@@ -70,6 +70,33 @@ jobs:
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           docker push "${{ steps.chall.outputs.image }}"
 
+      - name: Deploy static challenge (instanced: false)
+        # Static = shared server. Hosted as a labeled container behind the
+        # challs VM's Traefik; contract in ops/deploy-static.sh.
+        env:
+          SSH_DEPLOY_PRIVATE_KEY: ${{ secrets.SSH_DEPLOY_PRIVATE_KEY }}
+          IMAGE: ${{ steps.chall.outputs.image }}
+        run: |
+          set -euo pipefail
+          val=$(grep -oE "^instanced:[[:space:]]*(true|false)" "${{ matrix.dir }}/chall.yaml" | grep -oE "true|false" | head -1)
+          case "$val" in
+            false) ;;
+            true) echo "instanced challenge — no static deploy step"; exit 0;;
+            *) echo "::error::chall.yaml missing 'instanced: true/false'"; exit 1;;
+          esac
+          mkdir -p ~/.ssh
+          install -m 600 /dev/null ~/.ssh/id_ed25519
+          echo "$SSH_DEPLOY_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          eval $(ssh-agent -s) >/dev/null
+          ssh-add ~/.ssh/id_ed25519 >/dev/null
+          dir_name=$(basename "${{ matrix.dir }}")
+          env NAME="$dir_name" \
+              INTERNAL_HOST="$dir_name.challs.ingeniums.club" \
+              IMAGE="$IMAGE" \
+              HOST_SSH="root@ssh.alpha.openscaler.net" HOST_SSH_PORT="9305" \
+              bash ops/deploy-static.sh
+
+
       - name: Register challenge on platform
         # Bot admin with challsRead|challsWrite only (perms 3, ADR 0005).
         # Token is a rotating Actions secret; never a full-63 admin token.

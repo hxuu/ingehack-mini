@@ -1,0 +1,20 @@
+name: hello
+author: hxuu
+category: misc
+description: |
+  Your first flag. This page is a plain HTTP endpoint — a web server answers
+  your browser's request with what you're reading right now.
+
+  1. Open your browser's developer tools (F12) → **Network** tab and reload:
+     that row in front of you is the request your browser made and this page
+     coming back.
+  2. The flag is served on a different path of the same host.
+  3. Submit it on the platform.
+
+  This one is shared — every team sees the same flag. When you're done, you'll
+  have used: HTTP requests and paths, and reading a response.
+points: {min: 100, max: 250}
+tiebreakEligible: false
+tags: [beginner, HTTP Protocol]
+flag: ingehack{http_is_just_requests}
+instanced: false
