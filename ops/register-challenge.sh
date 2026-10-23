@@ -112,15 +112,16 @@ payload=$(echo "$payload" | jq --argjson files "$online" '.data.files = $files')
 
 id=$(python3 -c 'import sys,yaml;m=yaml.safe_load(open(sys.argv[1]));i=m.get("instancer") or {};print(i.get("challengeIntegrationId", m.get("challengeIntegrationId")) or m["name"].lower().replace(" ","-"))' "$manifest")
 
-# ---- pre-PUT validation: instancer config against the LIVE provider schema --
+# ---- pre-PUT validation: PAYLOAD's instancer config vs LIVE provider schema -
 echo "validating instancerConfig against live provider schema ..."
-inst_schema_url="$platform/api/v2/admin/instancer/schema"
-curl -fsS "$inst_schema_url" -H "Authorization: Bearer $token" -o /tmp/instschema.json
-python3 - "$manifest" /tmp/instschema.json <<'PY'
-import json, sys, yaml
-m = yaml.safe_load(open(sys.argv[1]))
+curl -fsS "$platform/api/v2/admin/instancer/schema" \
+  -H "Authorization: Bearer $token" -o /tmp/instschema.json
+echo "$payload" > /tmp/chall-payload.json
+python3 - /tmp/chall-payload.json /tmp/instschema.json <<'PY'
+import json, sys
+put = json.load(open(sys.argv[1]))
 schema_doc = json.load(open(sys.argv[2]))
-if not m.get("instanced"): sys.exit(0)
+if not put["data"].get("instancerConfig"): sys.exit(0)
 try:
     import jsonschema
 except ImportError:
@@ -128,10 +129,9 @@ except ImportError:
     sys.exit(0)
 insts = schema_doc["data"]["instancers"]
 default = schema_doc["data"].get("defaultInstancer")
-chosen = m["instancer"].get("instancerName", default)
+chosen = put["data"]["instancerConfig"].get("instancer", default)
 entry = next(i for i in insts if i["name"] == chosen)
-cfg = {"services": m["instancer"].get("services"), "networks": m["instancer"].get("networks", {}), "volumes": m["instancer"].get("volumes", {})}
-jsonschema.validate(cfg, entry["schema"])
+jsonschema.validate(put["data"]["instancerConfig"]["config"], entry["schema"])
 print("instancer config validated against", chosen, "schema")
 PY
 
