@@ -208,7 +208,7 @@ Operational notes / follow-ups:
 
 ## CI/CD pipeline — LIVE-verified 2026-10-23 (ADR 0005)
 
-- Repo is live at https://github.com/hxuu/inge-minictf (private).ursd
+- Repo is live at https://github.com/hxuu/inge-minictf (private).
 - Bot admin `ci-bot@ingeniums.club` (+ register fresh token, perms
   **challsRead|challsWrite = 3 only**), token stored as GitHub Actions secret
   `CHALLENGE_BOT_TOKEN` (repo-scoped; rotate = re-promote fresh email + one
