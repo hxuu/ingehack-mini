@@ -1,6 +1,6 @@
 ---
 name: remove-challenge
-description: Remove or retire a merged, live Ingehack Mini challenge. Use when a shipped challenge must be taken off the platform — pulled, broken, or withdrawn. Not for editing a live challenge — that is `update-challenge`.
+description: Remove or retire a merged, live Ingehack Mini challenge — pulled, broken, withdrawn, or the dead id left over after a static challenge was renamed (its id IS its `name`, so the rename migrates and the old entry retires here; see `new-challenge` Update mode). Not for editing a live challenge — that is `update-challenge`.
 ---
 
 # remove-challenge
@@ -27,13 +27,11 @@ removal is hide-first, wipe-optional, sweep-manual.
    - running per-team instances expire via `timeoutMilliseconds` (or
      `DELETE /api/v2/admin/challs/:id/instance` acting per admin team);
    - merge the PR that deletes `challenges/<category>/<name>/` so CI stops
-     building and registering it.
+     building and registering it (also the closing step of a static-rename
+     migration — `new-challenge` Update mode).
 
 ## The one direction to watch
 
 Re-merging the challenge directory from git history restores and un-hides it.
 If a challenge must stay dead, delete the directory in the step-3 PR as well;
 a later revival is a fresh decision made in PR, not by accident.
-
-Smoke-test the script first on the QA `qa-pipeline-chall` (scheduled for
-deletion anyway) — the script is new.
