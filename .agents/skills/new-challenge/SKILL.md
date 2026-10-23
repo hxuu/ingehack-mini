@@ -43,11 +43,20 @@ Create `challenges/<category>/<name>/` with:
 - `Dockerfile` — category-typical base and layout (e.g. pwn: minimal Debian +
   socat/ynetd + compiled binary; web: whatever the stack needs; rev: nothing
   served, just handouts).
-- `chall.yaml` — the human-side manifest: name, category, concept tags,
-  flavor/description, instanced or static, `challengeIntegrationId`
-  (stable id the platform tracks across PRs), expose kinds (`http`, `https`,
-  `tcp-ssl`; pwn is always `tcp-ssl`), instance timeout, author files
-  (handouts), and where the Docker image will live. This file is the input the
+- `chall.yaml` — the human-side manifest (exact contract:
+  `ops/register-challenge.sh` maps it to the rCTF v2 upsert; see
+  `docs/research/rctf-v2-api-schema.md`): `name`, `author`, `category`,
+  `description` (markdown), `points: {min,max}`, `tags` (concept tags),
+  `tiebreakEligible`, `hidden`/`releaseTime`, flags (`flag:` static OR
+  `flagsDynamicBase` per-team), `files[]` handouts (`name`, `path`, `size`),
+  and for instanced challenges: `instanced: true`, `instancer` block with
+  `challengeIntegrationId` (stable id, never changes after launch),
+  `timeoutMilliseconds`, `extendable`, `expose[]` (kinds `http`, `https`,
+  `tcp-ssl` — pwn is always `tcp-ssl`; each entry: `hostPrefix`,
+  `containerName`, `containerPort`, `title`), and `services` (tiny-instancer
+  config: mind `mem_limit` default "6m", `read_only: true`,
+  `cap_drop: ['ALL']` baked-in defaults that break most services — declare
+  what you need). CI injects the `image:` at register time.
   ship step turns into platform config.
 - `src/` — challenge code. Where the flag placeholder is used, it is
   literally the string `${RCTF_FLAG}`; the instancer replaces it from the

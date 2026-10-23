@@ -205,3 +205,31 @@ Operational notes / follow-ups:
   then `GET /api/v2/integrations/client/config` must show `false` and register
   returns `badRegistrationsDisabled`. Re-enable = delete the file +
   force-recreate. KEEP 03-frozen.yaml out of the rctf.d dir between events.
+
+## CI/CD pipeline — LIVE-verified 2026-10-23 (ADR 0005)
+
+- Repo is live at https://github.com/hxuu/inge-minictf (private).ursd
+- Bot admin `ci-bot@ingeniums.club` (+ register fresh token, perms
+  **challsRead|challsWrite = 3 only**), token stored as GitHub Actions secret
+  `CHALLENGE_BOT_TOKEN` (repo-scoped; rotate = re-promote fresh email + one
+  `gh secret set`).
+- `ops/register-challenge.sh` rewritten to the verified v2 schema
+  (`docs/research/rctf-v2-api-schema.md`): correct payload (`points`,
+  `flags[]` entries, `{data:{...}}` wrapper, `instancerConfig` inside
+  `challengeIntegrationId`), validates the instancer `config` against the
+  LIVE `GET /api/v2/admin/instancer/schema` JSON Schema pre-PUT, and upserts
+  via one `PUT /api/v2/admin/challs/:id` (create-when-missing semantics — no
+  branching). LIVE-verified end-to-end: registered QA challenge
+  `qa-pipeline-chall` via the bot (then re-confirmed update path).
+- Bot boundary checks (role matrix row 3 = partial perms editor, also
+  verified): settings PUT → `badPerms` ✓, user delete → `badPerms` ✓,
+  challenge PUT → success ✓ (leaked bot token cannot touch event config).
+- Registration kill switch verified (row 4, see the dedicated section).
+- Workflow `.github/workflows/challenges.yml` triggers on merged changes
+  under `challenges/**` (detect matrix → docker build → public GHCR push →
+  register via bot). First REAL-MERGE round-trip (PR → GHCR image pull at
+  instance start on the Chall VM) is the remaining integration test, owed
+  when the first authored challenge ships.
+- Local-handout uploads via the admin `POST /api/v2/admin/upload` are bot-
+  capable but NOT yet wired (script explicitly refuses local-handout challs
+  instead of half-registering). Wire-in owed.
