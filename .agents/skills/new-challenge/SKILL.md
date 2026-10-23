@@ -67,6 +67,11 @@ Create `challenges/<category>/<name>/` with:
   challenge.
 - `src/` — challenge code. Where the flag placeholder is used, it is
   literally the string `${RCTF_FLAG}`.
+- `files/` + `files[]` handouts: a `path` entry commits the file with the
+  challenge and CI uploads it at register time (size auto-filled); a `url`
+  entry points at an attachment already hosted on
+  `https://attachments.ingeniums.club` (a maintainer uploads it once via the
+  admin upload API) — write the real `size` there.
 - `solution/` — how it's meant to be solved: a solver script if the author has
   one, otherwise a plain prose walkthrough. `challenge-review` consumes this;
   it is mandatory.

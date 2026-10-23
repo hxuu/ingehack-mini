@@ -295,6 +295,31 @@ Operational notes / follow-ups:
   per-team leet flag (`ingehack{7H15_B453_h45_pl3N7y_10W3Rca5e_l3t73Rs_f0r_133t}`);
   wrong submit → `badFlag`, correct submit → `goodFlag` + solve recorded.
 
+## Attachments sanity checks — `sanity-check-2`/-3; upload wiring PROVEN (2026-10-23)
+
+- **`register-challenge.sh` now uploads local handouts** (multipart
+  `POST /api/v2/admin/upload`, field name `files`) and attaches every handout
+  as `{name, url, size}` — the owed wire-in from the CI round. Dedup is by
+  SHA-256, so CI re-registering an unchanged file returns the same url.
+  `chall-payload.py` passes `files[].path` through to the register script,
+  which resolves it against the manifest dir and auto-fills `size` from the
+  file when the manifest omits it.
+- **`sanity-check-2`** — local-attachment path: `files/naughty-list.zip`
+  committed to the repo, flag on the first line inside
+  (`ingehack{naughty_but_readable}`). **`sanity-check-3`** — R2 path:
+  `gifts.zip` uploaded to the bucket by hand (admin upload), chall.yaml
+  references its `attachments.ingeniums.club` URL (`ingehack{bucket_list_
+  checked_twice}`); the `url`-entry form requires the real `size` in the
+  manifest.
+- Both verified player-side (fresh QA token): attachment visible in
+  `GET /api/v2/challs` `files[]`, public download 200 from
+  attachments.ingeniums.club (no auth), wrong submit → `badFlag`,
+  correct submit → `goodFlag`; CI re-register via the bot token worked
+  identically (perms 3 is enough for upload).
+- QA admin used for the R2 seed upload: `qa-attach-1792778575@ingeniums.club`
+  (perms 63) — delete in the pre-event cleanup along with the other `QA-*`
+  accounts (its token is out-of-band, not stored in CI).
+
 ## Updating challenge metadata without a rebuild (added when needed)
 
 Merged-PR CI always rebuilds + ships the image; a pure manifest-text fix
