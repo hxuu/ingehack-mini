@@ -233,3 +233,37 @@ Operational notes / follow-ups:
 - Local-handout uploads via the admin `POST /api/v2/admin/upload` are bot-
   capable but NOT yet wired (script explicitly refuses local-handout challs
   instead of half-registering). Wire-in owed.
+
+## Author pair live — 2026-10-23 (first full author round-trip, repo renamed)
+
+- Repo renamed: **https://github.com/hxuu/ingehack-mini** (was inge-minictf).
+- Author flow executed as designed (PR #1 via `new-challenge` scaffold →
+  `challenge-review` verify ladder → merge): challenges ship via CI
+  automatically, authors have NO ssh key/VM access — the deploy key lives only
+  in the repo's Actions secrets (`SSH_DEPLOY_PRIVATE_KEY`), used by CI post-
+  merge. Repeated a couple of CI fixes on the way:
+  1. workflow YAML name with colon didn't parse (actionlint now used before
+     every workflow edit — keep it).
+  2. GHCR push via GITHUB_TOKEN denied → **pipeline switched to registry-less
+     CI**: runner builds → `docker save | ssh docker load` on the challs VM →
+     instanced challenges registered with a LOCAL image tag (`name:<sha>`,
+     no registry pull needed at instance start); static challenges deployed
+     as labeled containers behind the challs Traefik with the flag from
+     chall.yaml injected via env. Challenge images never leave the VM.
+  3. register script now validates the RESOLVED payload config (before it
+     validated the raw manifest — missing required `image`).
+- Live verification results:
+  - `challenges/misc/hello` (static): deployed, serves page + `/flag` with the
+    declared flag `ingehack{http_is_just_requests}` at
+    `hello.challs.ingeniums.club:9487` (traefik web entrypoint).
+  - `challenges/misc/hello-instancer`: CI-registered via the inscriberbot PUT
+    (image `hello-instancer:<sha>` local, flags unchanged, 3 exposes). Player
+    start (as QA-Player) → instance from the CI-shipped image on the VM,
+    THREE expose kinds verified live with the per-team leet flag:
+    http `hello-http-<uid>…:9487`, https `hello-https-<uid>…:9488`,
+    tcp-ssl `hello-tcp-<uid>…:9450` (curl note: the tcp-ssl kind responds over
+    HTTP/1.1; use `curl --http1.1` when scripting TLS test hits — browsers/pwn
+    clients unaffected).
+- QA instance started/stopped during verification. Challenge pairing on the
+  platform now: hello (static) + hello-instancer (3-expose instanced) + the
+  QA pipeline challenge `qa-pipeline-chall` (DELETE before event).

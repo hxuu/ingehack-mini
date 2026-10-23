@@ -1,6 +1,6 @@
-# inge-minictf
+# ingehack-mini
 
-Infra repo for **Inge MiniCTF** — a 48-hour jeopardy CTF for first-year CS
+Infra + authoring repo for **Ingehack Mini** — a 48-hour jeopardy CTF for first-year CS
 students at ingeniums.club, running on rCTF v2 across two OpenScaler VMs
 behind Cloudflare.
 
