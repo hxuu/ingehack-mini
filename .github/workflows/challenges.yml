@@ -110,7 +110,9 @@ jobs:
           eval $(ssh-agent -s) >/dev/null
           ssh-add ~/.ssh/id_ed25519 >/dev/null
           dir_name=$(basename "${{ matrix.dir }}")
+          flagval=$(python3 -c 'import yaml,sys;print(yaml.safe_load(open(sys.argv[1])).get("flag",""))' "${{ matrix.dir }}/chall.yaml")
           env NAME="$dir_name" \
+              DECLARED_FLAG="$flagval" \
               INTERNAL_HOST="$dir_name.challs.ingeniums.club" \
               IMAGE="$IMAGE" \
               HOST_SSH="root@ssh.alpha.openscaler.net" HOST_SSH_PORT="9305" \

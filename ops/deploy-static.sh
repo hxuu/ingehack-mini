@@ -14,6 +14,8 @@ set -euo pipefail
 IMAGE=${IMAGE:?}; INTERNAL_HOST=${INTERNAL_HOST:?}; NAME=${NAME:?}
 TRAEFIK_NETWORK=${TRAEFIK_NETWORK:-docker-instancer_tiny-network}
 PORT=8080   # containerPort for static web challs (fixed convention)
+DECLARED_FLAG=${DECLARED_FLAG:?}
+[[ "$DECLARED_FLAG" == ingehack{* ]] || { echo "FAIL: static flag must match the ingehack{...} format" >&2; exit 1; }
 
 printf 'Deploy %s\n  image: %s\n  host: %s\n' "$NAME" "$IMAGE" "$INTERNAL_HOST"
 ssh -o StrictHostKeyChecking=accept-new -p "${HOST_SSH_PORT:?}" "${HOST_SSH:?}" \
@@ -22,6 +24,7 @@ ssh -o StrictHostKeyChecking=accept-new -p "${HOST_SSH_PORT:?}" "${HOST_SSH:?}" 
    docker run -d --name 'static-$NAME' \
      --network '$TRAEFIK_NETWORK' \
      --restart unless-stopped \
+     -e 'FLAG=$DECLARED_FLAG' \
      -l 'traefik.enable=true' \
      -l 'traefik.http.routers.$NAME.rule=Host(\`$INTERNAL_HOST\`)' \
      -l 'traefik.http.routers.$NAME.entryPoints=web' \
