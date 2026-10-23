@@ -168,3 +168,28 @@ Root cause & correct architecture (learned the hard way):
   `/opt/rctf-src/deploy/docker-instancer/.env` to the PUBLIC numbers, then
   `docker compose -f deploy/docker-instancer/compose.yml up -d --force-recreate`.
   No editor/player action needed; instance URLs advertise the current numbers.
+
+## Load test — 2026-10-23, staged through the real CF edge/tunnel (client: local aiohttp script /tmp/opencode/loadtest.py, monitor: /tmp/loadmon*.log on platform)
+
+| Stage | Shape | Result |
+|---|---|---|
+| 1 reads | 250 "users" polling `/`, `/api/v2/challs`, `/api/v2/leaderboard` (= ~800 rps at one-client pacing) | PASS: p95 168 ms, p50 69 ms, zero 5xx over 72k requests; platform load ≤2.5, rctf container ≤49% of one core, Postgres quiet (fast path is cached/rateless) |
+| 2 submits | 120 workers hammering `POST /api/v1/challs/:id/submit` bad flags | PASS (defensively): rCTF rate-limits submissions (15,140×429, 13×400, no 200s) — brute-forcing flags from one IP is throttled without touching the DB |
+| 3 onboarding | 40 workers × rapid registration + every 6th starting an instance | PASS: p95 352 ms, worst outlier 5.4 s (first-instance Traefik spin-up), zero 5xx; **BUT** it spawned ~95 concurrent QA instances on Chall VM → its load spiked to 8.7 then recovered after cleanup |
+
+Verdict for 200–250 real players: platform (2 vCPU/4 GB) has comfortable
+headroom — real players word-choice at ~1–3 rps each = ≤750 rps worst-case,
+stage 1 proved 800 rps fine with p95 <200 ms. Load is bounded by the submit
+rate-limit and instancer start cost, not the read path.
+
+Operational notes / follow-ups:
+- Pre-event DB cleanup: delete all `QA-*` + `LoadTest-*` users (dozens of test
+  teams now exist), then tear down any stray instances (docker: `ti-hello-…`).
+- Instancer start is the expensive path (Redis CPU spike + platform 2.4 s
+  outliers). CF Turnstile on `instancerStart`/`instancerExtend` (already
+  pending) also caps launch storms at event start.
+- `/api/v2/leaderboard` returned `badEndpoint` (404) — my script guessed a
+  wrong path; scoreboard route may be v1 or differently named. Check the real
+  UI route once before event day (cheap).
+- Chall VM load spike during mass-spawn is expected; real event has each team
+  spawning at most once per challenge per 30 min, spread over minutes.
