@@ -267,3 +267,27 @@ Operational notes / follow-ups:
 - QA instance started/stopped during verification. Challenge pairing on the
   platform now: hello (static) + hello-instancer (3-expose instanced) + the
   QA pipeline challenge `qa-pipeline-chall` (DELETE before event).
+
+## Removing a challenge from the platform (added when needed)
+
+rCTF v2 has no v2 challenge-delete route; the only hard delete is the v1
+`DELETE /api/v1/admin/challs/:id`. Clean removal procedure
+(`ops/remove-challenge.sh`, same bot-token auth as register):
+
+1. **Hide (always)**: script PUTs the live challenge back with `hidden=true`
+   (round-trips the GET payload; on rejection, fallback is `hidden: true` in
+   `chall.yaml` + merge → CI re-registers hidden).
+2. **Wipe (optional, `--wipe`)**: v1 delete. Script warns on failure and the
+   challenge then stays hidden rather than deleted.
+3. **Manual sweep (no API covers)**: delete the GHCR image from the org's
+   package settings; per-team instances expire via `timeoutMilliseconds` (or
+   `DELETE /api/v2/admin/challs/:id/instance` acting per admin team); merge the
+   PR deleting `challenges/<category>/<name>/` so CI stops shipping it.
+   Re-merging the old manifest would unhide/restore the challenge.
+4. **Solves**: a hidden challenge keeps existing player solves — fine for a
+    withdrawal. The perms-3 bot has no solve-write perms, so solve cleanup is
+    a manual admin action (see schema docs §Users) if ever needed.
+
+Usage:
+    ops/remove-challenge.sh --platform https://ctf.ingeniums.club \
+      --challenge-id <id> --token "$CHALLENGE_BOT_TOKEN" [--wipe]
