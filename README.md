@@ -32,7 +32,7 @@ docs; challenge authors never touch any of it.
 ├── docs/research/                    # rCTF v2 API schema research etc.
 ├── ops/                              # Maintainer-side deploy/register scripts
 ├── .github/workflows/challenges.yml  # Merged PR ⇒ live challenge
-└── .agents/skills/                   # The two skills, for any agent harness
+└── .agents/skills/                   # Challenge lifecycle skills, for any agent harness
 ```
 
 ## I'm writing a challenge
@@ -61,6 +61,37 @@ platform — no hosting, no ports, no platform API in your face.
 > flags (the instancer injects the team's value at launch); `chall.yaml` sets
 > the flag provider/base. Static challenges declare a fixed
 > `flag: ingehack{...}` right in the manifest.
+
+## I'm updating a challenge
+
+Launch your agent in the repo and say *"update challenge <name>"* — the
+[`update-challenge`](/.agents/skills/update-challenge) skill routes the change:
+
+```sh
+# text-only change (description, points, tags, release time, expose layout)
+ops/update-challenge.sh --platform https://ctf.ingeniums.club \
+  --manifest challenges/<category>/<name>/chall.yaml --token "$CHALLENGE_BOT_TOKEN"
+```
+
+Text-only manifest edits re-register directly, no rebuild. Code or Dockerfile
+changes go through a merged PR — CI rebuilds, ships, and re-registers. Rollback
+is `git revert` + merge.
+
+## I'm removing a challenge
+
+Say *"remove challenge <name>"* — the
+[`remove-challenge`](/.agents/skills/remove-challenge) skill runs:
+
+```sh
+# hide it from players immediately (no v2 delete route exists)
+ops/remove-challenge.sh --platform https://ctf.ingeniums.club \
+  --challenge-id <id> --token "$CHALLENGE_BOT_TOKEN" [--wipe]
+```
+
+`--wipe` hard-deletes via the v1 API (use only when the challenge must not
+exist). Then delete `challenges/<category>/<name>/` in a PR so CI stops
+shipping it — re-merging the directory would restore it. See
+[docs/status.md](/docs/status.md) for the full procedure.
 
 ## I'm running the infra
 
