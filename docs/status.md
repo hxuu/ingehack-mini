@@ -144,3 +144,27 @@ applied via `docker compose up -d --force-recreate`; homeContent still says
    verification, useless as a player-facing hello challenge. The real
    `hello-instancer` delivering the flag visibly + correct/incorrect responses
    is to be authored via the new `new-challenge` skill.
+
+## Update — endpoint-port blocker RESOLVED (2026-10-23, later same day)
+
+Root cause & correct architecture (learned the hard way):
+- The OpenScaler mapping is **public port → internal port**; the gateway dials
+  the VM on the *internal* port. Traefik must keep listening on
+  **80 / 443 / 1337** (socket, host+container).
+- The mapped **public** numbers belong ONLY in what tiny-instancer *advertises*
+  to players/challenges (`TRAEFIK_HTTP_PORT`/`HTTPS`/`TCP` in its `.env` —
+  `KIND_TO_PORT` is advertisement-only).
+- Consequence: mapped ports rotated during the session. Current mapping:
+  challs **80→9487, 443→9488, 1337→9450** (osctl list confirmed; platform 9479→9383
+  unchanged). `compose.yml` published ports left at the stock 80:80/443:443/
+  1337:1337; `conf/traefik.yml` entrypoints :80/:443/:1337 (stock).
+- Verified end-to-end after fix: rCTF advertises `port:9487` and
+  `http://hello-<uid>.challs.ingeniums.club:9487/` serves the instance from
+  the local machine. QA instance stopped and removed afterwards.
+- osctl notes: `port open <internal>` assigns public automatically; closing and
+  re-opening re-assigns (rotates) numbers. A reboot did NOT change the numbers.
+- update-mapped-ports routine: run `osctl computer network port list --computer
+  <challs-id>`, then set TRAEFIK_HTTP_PORT/HTTPS_PORT/TCP_PORT in
+  `/opt/rctf-src/deploy/docker-instancer/.env` to the PUBLIC numbers, then
+  `docker compose -f deploy/docker-instancer/compose.yml up -d --force-recreate`.
+  No editor/player action needed; instance URLs advertise the current numbers.
