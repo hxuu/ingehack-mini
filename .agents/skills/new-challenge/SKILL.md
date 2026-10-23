@@ -89,7 +89,9 @@ Manifest-text-only tweaks skip the rebuild through the `update-challenge`
 skill's fast path. Renaming a live challenge: instanced ids are pinned by
 `challengeIntegrationId`, so a display rename is safe; a static challenge's
 id IS its `name` — re-register under the new name, then hide + wipe the old
-id with the `remove-challenge` skill. Test changes locally — platform writes
+id with the `remove-challenge` skill. Taking a challenge off outright: a
+merged PR that deletes its directory retires it automatically — see
+`remove-challenge`. Test changes locally — platform writes
 go through CI or the ops scripts, and live state is never a playground.
 
 ## Ship mode

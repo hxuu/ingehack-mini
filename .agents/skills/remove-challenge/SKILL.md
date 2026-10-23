@@ -12,16 +12,15 @@ removal is hide-first, wipe-optional, sweep-manual.
 
 ## Procedure
 
-Two ways in: a merged PR that deletes `challenges/<category>/<name>/` does
-steps 1–2 automatically (the workflow's `retire` job recovers the old
-`chall.yaml` from git history, derives the id the same way
-`register-challenge.sh` does, hides + wipes, and tears down the static
-container). Running the script by hand — a pull or an emergency — is the
-same steps, not automated:
+Two ways in. A merged PR that deletes `challenges/<category>/<name>/` runs
+steps 1–2 automatically (the workflow's `retire` job calls the same script);
+the steps below are for hand-running — a pull or an emergency:
 
 1. **Hide (mandatory)**: `ops/remove-challenge.sh --platform
-   https://ctf.ingeniums.club --challenge-id <id> --token
-   "$CHALLENGE_BOT_TOKEN"`. It PUTs the live challenge back with
+   https://ctf.ingeniums.club --challenge-id <id> --token <maintainer admin
+   token>` (hands-on gotcha: `$CHALLENGE_BOT_TOKEN` is a GitHub Actions
+   secret only, never local — see `update-challenge` branch 1).
+   It PUTs the live challenge back with
    `hidden=true` — done when it prints `OK: ... hidden from players`.
    If the hidden PUT fails, use the fallback it prints (`hidden: true` in
    `chall.yaml` + merge).

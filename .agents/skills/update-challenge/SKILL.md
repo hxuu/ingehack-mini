@@ -38,7 +38,6 @@ when the change is genuinely text-only.
 - `${RCTF_FLAG}` placeholder semantics and `challengeIntegrationId`
   immutability still apply (see `new-challenge`).
 - CI and the ops scripts are the only writers to the platform.
-- Retiring the challenge instead: `remove-challenge`.
 
 ## Rollback
 

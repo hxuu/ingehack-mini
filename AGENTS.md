@@ -10,7 +10,9 @@ Inside this repo: challenge lifecycle skills live in `.agents/skills/` —
 `challenges/`), `update-challenge` (change a live challenge),
 `remove-challenge` (retire one), `challenge-review` (verify a challenge
 actually works — author-side check and PR review are the same skill), and
-`pr` (use when creating a PR).
+`pr` (use when creating a PR). Platform state follows the repo: a merged PR
+that creates, changes, or deletes a challenge directory ships, re-registers,
+or retires it automatically (the `challenges` workflow).
 
 Harnesses that need their own directory (e.g. `.claude/skills/`) symlink into
 `.agents/skills/` — that is the single source of truth.
