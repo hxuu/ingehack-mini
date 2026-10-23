@@ -82,7 +82,7 @@ Note: public ports are auto-assigned by OpenScaler, so bookmark them via
 
 ## Pending (next session)
 
-1. Set real event `startTime`/`endTime` before the event (currently now+48h test window).
+1. Set real event `startTime`/`endTime` before the event (currently a test window: now+48h).
 2. Write-up bonus: check rCTF providers for a write-up/bonus mechanism or add a Misc
    workflow; verify scoring provider details (dynamic decay).
 

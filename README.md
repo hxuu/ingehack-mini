@@ -1,6 +1,6 @@
 # ingehack-mini
 
-A 48-hour jeopardy CTF for first-year CS students, run by
+A jeopardy CTF for first-year CS students, run by
 [ingeniums.club](https://ingeniums.club). This repo holds both the
 infrastructure documentation *and* the challenge authoring workflow — challenge
 images never leave the organization's VM, and "merged PR" means "live for

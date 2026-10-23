@@ -1,6 +1,6 @@
 # Inge MiniCTF Infrastructure
 
-The domain language for running the ingeniums.club miniCTF: a 48-hour jeopardy
+The domain language for running the ingeniums.club miniCTF: a jeopardy
 Ctf for first-year students, hosted on rCTF v2 across two OpenScaler VMs behind
 Cloudflare. This glossary is for infra maintainers; challenge-author or
 player-facing language lives with the event content, not here.
