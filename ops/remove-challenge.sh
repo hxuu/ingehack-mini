@@ -81,10 +81,16 @@ if [[ $wipe == 1 ]]; then
 fi
 
 # ---- 3. manual sweep the API cannot do --------------------------------------
+# (When CI runs this on a merged directory-deletion PR, the retire job also
+# tears down the shared static container; nothing else is needed. The sweep
+# below is what remains when you run this script by hand.)
 cat <<'EOF'
-Remaining sweep (no API covers these):
-  - GHCR image from CI's build — delete in the org's package settings.
+Remaining sweep (no API fully covers these):
+  - Challenge images live only on the challs VM; a docker rmi there is
+    optional cleanup, nothing references them once unregistered.
   - Running per-team instances stop via timeoutMilliseconds, or
     DELETE /api/v2/admin/challs/:id/instance when acting as that team's admin.
-  - Remove challenges/<category>/<name>/ in a PR so CI stops shipping it.
+  - Delete challenges/<category>/<name>/ in a PR if not already done — once
+    merged, CI (retire job) performs the hide+wipe and container teardown
+    itself; a later revival is a fresh decision made in PR, not by accident.
 EOF

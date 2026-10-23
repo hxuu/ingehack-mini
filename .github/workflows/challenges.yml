@@ -6,6 +6,18 @@ name: challenges
 # using the perms-3 bot token, and for static challenges deploys a labeled
 # container behind the challs Traefik. Challenge images never leave the VM.
 # Authors only interact through a PR; they never see this file.
+#
+# The same pipeline covers all three lifecycle moves on a merged PR:
+#   - create / update: register-challenge.sh is an UPSERT — a changed
+#     dir's new chall.yaml re-registers (and statics redeploy) in place,
+#     as long as the id stays stable (instanced: challengeIntegrationId;
+#     static: the `name` field IS the id — renaming = migration, see
+#     the new-challenge skill).
+#   - delete: a fully removed challenges/<category>/<name>/ dir fires the
+#     retire job, which recovers the OLD chall.yaml from git history,
+#     derives the id the same way, and hides + wipes the platform entry
+#     (statics also get their shared container torn down). Imaging the
+#     directory back re-registers it — deletion is as reversible as git.
 
 on:
   push:
@@ -28,6 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       dirs: ${{ steps.set.outputs.dirs }}
+      deleted: ${{ steps.set.outputs.deleted }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -38,8 +51,77 @@ jobs:
             | grep '^challenges/' \
             | cut -d/ -f1-3 \
             | sort -u \
+            | while read -r d; do
+                test -e "$d/chall.yaml" && echo "$d"
+              done \
             | jq -R -s -c 'split("\n") | map(select(length > 0))')
-          echo "dirs=$dirs" >> "$GITHUB_OUTPUT"
+          # a dir counts as DELETED only when every path under it is gone at
+          # HEAD (a pruned file inside a live dir is just part of an update)
+          deleted=$(git diff --name-only --diff-filter=D HEAD^ HEAD \
+            | grep '^challenges/' \
+            | cut -d/ -f1-3 \
+            | sort -u \
+            | while read -r d; do
+                test -d "$d" || echo "$d"
+              done \
+            | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          echo "dirs=$dirs"       >> "$GITHUB_OUTPUT"
+          echo "deleted=$deleted" >> "$GITHUB_OUTPUT"
+
+  retire:
+    needs: detect
+    if: needs.detect.outputs.deleted != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      env:
+        SSH_DEPLOY_PRIVATE_KEY: ${{ secrets.SSH_DEPLOY_PRIVATE_KEY }}
+    matrix:
+      dir: ${{ fromJson(needs.detect.outputs.deleted) }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - id: oldchall
+        run: |
+          # the dir was deleted; its live identity comes from git history.
+          # Derive the id with the SAME expression register-challenge.sh
+          # uses (line "id=$python…") — dropping it here would let the two
+          # rules drift.
+          test -e "${{ matrix.dir }}" && { echo "::error::dir still exists at HEAD"; exit 1; }
+          git show HEAD^:"${{ matrix.dir }}/chall.yaml" > old-chall.yaml \
+            || { echo "::error::no chall.yaml in the deleted dir's parent commit"; exit 1; }
+          expr='import sys,yaml;m=yaml.safe_load(open(sys.argv[1]));i=m.get("instancer") or {};print(i.get("challengeIntegrationId", m.get("challengeIntegrationId")) or m["name"].lower().replace(" ","-"))'
+          echo "id=$(python3 -c "$expr" old-chall.yaml)" >> "$GITHUB_OUTPUT"
+          inst=$(grep -oE "^instanced:[[:space:]]*(true|false)" old-chall.yaml \
+                 | grep -oE "true|false" | head -1)
+          echo "instanced=${inst:-false}" >> "$GITHUB_OUTPUT"
+      - name: Hide + wipe platform entry
+        env:
+          TOKEN: ${{ secrets.CHALLENGE_BOT_TOKEN }}
+        run: |
+          set -euo pipefail
+          ops/remove-challenge.sh \
+            --platform "$PLATFORM_URL" \
+            --challenge-id "${{ steps.oldchall.outputs.id }}" \
+            --token "$TOKEN" \
+            --wipe
+      - name: Tear down the shared static container (static challenges only)
+        if: steps.oldchall.outputs.instanced != 'true'
+        run: |
+          # static challenges always have a running shared container named
+          # static-<dirname>; instanced ones are per-team and expire via
+          # timeoutMilliseconds. A missing container is not an error, and
+          # this ssh call is harmless for instanced challenges too.
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          install -m 600 /dev/null ~/.ssh/id_ed25519
+          echo "$SSH_DEPLOY_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          eval $(ssh-agent -s) >/dev/null
+          ssh-add ~/.ssh/id_ed25519 >/dev/null
+          ssh -o StrictHostKeyChecking=accept-new -p 9305 \
+              root@ssh.alpha.openscaler.net \
+              "docker rm -f static-$(basename '${{ matrix.dir }}') 2>/dev/null || true"
 
   ship:
     needs: detect

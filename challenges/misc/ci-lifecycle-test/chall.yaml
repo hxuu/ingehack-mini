@@ -1,0 +1,11 @@
+name: ci-lifecycle-test
+author: hxuu
+category: misc
+description: |
+  **Scratch challenge for proving the CI lifecycle** — created by a merge
+  with no handcrafted code, retired by the very next merge that deletes this
+  directory. Never intended for players.
+points: {min: 100, max: 100}
+tiebreakEligible: false
+tags: [beginner]
+flag: ingehack{lifecycle_created_and_deleted}
