@@ -109,6 +109,17 @@ _Avoid_: Label, keyword
 A guided onboarding challenge walking beginners through DevTools/HTTP/terminal
 basics; part of the MISC taxonomy with beginners as the primary audience.
 _Avoid_: Tutorial, warmup (acceptable in player-facing prose but not in records)
+
+**Flag Placeholder**:
+The literal `${RCTF_FLAG}` string an author writes in challenge code; the
+Instancer replaces it with the team's flag at Challenge Instance launch.
+Static challenges use a fixed flag decided at ship time instead.
+_Avoid_: flag env, flag injection variable
+
+**Challenge PR**:
+A pull request whose diff touches `challenges/<category>/<name>/`; on merge
+it goes live — built and pushed by CI, registered on the Platform (ADR 0005).
+_Avoid_: submission, release
 **Write-up**:
 A player-submitted solution description, locked per-challenge until the
 player solves it, flat-bonus scored, published post-event. Not yet wired into

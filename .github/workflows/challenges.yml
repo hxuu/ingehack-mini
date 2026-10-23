@@ -1,0 +1,90 @@
+name: challenges
+
+# ADR 0005: merged challenge PR ⇒ live challenge.
+# Build + push image to public GHCR, then register the challenge on the
+# platform via the rCTF v2 admin API using the perms-3 bot token.
+# Authors only ever interact with this through a PR — they never see this file
+# and never touch the platform.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "challenges/**"
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: challenges-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  PLATFORM_URL: https://ctf.ingeniums.club
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      dirs: ${{ steps.set.outputs.dirs }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - id: set
+        run: |
+          dirs=$(git diff --name-only HEAD^ HEAD \
+            | grep '^challenges/' \
+            | cut -d/ -f1-3 \
+            | sort -u \
+            | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          echo "dirs=$dirs" >> "$GITHUB_OUTPUT"
+
+  build-push-register:
+    needs: detect
+    if: needs.detect.outputs.dirs != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dir: ${{ fromJson(needs.detect.outputs.dirs) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read challenge manifest
+        id: chall
+        run: |
+          # chall.yaml is the human-side manifest produced by new-challenge.
+          # Keep it YAML-shaped exactly as the skill scaffolds it.
+          test -f "${{ matrix.dir }}/chall.yaml" || { echo "::error::missing chall.yaml"; exit 1; }
+          name=$(basename "${{ matrix.dir }}")
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+          echo "image=ghcr.io/${{ github.repository_owner }}/$name:latest" >> "$GITHUB_OUTPUT"
+
+      - name: Docker build
+        run: docker build -t "${{ steps.chall.outputs.image }}" "${{ matrix.dir }}"
+
+      - name: Push to public GHCR
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker push "${{ steps.chall.outputs.image }}"
+
+      - name: Register challenge on platform
+        # Bot admin with challsRead|challsWrite only (perms 3, ADR 0005).
+        # Token is a rotating Actions secret; never a full-63 admin token.
+        env:
+          TOKEN: ${{ secrets.CHALLENGE_BOT_TOKEN }}
+          IMAGE: ${{ steps.chall.outputs.image }}
+        run: |
+          set -euo pipefail
+          # chall.yaml -> rCTF v2 challenge upsert. The mapping (name,
+          # challengeIntegrationId, category, flavor/description, concept
+          # tags, expose kinds, instance timeout, files[] handouts where every
+          # entry needs `size`, and the --image reference) lives in one script
+          # so schema fixes never touch the workflow:
+          ops/register-challenge.sh \
+            --platform "$PLATFORM_URL" \
+            --manifest "${{ matrix.dir }}/chall.yaml" \
+            --image "$IMAGE" \
+            --token "$TOKEN"
