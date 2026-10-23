@@ -18,7 +18,7 @@ platform. GLOSSARY.md defines the domain words used below.
 
 ## Input interview (always do this first)
 
-Ask the author, and don't scaffold until answered:
+Ask the author, and scaffold only once all six are answered:
 
 1. **Name** — kebab-case, used as the directory and challenge id.
 2. **Category** — pwn / web / rev / crypto / forensics / misc. Categories map

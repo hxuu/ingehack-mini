@@ -16,7 +16,8 @@ removal is hide-first, wipe-optional, sweep-manual.
    https://ctf.ingeniums.club --challenge-id <id> --token
    "$CHALLENGE_BOT_TOKEN"`. It PUTs the live challenge back with
    `hidden=true` — done when it prints `OK: ... hidden from players`.
-   Do not stop here and edit platform state by hand.
+   If the hidden PUT fails, use the fallback it prints (`hidden: true` in
+   `chall.yaml` + merge).
 2. **Wipe (only when the challenge must not exist)**: rerun with `--wipe`.
    Order makes the wipe safe: hide already succeeded, so a wipe failure
    leaves the challenge hidden, not half-deleted. Done = `OK: ... deleted
@@ -31,9 +32,8 @@ removal is hide-first, wipe-optional, sweep-manual.
 ## The one direction to watch
 
 Re-merging the challenge directory from git history restores and un-hides it.
-If a challenge must stay dead, also delete the directory in the same PR as
-step 3, and never restore it without intent.
+If a challenge must stay dead, delete the directory in the step-3 PR as well;
+a later revival is a fresh decision made in PR, not by accident.
 
-Prefer verify-only on a throwaway target first: the script is new — smoke-test
-it on the QA `qa-pipeline-chall` (scheduled for deletion anyway) before
-trusting it on a live challenge.
+Smoke-test the script first on the QA `qa-pipeline-chall` (scheduled for
+deletion anyway) — the script is new.

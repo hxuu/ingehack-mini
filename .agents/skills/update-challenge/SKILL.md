@@ -6,8 +6,7 @@ description: Update an Ingehack Mini challenge after it has shipped. Use when an
 # update-challenge
 
 Change an existing `challenges/<category>/<name>/` and get the change onto the
-platform. The author edits challenge-visible content; the plumbing below
-decides how the change travels.
+platform.
 
 ## What kind of change is this? (always ask this first)
 
@@ -29,9 +28,8 @@ when the change is genuinely text-only.
 
 - `${RCTF_FLAG}` placeholder semantics and `challengeIntegrationId`
   immutability still apply (see `new-challenge`).
-- Never hand-edit live platform state outside these two scripts — CI and the
-  ops scripts are the only writers to the platform.
-- A challenge is being retired instead? Use `remove-challenge`.
+- CI and the ops scripts are the only writers to the platform.
+- Retiring the challenge instead: `remove-challenge`.
 
 ## Rollback
 
