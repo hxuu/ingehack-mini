@@ -1,6 +1,6 @@
 ---
 name: new-challenge
-description: Create, update, or ship an Ingehack Mini challenge. Use when a challenge author wants to start a new challenge in this repo, change an existing one, or produce the package that makes it go live. The author only needs to know WHAT the challenge is — this skill handles everything about how it runs.
+description: Create, update, or ship an Ingehack Mini challenge. Use when a challenge author wants to start a new challenge in this repo, change an existing one, or produce the package that makes it go live.
 ---
 
 # new-challenge
@@ -32,9 +32,9 @@ Ask the author, and don't scaffold until answered:
    free-form tags.
 5. **Difficulty + flavor text** — beginner-aware: flavor text that points at
    the concept without spoiling.
-6. **Flag format** — always `${RCTF_FLAG}` in author code; the instancer bakes
-   the per-team value at launch. Static challenges use a fixed flag decided at
-   ship time.
+6. **Flag format** — instanced: author code uses the literal string
+   `${RCTF_FLAG}` (the instancer bakes the per-team value at launch);
+   static: a fixed flag decided at ship time.
 
 ## Scaffold
 
@@ -43,24 +43,25 @@ Create `challenges/<category>/<name>/` with:
 - `Dockerfile` — category-typical base and layout (e.g. pwn: minimal Debian +
   socat/ynetd + compiled binary; web: whatever the stack needs; rev: nothing
   served, just handouts).
-- `chall.yaml` — the human-side manifest (exact contract:
-  `ops/register-challenge.sh` maps it to the rCTF v2 upsert; see
-  `docs/research/rctf-v2-api-schema.md`): `name`, `author`, `category`,
-  `description` (markdown), `points: {min,max}`, `tags` (concept tags),
-  `tiebreakEligible`, `hidden`/`releaseTime`, flags (`flag:` static OR
-  `flagsDynamicBase` per-team), `files[]` handouts (`name`, `path`, `size`),
-  and for instanced challenges: `instanced: true`, `instancer` block with
-  `challengeIntegrationId` (stable id, never changes after launch),
-  `timeoutMilliseconds`, `extendable`, `expose[]` (kinds `http`, `https`,
-  `tcp-ssl` — pwn is always `tcp-ssl`; each entry: `hostPrefix`,
-  `containerName`, `containerPort`, `title`), and `services` (tiny-instancer
-  config: mind `mem_limit` default "6m", `read_only: true`,
-  `cap_drop: ['ALL']` baked-in defaults that break most services — declare
-  what you need). CI injects the `image:` at register time.
-  ship step turns into platform config.
+- `chall.yaml` — the human-side manifest; the platform only ever sees it
+  through `ops/register-challenge.sh`, which maps it to the rCTF v2 upsert
+  (that script plus `docs/research/rctf-v2-api-schema.md` is the exact
+  contract). Fields it needs: `name`, `author`, `category`, `description`
+  (markdown), `points: {min,max}`, `tags` (concept tags), `tiebreakEligible`,
+  flag (`flag:` static OR `flagsDynamicBase` per-team), `files[]` handouts
+  (`name`, `path`, `size` — rCTF v2 requires `size`; ADR 0003), and for
+  instanced challenges `instanced: true` plus an `instancer` block. Copy the
+  shape from the exemplars instead of writing from memory:
+  `challenges/misc/hello/` (static) and `challenges/misc/hello-instancer/`
+  (instanced, all three expose kinds). CI injects the `image:` at register
+  time.
+- Gotchas not visible in the schema doc: the instancer's `services` block
+  bakes in `mem_limit: "6m"`, `read_only: true`, `cap_drop: ['ALL']`
+  defaults that break most real services — declare what you need. Pwn always
+  uses expose kind `tcp-ssl`. `challengeIntegrationId` never changes after
+  launch — it is the platform's stable identity for the challenge.
 - `src/` — challenge code. Where the flag placeholder is used, it is
-  literally the string `${RCTF_FLAG}`; the instancer replaces it from the
-  challenge env at launch.
+  literally the string `${RCTF_FLAG}`.
 - `solution/` — how it's meant to be solved: a solver script if the author has
   one, otherwise a plain prose walkthrough. `challenge-review` consumes this;
   it is mandatory.

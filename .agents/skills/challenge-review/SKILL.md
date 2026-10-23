@@ -45,11 +45,6 @@ challenges additionally need 4 before players see it.
 ## Review report
 
 Structure the report as: claim → evidence (command + response) → verdict.
-Match the `code-review` conventions this repo's AGENTS.md points at. Reject
-with concrete fixes, not vibes.
-
-## Token economy
-
-Batch reads, prefer grep over full-file reads, and never re-run a passing
-check. The whole author-side loop should normally fit in a handful of tool
-calls over the ladder.
+Reject with concrete fixes, not vibes. The whole author-side loop should
+normally fit in a handful of tool calls over the ladder; never re-run a
+passing check.
