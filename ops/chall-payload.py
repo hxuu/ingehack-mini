@@ -60,6 +60,11 @@ if m.get("instanced"):
                    "volumes": inst.get("volumes", {})},
     }
 
-files = [{"name": f["name"], "path": f["path"], "size": f.get("size")}
+# files entries: `path` = local file under the challenge dir (uploaded by
+# register-challenge.sh via POST /api/v2/admin/upload); `url` = already-hosted
+# attachment (e.g. on attachments.ingeniums.club/R2), no upload, `size` required.
+files = [{"name": f["name"],
+          **({"path": f["path"]} if "path" in f else {"url": f["url"]}),
+          "size": f.get("size")}
          for f in m.get("files", [])]
 print(json.dumps({"data": data} | {"filesOnDisk": files}))

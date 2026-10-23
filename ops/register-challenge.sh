@@ -43,21 +43,50 @@ python3 -c 'import jsonschema' 2>/dev/null || pip install --quiet jsonschema || 
 # The builder lives in ops/chall-payload.py — shared with update-challenge.sh.
 payload=$(CHALLENGE_IMAGE="$image" python3 ops/chall-payload.py "$manifest")
 
-# handouts with a local path get uploaded to the R2 bucket first
-# (POST /api/v2/admin/upload is multipart; response gives name/url/size).
+# handouts: entries with a local `path` are uploaded first (multipart
+# POST /api/v2/admin/upload, field name `files`, one per request), then every
+# handout -- local and pre-hosted alike -- is attached as {name, url, size}.
+# The upload provider is `uploads/r2` (publicBaseUrl
+# https://attachments.ingeniums.club); dedup is by SHA-256, so re-registering
+# an unchanged file returns the same url. `url` entries (already hosted, e.g.
+# dropped onto the bucket by a maintainer) ride through unchanged.
 files_json=$(echo "$payload" | jq -c '.filesOnDisk // []')
 payload=$(echo "$payload" | jq 'del(.filesOnDisk)')
-files_any_local=$(echo "$files_json" | jq -e '[.[] | select(.path != null)] | length' \
-  || echo 0)
-if [[ "$files_any_local" -gt 0 ]]; then
-  echo "FAIL: chall.yaml declares local handouts but the upload wiring is not" \
-       "proven yet (POST /api/v2/admin/upload is multipart; bot token HAS" \
-       "challsWrite). Register these challenges manually or drop local files for" \
-       "now — see docs/research/rctf-v2-api-schema.md §Upload." >&2
-  exit 2
-fi
-online=$(echo "$files_json" | jq -c 'map({name, url: (if .url then .url else "" end), size: (if .size then .size else 0 end)})')
-payload=$(echo "$payload" | jq --argjson files "$online" '.data.files = $files')
+mandir=$(cd "$(dirname "$manifest")" && pwd)
+
+export MANDIR="$mandir" PLATFORM="$platform" AUTH_TOKEN="$token" HANDOUTS="$files_json"
+attached=$(python3 - <<'PY'
+import json, os, subprocess, sys
+
+mandir, platform, token = os.environ["MANDIR"], os.environ["PLATFORM"], os.environ["AUTH_TOKEN"]
+entries = json.loads(os.environ["HANDOUTS"])
+out = []
+for entry in entries:
+    name = entry["name"]
+    if "path" in entry:
+        p = os.path.join(mandir, entry["path"])
+        if not os.path.isfile(p):
+            raise SystemExit(f"FAIL: handout file missing: {p}")
+        size = entry.get("size") or os.path.getsize(p)
+        print(f"uploading handout {name} ({size} bytes) ...", file=sys.stderr, flush=True)
+        r = json.loads(subprocess.check_output([
+            "curl", "-fsS", "-X", "POST", f"{platform}/api/v2/admin/upload",
+            "-H", f"Authorization: Bearer {token}",
+            "-F", f"files=@{p};filename={name}",
+        ]))
+        if r.get("kind") != "goodFilesUploadV2":
+            raise SystemExit(f"FAIL: upload kind {r.get('kind')!r} for {name}: {r}")
+        try:
+            url = next(i["url"] for i in r["data"] if i["name"] == name)
+        except StopIteration:
+            raise SystemExit(f"FAIL: no url returned for {name}")
+        out.append({"name": name, "url": url, "size": size})
+    else:
+        out.append({"name": name, "url": entry["url"], "size": entry.get("size") or 0})
+print(json.dumps(out))
+PY
+)
+payload=$(echo "$payload" | jq --argjson files "$attached" '.data.files = $files')
 
 id=$(python3 -c 'import sys,yaml;m=yaml.safe_load(open(sys.argv[1]));i=m.get("instancer") or {};print(i.get("challengeIntegrationId", m.get("challengeIntegrationId")) or m["name"].lower().replace(" ","-"))' "$manifest")
 
