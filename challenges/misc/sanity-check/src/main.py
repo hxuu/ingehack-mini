@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Ingehack Mini — hello (static sanity challenge).
+"""Ingehack Mini — sanity-check (static shared challenge).
 
 Serves a beginner instructions page and hands over the flag on a plain path.
 The flag is injected once at deploy time via the FLAG env var.
@@ -14,7 +14,7 @@ PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8">
 <style>body{font-family:ui-monospace,monospace;max-width:42em;margin:3em auto;padding:0 1em}
 code{background:#eee;padding:.15em .4em}</style></head>
 <body>
-<h1>hello — your first flag</h1>
+<h1>sanity-check — your first flag</h1>
 <p>This is a plain HTTP endpoint like any website you visit. Your browser sent a
 <code>GET</code> request and this server answered with this page.</p>
 <ol>

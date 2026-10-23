@@ -1,9 +1,13 @@
-name: hello
+name: sanity-check
 author: hxuu
 category: misc
 description: |
-  Your first flag. This page is a plain HTTP endpoint — a web server answers
-  your browser's request with what you're reading right now.
+  Your first flag — a sanity check that the challenge plumbing works: this
+  page is a plain HTTP endpoint on the shared challenge server, and your
+  browser reaches it directly.
+
+  Reachable at **https://sanity-check.challs.ingeniums.club:9487/** (plain
+  HTTP; the :9487 mapped port is the gateway's current number).
 
   1. Open your browser's developer tools (F12) → **Network** tab and reload:
      that row in front of you is the request your browser made and this page

@@ -97,6 +97,22 @@ jobs:
             --image "$IMAGE" \
             --token "$TOKEN"
 
+      - name: Register static challenge on the platform (metadata only)
+        if: steps.chall.outputs.instanced == 'false'
+        env:
+          TOKEN: ${{ secrets.CHALLENGE_BOT_TOKEN }}
+          SHA: ${{ steps.chall.outputs.sha }}
+        # static challenges have no instancerConfig, so the payload builder
+        # never touches the image; --image is only the log label here.
+        # Without this PUT the challenge never appears on the platform at all.
+        run: |
+          set -euo pipefail
+          ops/register-challenge.sh \
+            --platform "$PLATFORM_URL" \
+            --manifest "${{ matrix.dir }}/chall.yaml" \
+            --image "static:${{ matrix.dir }}:${SHA}" \
+            --token "$TOKEN"
+
       - name: Deploy static challenge (behind the challs Traefik)
         if: steps.chall.outputs.instanced == 'false'
         env:

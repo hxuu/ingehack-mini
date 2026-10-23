@@ -44,12 +44,17 @@ if m.get("instanced"):
     if img:
         for svc in services.values():
             svc.setdefault("image", img)
+    # shouldDisplay defaults OFF in rCTF's schema (optional, no default) —
+    # a manifest that omits it makes rCTF hide ALL endpoint URLs from players
+    # (filterInstanceEndpoints). Default it ON here; opt out per-expose.
+    expose = [{**e, "shouldDisplay": e.get("shouldDisplay", True)}
+              for e in inst["expose"]]
     data["instancerConfig"] = {
         "challengeIntegrationId": inst.get("challengeIntegrationId",
                                            m.get("challengeIntegrationId")),
         "timeoutMilliseconds": inst["timeoutMilliseconds"],
         "extendable": inst.get("extendable", False),
-        "expose": inst["expose"],
+        "expose": expose,
         "config": {"services": services,
                    "networks": inst.get("networks", {}),
                    "volumes": inst.get("volumes", {})},

@@ -1,0 +1,24 @@
+name: hello-shared
+author: hxuu
+category: misc
+description: |
+  This challenge runs on a **shared instance**: one server, every team hits the
+  same copy at the same URL — no container of your own, no per-team flag. Visit
+  the counter page and you'll see every other team's visits in the same number.
+
+  Reachable at **https://hello-shared.challs.ingeniums.club:9487/**.
+
+  1. Open the URL. The page keeps one visitor counter shared by everyone.
+  2. The flag is served on a different path of the same host — but this time
+     it does **not** arrive in the body. Open dev tools (F12) → **Network**
+     tab, request that path, click the request, and read the **response
+     headers**.
+  3. Submit it on the platform.
+
+  When you're done, you'll have used: HTTP paths, and reading response
+  headers (where real infrastructure lives: cookies, auth, caching).
+points: {min: 100, max: 250}
+tiebreakEligible: false
+tags: [beginner, HTTP Protocol, Browser Trust Boundaries]
+flag: ingehack{same_server_every_team}
+instanced: false

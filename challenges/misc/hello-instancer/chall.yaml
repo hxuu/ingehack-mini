@@ -25,9 +25,9 @@ instancer:
   timeoutMilliseconds: 1800000
   extendable: true
   expose:
-    - {kind: http,    hostPrefix: hello-http,    containerName: main, containerPort: 80, title: "Plain HTTP"}
-    - {kind: https,   hostPrefix: hello-https,   containerName: main, containerPort: 80, title: "HTTPS"}
-    - {kind: tcp-ssl, hostPrefix: hello-tcp,     containerName: main, containerPort: 80, title: "TLS-wrapped TCP (nc-style)"}
+    - {kind: http,    hostPrefix: hello-http,    containerName: main, containerPort: 80, shouldDisplay: true, title: "Plain HTTP"}
+    - {kind: https,   hostPrefix: hello-https,   containerName: main, containerPort: 80, shouldDisplay: true, title: "HTTPS"}
+    - {kind: tcp-ssl, hostPrefix: hello-tcp,     containerName: main, containerPort: 80, shouldDisplay: true, title: "TLS-wrapped TCP (nc-style)"}
   services:
     main:
       environment:
