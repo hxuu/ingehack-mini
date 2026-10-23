@@ -70,7 +70,7 @@ jobs:
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           docker push "${{ steps.chall.outputs.image }}"
 
-      - name: Deploy static challenge (instanced: false)
+      - name: Deploy static challenge (instanced false)
         # Static = shared server. Hosted as a labeled container behind the
         # challs VM's Traefik; contract in ops/deploy-static.sh.
         env:
