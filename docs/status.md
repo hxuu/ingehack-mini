@@ -193,3 +193,15 @@ Operational notes / follow-ups:
   UI route once before event day (cheap).
 - Chall VM load spike during mass-spawn is expected; real event has each team
   spawning at most once per challenge per 30 min, spread over minutes.
+
+## Registration kill switch — verified 2026-10-23 (role-matrix row 4)
+
+- `registrationsEnabled` / `flagFormatPlaceholder` are **config-file only**;
+  the admin settings PUT silently ignores them (PUT succeeded but had no
+  effect, and client config kept `true`).
+- Event-day freeze routine:
+  `printf "registrationsEnabled: false\n" > /opt/rctf/rctf.d/03-frozen.yaml
+   && cd /opt/rctf && docker compose up -d --force-recreate rctf`
+  then `GET /api/v2/integrations/client/config` must show `false` and register
+  returns `badRegistrationsDisabled`. Re-enable = delete the file +
+  force-recreate. KEEP 03-frozen.yaml out of the rctf.d dir between events.
