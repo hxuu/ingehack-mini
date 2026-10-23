@@ -146,7 +146,7 @@ jobs:
           echo "name=$name"    >> "$GITHUB_OUTPUT"
           echo "sha=$sha"      >> "$GITHUB_OUTPUT"
           echo "image=${name}:${sha}" >> "$GITHUB_OUTPUT"
-          echo "instanced=${val}" >> "$GITHUB_OUTPUT"
+          echo "instanced=${val:-false}" >> "$GITHUB_OUTPUT"
 
       - name: Build image
         run: docker build -t "${{ steps.chall.outputs.image }}" "${{ matrix.dir }}"
