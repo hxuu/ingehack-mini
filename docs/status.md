@@ -183,7 +183,7 @@ stage 1 proved 800 rps fine with p95 <200 ms. Load is bounded by the submit
 rate-limit and instancer start cost, not the read path.
 
 Operational notes / follow-ups:
-- Pre-event DB cleanup: delete all `QA-*` + `LoadTest-*` users (dozens of test
+- Pre-event DB cleanup: DONE 2026-10-23 (see the Pre-event cleanup round).
   teams now exist), then tear down any stray instances (docker: `ti-hello-…`).
 - Instancer start is the expensive path (Redis CPU spike + platform 2.4 s
   outliers). CF Turnstile on `instancerStart`/`instancerExtend` (already
@@ -295,6 +295,22 @@ Operational notes / follow-ups:
   per-team leet flag (`ingehack{7H15_B453_h45_pl3N7y_10W3Rca5e_l3t73Rs_f0r_133t}`);
   wrong submit → `badFlag`, correct submit → `goodFlag` + solve recorded.
 
+## Pre-event cleanup round (2026-10-23, done)
+
+- **Users swept: 4,068 → 4.** Deleted all `loadtest-*` (4,048 bulk copies from
+  the load-test runs), `qa-player/ratelimit/urltest/attach-admin-fixture`, and
+  `test-player/test-admin/frozen*` accounts. Kept: `admin@` (rootadmin),
+  `ci-bot` (the CI identity), `Team authors` (ladis30704@hopefunder.com), and
+  `qa-attach-…` — the last promoted to the manual admin token
+  (`/tmp/opencode/qa-admin-token`); the other QA admins could not be
+  API-deleted while privileged, so they were first demoted via the CLI on the
+  platform VM (`docker exec rctf-rctf-1 rctf user demote <email>`) and then
+  deleted normally. Route: `DELETE /api/v2/admin/users/:id`; paginated listing
+  needs `?limit=100&offset=N` (bare or partial params → `query:offset:
+  Invalid input`).
+- **`qa-pipeline-chall` wiped** off the platform (hidden, then v1-deleted):
+  the player-visible challenge list is exactly the five sanity checks.
+
 ## CI lifecycle round (2026-10-23, proven live)
 
 The `challenges` workflow now covers create, update, AND delete on a merged
@@ -375,8 +391,8 @@ silently did nothing on the platform).
   correct submit → `goodFlag`; CI re-register via the bot token worked
   identically (perms 3 is enough for upload).
 - QA admin used for the R2 seed upload: `qa-attach-1792778575@ingeniums.club`
-  (perms 63) — delete in the pre-event cleanup along with the other `QA-*`
-  accounts (its token is out-of-band, not stored in CI).
+  (perms 63) — KEPT as the manual admin token (`/tmp/opencode/qa-admin-token`),
+  uniquely deletable via the CLI-demote path if rotation is ever wanted.
 
 ## Updating challenge metadata without a rebuild (added when needed)
 
