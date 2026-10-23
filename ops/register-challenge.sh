@@ -40,59 +40,8 @@ python3 -c 'import jsonschema' 2>/dev/null || pip install --quiet jsonschema || 
 #       expose:[{kind, hostPrefix, containerName, containerPort, title?}],
 #       services: {...tiny-instancer config.services...}}
 # CI injects --image as services[*].image.
-payload=$(CHALLENGE_IMAGE="$image" python3 - "$manifest" <<'PY'
-import json, os, sys, yaml
-m = yaml.safe_load(open(sys.argv[1]))
-img = os.environ["CHALLENGE_IMAGE"]
-
-data = {
-    "name": m["name"],
-    "category": m["category"],
-    "author": m.get("author", "Unknown"),
-    "description": m["description"],
-    "points": {"min": m.get("points", {}).get("min", 100),
-               "max": m.get("points", {}).get("max", 500)},
-    "tiebreakEligible": m.get("tiebreakEligible", True),
-    "hidden": m.get("hidden", False),
-    "releaseTime": m.get("releaseTime", None),
-    "scoring": m.get("scoring", {"kind": "decay"}),
-}
-if "tags" in m: data["tags"] = m["tags"]
-
-if "flags" in m:                    # full entries form
-    data["flags"] = m["flags"]
-elif "flagsDynamicBase" in m:       # per-team flags (instanced challenges)
-    data["flags"] = [{"provider": "flags/dynamic",
-                      "config": {"base": m["flagsDynamicBase"],
-                                 "mode": m.get("flagsDynamicMode", "auto")}}]
-elif "flag" in m:                   # single static
-    data["flags"] = [{"provider": "flags/static", "config": {"flag": m["flag"]}}]
-else:
-    sys.exit(f"{sys.argv[1]}: no flag entry (flag / flags / flagsDynamicBase)")
-
-if m.get("instanced"):
-    inst = m["instancer"]
-    services = json.loads(json.dumps(inst.get("services", {"main": {}})))
-    for svc in services.values():
-        svc.setdefault("image", img)
-    data["instancerConfig"] = {
-        "challengeIntegrationId": inst.get("challengeIntegrationId",
-                                           m.get("challengeIntegrationId")),
-        "timeoutMilliseconds": inst["timeoutMilliseconds"],
-        "extendable": inst.get("extendable", False),
-        "expose": inst["expose"],
-        "config": {"services": services,
-                   "networks": inst.get("networks", {}),
-                   "volumes": inst.get("volumes", {})},
-    }
-
-files = [
-    {"name": f["name"], "path": f["path"], "size": f.get("size")}
-    for f in m.get("files", [])
-]
-print(json.dumps({"data": data} | {"filesOnDisk": files}))
-PY
-)
+# The builder lives in ops/chall-payload.py — shared with update-challenge.sh.
+payload=$(CHALLENGE_IMAGE="$image" python3 ops/chall-payload.py "$manifest")
 
 # handouts with a local path get uploaded to the R2 bucket first
 # (POST /api/v2/admin/upload is multipart; response gives name/url/size).

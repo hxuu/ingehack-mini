@@ -268,6 +268,18 @@ Operational notes / follow-ups:
   platform now: hello (static) + hello-instancer (3-expose instanced) + the
   QA pipeline challenge `qa-pipeline-chall` (DELETE before event).
 
+## Updating challenge metadata without a rebuild (added when needed)
+
+Merged-PR CI always rebuilds + ships the image; a pure manifest-text fix
+(description, points, tags, `releaseTime`, expose layout) does not need that.
+`ops/update-challenge.sh --platform ... --manifest <chall.yaml> --token ...`
+re-registers from the manifest directly. Image handling in an instanced
+payload: with no `--image` the script reuses the LIVE service images (GET /
+api/v2/admin/challs/:id) — i.e. whatever CI shipped last; adding/removing a
+service with no live counterpart requires `--image`. The payload builder is
+shared with register in `ops/chall-payload.py` — the manifest contract lives
+there once. Code/Dockerfile changes still go through CI (ADR 0005).
+
 ## Removing a challenge from the platform (added when needed)
 
 rCTF v2 has no v2 challenge-delete route; the only hard delete is the v1

@@ -5,11 +5,12 @@ language), `docs/adr/` (topology rationale).
 
 ## Skills in this repo
 
-- `.agents/skills/new-challenge/` — read before creating or editing anything
-  under `challenges/`; it owns scaffold, update, and ship.
-- `.agents/skills/challenge-review/` — verify a challenge actually works
-  (author-side check and maintainer-side PR review are the same skill).
-- `.agents/skills/pr/` — use when creating a PR.
+Inside this repo: challenge lifecycle skills live in `.agents/skills/` —
+`new-challenge` (read before creating or editing anything under
+`challenges/`), `update-challenge` (change a live challenge),
+`remove-challenge` (retire one), `challenge-review` (verify a challenge
+actually works — author-side check and PR review are the same skill), and
+`pr` (use when creating a PR).
 
 Harnesses that need their own directory (e.g. `.claude/skills/`) symlink into
 `.agents/skills/` — that is the single source of truth.
