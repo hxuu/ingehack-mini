@@ -21,21 +21,28 @@ claim below gets an actual response or log line, never a "should work".
 
 1. **Static read** (zero tokens beyond reading): `chall.yaml` complete (expose
    kinds valid: `http` / `https` / `tcp-ssl`; pwn = `tcp-ssl`; instance
-   timeout present; concept tags present; every `files[]` handout has a
-   `size` field), Dockerfile builds-if-plausible, `${RCTF_FLAG}` placeholder
-   appears wherever the flag should be injected. Read `solution/` so every
-   later check is pointed at the actual intended path.
+   timeout present; concept tags present), every `expose` entry carries
+   `shouldDisplay: true` (absent = players see NO instance URLs), and every
+   `files[]` handout has either a `path:` committed in `files/` (size
+   auto-filled at register) or a `url:` with the real byte-count `size`.
+   In a static challenge's description, the URL line maps scheme to port
+   exactly (`http://` on the HTTP port, `https://` on the HTTPS port —
+   swapped, Traefik 404s; current ports via `docs/status.md`) and its host
+   matches the directory name, since that is what CI labels the Traefik
+   host. `${RCTF_FLAG}` appears wherever the flag should be injected. Read
+   `solution/` so every later check aims at the intended path.
 2. **Local build**: `docker build .` in the challenge directory. Fail =
    review fails with the build log.
 3. **Local run + solve**: run the container locally on a throwaway port; if
    the manifest is instanced, fake the env the instancer would inject
    (e.g. `RCTF_FLAG=unverified-flag-local`) and consume the solver — solver
-   script executed or prose steps followed. Confirm the good path yields the
-   (local) flag and interaction with the challenge yields a sensible bad-flag
-   error.
-4. **Shared-instance check** (instanced challenges only, final pre-merge
-   step): do NOT run platform plumbing yourself. Report that the challenge is
-   owed one real instance on the Challs VM; `docs/status.md` has how the
+   script executed or prose steps followed. Confirm the intended path yields
+   the flag and a wrong flag yields a sensible bad-flag response. Handouts:
+   `path:` entries open with their solver (`unzip -l` etc.); `url:` entries
+   fetch publicly with 200 and byte-size == manifest `size`.
+4. **Live-instance check** (instanced challenges only, final pre-merge
+   step): do NOT run platform plumbing yourself. Report that the challenge
+   is owed one real instance on the Challs VM; `docs/status.md` has how the
    maintainer (or CI's registration job) does that. Per-team flag injection
    is only provable there, not locally.
 
