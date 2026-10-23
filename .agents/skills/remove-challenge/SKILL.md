@@ -12,6 +12,13 @@ removal is hide-first, wipe-optional, sweep-manual.
 
 ## Procedure
 
+Two ways in: a merged PR that deletes `challenges/<category>/<name>/` does
+steps 1–2 automatically (the workflow's `retire` job recovers the old
+`chall.yaml` from git history, derives the id the same way
+`register-challenge.sh` does, hides + wipes, and tears down the static
+container). Running the script by hand — a pull or an emergency — is the
+same steps, not automated:
+
 1. **Hide (mandatory)**: `ops/remove-challenge.sh --platform
    https://ctf.ingeniums.club --challenge-id <id> --token
    "$CHALLENGE_BOT_TOKEN"`. It PUTs the live challenge back with
@@ -23,12 +30,13 @@ removal is hide-first, wipe-optional, sweep-manual.
    leaves the challenge hidden, not half-deleted. Done = `OK: ... deleted
    (v1 route)`.
 3. **Sweep (manual, report to the maintainer in the PR)**:
-   - delete the GHCR image in the org's package settings;
+   - challenge images live only on the challs VM (a `docker rmi` there is
+     optional cleanup — nothing references them once unregistered);
    - running per-team instances expire via `timeoutMilliseconds` (or
      `DELETE /api/v2/admin/challs/:id/instance` acting per admin team);
-   - merge the PR that deletes `challenges/<category>/<name>/` so CI stops
-     building and registering it (also the closing step of a static-rename
-     migration — `new-challenge` Update mode).
+   - delete the directory in a PR if not already done — a merged deletion PR
+     doubles as the closing step of a static-rename migration
+     (`new-challenge` Update mode), since CI runs steps 1–2 on it.
 
 ## The one direction to watch
 

@@ -1,6 +1,6 @@
 # Inge MiniCTF — infrastructure status
 
-Date: 2026-10-22. Platform: rCTF v2 (otter-sec/rctf, `ghcr.io/otter-sec/rctf:main`).
+Date: 2026-10-23. Platform: rCTF v2 (otter-sec/rctf, `ghcr.io/otter-sec/rctf:main`).
 
 ## OpenScaler VMs (region alg1, VPC 10.0.47.0/24, shared public IP 105.98.65.136)
 
@@ -294,6 +294,36 @@ Operational notes / follow-ups:
   instance start→running→endpoints; `/flag` on the instance serves the
   per-team leet flag (`ingehack{7H15_B453_h45_pl3N7y_10W3Rca5e_l3t73Rs_f0r_133t}`);
   wrong submit → `badFlag`, correct submit → `goodFlag` + solve recorded.
+
+## CI lifecycle round (2026-10-23, proven live)
+
+The `challenges` workflow now covers create, update, AND delete on a merged
+PR — until this round it only handled create/update (a deleted directory
+silently did nothing on the platform).
+
+- **Delete path**: new `retire` job. `detect` additionally lists dirs fully
+  deleted at HEAD (diff-filter=D + absence check, so a pruned file inside a
+  live dir stays an update). `retire` recovers the old `chall.yaml` from
+  `git show HEAD^:`, derives the id with the SAME python expression as
+  `register-challenge.sh` (instancer-level `challengeIntegrationId` →
+  top-level → `name` slug), then `ops/remove-challenge.sh --wipe` + ssh
+  `docker rm -f static-<dirname>` (gated on `instanced != true`).
+- **Proven end-to-end** with the scratch `ci-lifecycle-test` (static, no
+  handcrafted code): merge #1 registered + deployed it (200 on
+  `:9487`, `X-Flag` header), merge #2 deleted the dir → `retire`
+  hidden+wiped the entry and removed the container; platform list and
+  Traefik host both clean afterwards.
+- Two workflow-file bugs caught by GH's parser in the process (each reject
+  killed the run in 0s with "workflow file issue"): `env:` may NOT sit
+  inside `strategy:`, and `matrix:` must sit inside it (run 40004352378,
+  40004556472).
+- **Ship job latent bug found by the fixture**: a static manifest with NO
+  `instanced:` line left the `chall` step's output empty, and the register
+  steps gate on `== 'false'` — registration silently skipped. Now default
+  `instanced=false` on absence (same rule the retire job reads with).
+- Node: only pushes touching `challenges/**` fire runs at all — workflow-only
+  commits neither self-test nor self-heal; a parse error surfaces on the next
+  challenge push.
 
 ## Naming + URL-scheme round (2026-10-23, verified)
 

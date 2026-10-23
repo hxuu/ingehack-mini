@@ -8,8 +8,14 @@
 #      the player view immediately (rCTF v2 has no per-route "hide").
 #   2. --wipe: hard-delete via DELETE /api/v1/admin/challs/:id — the ONLY
 #      delete route that exists (v1; docs/research/rctf-v2-api-schema.md).
-#   3. Report the manual sweep that no API covers: GHCR image and any running
-#      per-team instances (they also expire via timeoutMilliseconds).
+#   3. Report the manual sweep that no API covers: challenge images live only
+#      on the challs VM (nothing references them once unregistered), and any
+#      running per-team instances (they also expire via timeoutMilliseconds).
+#
+# CI also runs this script: a merged PR that deletes the challenge directory
+# fires the workflow's retire job, which derives the id from git history
+# (same rule as register-challenge.sh), hides + wipes, and tears down the
+# shared static container. Running it by hand is for pulls/emergencies.
 #
 # After hiding, remove challenges/<category>/<name>/ in a PR so CI stops
 # building/re-registering it. Re-merge of the old chall.yaml would unhide it.
