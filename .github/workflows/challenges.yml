@@ -1,10 +1,11 @@
 name: challenges
 
 # ADR 0005: merged challenge PR ⇒ live challenge.
-# Build + push image to public GHCR, then register the challenge on the
-# platform via the rCTF v2 admin API using the perms-3 bot token.
-# Authors only ever interact with this through a PR — they never see this file
-# and never touch the platform.
+# The runner builds the image, ships it to the challs VM over SSH (docker
+# load), then for instanced challenges registers via the rCTF v2 admin API
+# using the perms-3 bot token, and for static challenges deploys a labeled
+# container behind the challs Traefik. Challenge images never leave the VM.
+# Authors only interact through a PR; they never see this file.
 
 on:
   push:
@@ -14,7 +15,6 @@ on:
 
 permissions:
   contents: read
-  packages: write
 
 concurrency:
   group: challenges-${{ github.ref }}
@@ -41,10 +41,12 @@ jobs:
             | jq -R -s -c 'split("\n") | map(select(length > 0))')
           echo "dirs=$dirs" >> "$GITHUB_OUTPUT"
 
-  build-push-register:
+  ship:
     needs: detect
     if: needs.detect.outputs.dirs != '[]'
     runs-on: ubuntu-latest
+    env:
+      SSH_DEPLOY_PRIVATE_KEY: ${{ secrets.SSH_DEPLOY_PRIVATE_KEY }}
     strategy:
       fail-fast: false
       matrix:
@@ -52,38 +54,56 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Read challenge manifest
-        id: chall
+      - id: chall
         run: |
-          # chall.yaml is the human-side manifest produced by new-challenge.
-          # Keep it YAML-shaped exactly as the skill scaffolds it.
           test -f "${{ matrix.dir }}/chall.yaml" || { echo "::error::missing chall.yaml"; exit 1; }
           name=$(basename "${{ matrix.dir }}")
-          echo "name=$name" >> "$GITHUB_OUTPUT"
-          echo "image=ghcr.io/${{ github.repository_owner }}/$name:latest" >> "$GITHUB_OUTPUT"
+          sha=$(git rev-parse --short "$GITHUB_SHA")
+          val=$(grep -oE "^instanced:[[:space:]]*(true|false)" \
+                "${{ matrix.dir }}/chall.yaml" | grep -oE "true|false" | head -1)
+          echo "name=$name"    >> "$GITHUB_OUTPUT"
+          echo "sha=$sha"      >> "$GITHUB_OUTPUT"
+          echo "image=${name}:${sha}" >> "$GITHUB_OUTPUT"
+          echo "instanced=${val}" >> "$GITHUB_OUTPUT"
 
-      - name: Docker build
+      - name: Build image
         run: docker build -t "${{ steps.chall.outputs.image }}" "${{ matrix.dir }}"
 
-      - name: Push to public GHCR
+      - name: Ship image to the challs VM (docker load)
         run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-          docker push "${{ steps.chall.outputs.image }}"
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          install -m 600 /dev/null ~/.ssh/id_ed25519
+          echo "$SSH_DEPLOY_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          eval $(ssh-agent -s) >/dev/null
+          ssh-add ~/.ssh/id_ed25519 >/dev/null
+          docker save "${{ steps.chall.outputs.image }}" \
+            | ssh -o StrictHostKeyChecking=accept-new \
+                  -p 9305 root@ssh.alpha.openscaler.net \
+                  docker load
 
-      - name: Deploy static challenge (instanced false)
-        # Static = shared server. Hosted as a labeled container behind the
-        # challs VM's Traefik; contract in ops/deploy-static.sh.
+      - name: Register instanced challenge (rCTF v2 admin API, bot perms-3)
+        if: steps.chall.outputs.instanced == 'true'
+        env:
+          TOKEN: ${{ secrets.CHALLENGE_BOT_TOKEN }}
+          IMAGE: ${{ steps.chall.outputs.image }}
+        # chall.yaml -> rCTF v2 upsert lives in one script so schema fixes
+        # never touch the workflow; see docs/research/rctf-v2-api-schema.md.
+        run: |
+          set -euo pipefail
+          ops/register-challenge.sh \
+            --platform "$PLATFORM_URL" \
+            --manifest "${{ matrix.dir }}/chall.yaml" \
+            --image "$IMAGE" \
+            --token "$TOKEN"
+
+      - name: Deploy static challenge (behind the challs Traefik)
+        if: steps.chall.outputs.instanced == 'false'
         env:
           SSH_DEPLOY_PRIVATE_KEY: ${{ secrets.SSH_DEPLOY_PRIVATE_KEY }}
           IMAGE: ${{ steps.chall.outputs.image }}
         run: |
           set -euo pipefail
-          val=$(grep -oE "^instanced:[[:space:]]*(true|false)" "${{ matrix.dir }}/chall.yaml" | grep -oE "true|false" | head -1)
-          case "$val" in
-            false) ;;
-            true) echo "instanced challenge — no static deploy step"; exit 0;;
-            *) echo "::error::chall.yaml missing 'instanced: true/false'"; exit 1;;
-          esac
           mkdir -p ~/.ssh
           install -m 600 /dev/null ~/.ssh/id_ed25519
           echo "$SSH_DEPLOY_PRIVATE_KEY" > ~/.ssh/id_ed25519
@@ -95,23 +115,3 @@ jobs:
               IMAGE="$IMAGE" \
               HOST_SSH="root@ssh.alpha.openscaler.net" HOST_SSH_PORT="9305" \
               bash ops/deploy-static.sh
-
-
-      - name: Register challenge on platform
-        # Bot admin with challsRead|challsWrite only (perms 3, ADR 0005).
-        # Token is a rotating Actions secret; never a full-63 admin token.
-        env:
-          TOKEN: ${{ secrets.CHALLENGE_BOT_TOKEN }}
-          IMAGE: ${{ steps.chall.outputs.image }}
-        run: |
-          set -euo pipefail
-          # chall.yaml -> rCTF v2 challenge upsert. The mapping (name,
-          # challengeIntegrationId, category, flavor/description, concept
-          # tags, expose kinds, instance timeout, files[] handouts where every
-          # entry needs `size`, and the --image reference) lives in one script
-          # so schema fixes never touch the workflow:
-          ops/register-challenge.sh \
-            --platform "$PLATFORM_URL" \
-            --manifest "${{ matrix.dir }}/chall.yaml" \
-            --image "$IMAGE" \
-            --token "$TOKEN"

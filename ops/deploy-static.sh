@@ -18,7 +18,6 @@ PORT=8080   # containerPort for static web challs (fixed convention)
 printf 'Deploy %s\n  image: %s\n  host: %s\n' "$NAME" "$IMAGE" "$INTERNAL_HOST"
 ssh -o StrictHostKeyChecking=accept-new -p "${HOST_SSH_PORT:?}" "${HOST_SSH:?}" \
   "set -e
-   docker pull '$IMAGE'
    docker rm -f 'static-$NAME' 2>/dev/null || true
    docker run -d --name 'static-$NAME' \
      --network '$TRAEFIK_NETWORK' \
