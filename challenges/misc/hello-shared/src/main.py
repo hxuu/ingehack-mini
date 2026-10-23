@@ -48,6 +48,8 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    do_HEAD = do_GET  # HEAD probes (curl -sI) must not 501
+
 
 if __name__ == "__main__":
     ThreadingHTTPServer(("0.0.0.0", PORT), Handler).serve_forever()

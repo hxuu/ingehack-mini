@@ -58,8 +58,13 @@ Create `challenges/<category>/<name>/` with:
 - Gotchas not visible in the schema doc: the instancer's `services` block
   bakes in `mem_limit: "6m"`, `read_only: true`, `cap_drop: ['ALL']`
   defaults that break most real services — declare what you need. Pwn always
-  uses expose kind `tcp-ssl`. `challengeIntegrationId` never changes after
-  launch — it is the platform's stable identity for the challenge.
+  uses expose kind `tcp-ssl`. Each `expose` entry needs `shouldDisplay: true`
+  explicitly (rCTF treats the field as absent→hidden and shows players NO
+  instance URLs otherwise; `chall-payload.py` defaults it on, but write it
+  down). Static challenges are visible to players only through the URL line
+  baked into their `description` — put it in. `challengeIntegrationId` never
+  changes after launch — it is the platform's stable identity for the
+  challenge.
 - `src/` — challenge code. Where the flag placeholder is used, it is
   literally the string `${RCTF_FLAG}`.
 - `solution/` — how it's meant to be solved: a solver script if the author has

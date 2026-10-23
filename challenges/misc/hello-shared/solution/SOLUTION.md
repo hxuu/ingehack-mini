@@ -8,11 +8,12 @@ Walkthrough, so review can verify the intended path:
    body: request `GET /flag`.
 3. In dev tools (F12 → Network), click the request → Response headers →
    `X-Flag: ingehack{same_server_every_team}` (fixed; shared).
-   (`curl -si` shows the same header from a terminal.)
+   (`curl -si` shows the same header from a terminal — note lowercase `-si`,
+   a HEAD probe with `-sI` gets a 501.)
 4. Submit it on the platform.
 
 Solver one-liner:
 
 ```sh
-curl -sI "http://hello-shared.challs.ingeniums.club:9487/flag" | grep -i x-flag
+curl -si "http://hello-shared.challs.ingeniums.club:9487/flag" | grep -i x-flag
 ```

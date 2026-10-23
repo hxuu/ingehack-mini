@@ -268,6 +268,33 @@ Operational notes / follow-ups:
   platform now: hello (static) + hello-instancer (3-expose instanced) + the
   QA pipeline challenge `qa-pipeline-chall` (DELETE before event).
 
+## Player-UX round — URL display + shared-instance wired (2026-10-23, verified)
+
+- **Root cause of "no instance URL"**: rCTF's `filterInstanceEndpoints`
+  drops every endpoint whose stored `expose` entry lacks a truthy
+  `shouldDisplay` — and in rCTF's schema `shouldDisplay` is optional with NO
+  default (the docs example `true` is only an example, not a default). Our
+  manifests omitted it → players got `endpoints: []` while instances ran fine.
+  Fix: `ops/chall-payload.py` now defaults `shouldDisplay: true` per expose
+  (opt out per entry), manifests write it explicitly. Verified: player
+  GET instance returns all three URLs with titles
+  (`hello-http-<uid>…:9487`, `hello-https-…:9488`, `hello-tcp-…:9450`).
+- **Hello renamed**: `challenges/misc/hello` → `sanity-check` (same static
+  flag/page flavor). Never registered before the rename, so no stale id.
+- **New `hello-shared`**: static shared-instance exemplar — one server for
+  everyone, a shared visit counter on `/`, the flag in the `X-Flag` response
+  header on `/flag` (teaches header inspection). HEAD probes 501 →
+  `do_HEAD = do_GET` alias; solver note says `curl -si`, not `-sI`.
+- **CI now registers static challenges on the platform** (workflow: register
+  step runs for `instanced: false` too — payload has no `instancerConfig`,
+  `--image` is a log label only). Before this, static challenges were deployed
+  behind Traefik but invisible on the platform entirely.
+- Player-flow verification (fresh QA token): challenge list shows
+  `sanity-check`, `hello-shared`, `hello-instancer` (+ QA challenge);
+  instance start→running→endpoints; `/flag` on the instance serves the
+  per-team leet flag (`ingehack{7H15_B453_h45_pl3N7y_10W3Rca5e_l3t73Rs_f0r_133t}`);
+  wrong submit → `badFlag`, correct submit → `goodFlag` + solve recorded.
+
 ## Updating challenge metadata without a rebuild (added when needed)
 
 Merged-PR CI always rebuilds + ships the image; a pure manifest-text fix
