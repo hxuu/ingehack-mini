@@ -95,3 +95,52 @@ Note: public ports are auto-assigned by OpenScaler, so bookmark them via
   name `files`) → public fetch on the bucket CDN → `upload/query` lookup →
   attached to challenge (v2 PUT `files[]` entries require `size`) → detached.
 - Note: challenge `files[].size` (bytes) is required by the v2 update route.
+
+## Verification record — 2026-10-23 E2E playthrough round (agent session 2)
+
+Brand: working brand is now **Ingehack Mini** (`ctfName` runtime override set;
+`flagFormatPlaceholder: 'ingehack{[\x20-\x7e]+}'` added to `/opt/rctf/rctf.d/01-ui.yaml`,
+applied via `docker compose up -d --force-recreate`; homeContent still says
+"Inge MiniCTF" — needs the same edit when homepage copy is finalized).
+
+### hello-instancer E2E (all player-flow, verified this round)
+
+- Fresh admin `qa-admin-471@ingeniums.club` registered + promoted to perms=63
+  (rotate-by-fresh-email works). QA player teams 471/472/473 + 5 QA-RateLimit-*
+  also exist; delete before the real event.
+- Player instance routes verified: `PUT/GET/PATCH/DELETE` on
+  `/api/v2/integrations/challs/hello-instancer/instance` (PUT/PATCH need `-d '{}'`).
+  Extend ✓, stop ✓, restart after stop ✓.
+- Solve flow: `POST /api/v1/challs/hello-instancer/submit` (v1 only) —
+  wrong flag → `badFlag`, correct → `goodFlag` + solve recorded; later submit →
+  `badAlreadySolvedChallenge`.
+- Per-team flags now REAL: challenge switched to
+  `flags/dynamic` (`flags/static` before) with base
+  `ingehack{this_base_has_plenty_lowercase_letters_for_leet}`, mode auto → leet.
+  Three concurrent instances served three distinct per-team flags inside
+  `RCTF_FLAG` env (verified via `docker inspect` on Chall VM). `${RCTF_FLAG}`
+  = first configured flag entry's concrete per-team value (docker-instancer docs).
+- 3 concurrent instances ✓ isolated (per-flag + per-hostnamesuffix containers).
+
+### Defects / pending work recorded from this round
+
+1. **BLOCKER (UX): exposed endpoint advertises port 80** — rCTF reports
+   `{kind:http, host: hello-<uid>.challs…, port:80}` but the gateway maps 80 →
+   public 9489. `hello-<uid>.challs…:80` 503s; the *reachable* URL is
+   `…:9489`. Same shape expected for https (443→9471) and tcp-ssl (1337→9464).
+   Fix options: make the tiny-instancer/Traefik labels advertise the public
+   port, or a maintainer-side rewrite in `04-instancer.yaml`, or document a
+   "mapped port" note in the challenge UI copy until patched. NOT yet fixed.
+2. `flagFormatPlaceholder` is config-file-only — runtime settings PUT ignores it.
+3. **No captcha / IP throttle on registration**: 5 rapid registrations from one
+   IP all 200 (`badBody` shape is fine). IP attribution is correct in rctf logs
+   (`"ip":"105.235.138.234"`, real client via CF headers). Event-day spam/flag
+   brute-force protection still needs CF Turnstile on register/instancer actions
+   (rCTF captcha provider, free) — pending.
+4. Admin instance-status GET for team 472 returned `stopped` while its container
+   was running (observed once during QA cleanup; possibly keyed by instance-owner
+   id ≠ our user id). Low priority; verify again with a clean repro.
+5. Container `whoami` image cannot *show* the env flag — fine for instancer
+   verification, useless as a player-facing hello challenge. The real
+   `hello-instancer` delivering the flag visibly + correct/incorrect responses
+   is to be authored via the new `new-challenge` skill.
