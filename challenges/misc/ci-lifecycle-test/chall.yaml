@@ -9,3 +9,4 @@ points: {min: 100, max: 100}
 tiebreakEligible: false
 tags: [beginner]
 flag: ingehack{lifecycle_created_and_deleted}
+
