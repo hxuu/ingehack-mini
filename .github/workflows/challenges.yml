@@ -76,8 +76,8 @@ jobs:
       SSH_DEPLOY_PRIVATE_KEY: ${{ secrets.SSH_DEPLOY_PRIVATE_KEY }}
     strategy:
       fail-fast: false
-    matrix:
-      dir: ${{ fromJson(needs.detect.outputs.deleted) }}
+      matrix:
+        dir: ${{ fromJson(needs.detect.outputs.deleted) }}
     steps:
       - uses: actions/checkout@v4
         with:
