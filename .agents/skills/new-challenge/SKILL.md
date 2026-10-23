@@ -74,7 +74,10 @@ Create `challenges/<category>/<name>/` with:
   admin upload API) — write the real `size` there.
 - `solution/` — how it's meant to be solved: a solver script if the author has
   one, otherwise a plain prose walkthrough. `challenge-review` consumes this;
-  it is mandatory.
+  it is mandatory. Renaming an existing challenge: instanced ids are pinned
+  by `challengeIntegrationId` (display rename is safe); a static challenge's
+  id IS its `name` — renaming a live static one migrates platform state
+  (re-register under the new name, then hide + wipe the old id).
 
 Keep scaffolds small and idiomatic per category — a 1st-year should solve it,
 the author should barely review the plumbing.

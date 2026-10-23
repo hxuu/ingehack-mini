@@ -295,6 +295,34 @@ Operational notes / follow-ups:
   per-team leet flag (`ingehack{7H15_B453_h45_pl3N7y_10W3Rca5e_l3t73Rs_f0r_133t}`);
   wrong submit → `badFlag`, correct submit → `goodFlag` + solve recorded.
 
+## Naming + URL-scheme round (2026-10-23, verified)
+
+- All sanity challenges now brand as the **sanity-check series**:
+  display names `sanity-check`, `sanity-check-shared` (was hello-shared),
+  `sanity-check-instanced` (was hello-instancer, id unchanged — instanced
+  challenges pin `challengeIntegrationId` so solves survive the rename),
+  `sanity-check-2`/-3.
+- **Static-challenge renaming gotcha**: with no `challengeIntegrationId`, a
+  static challenge's id derives from its `name` — renaming the display name
+  creates a NEW id. Old `hello-shared` was hidden + wiped via
+  `ops/remove-challenge.sh`; its directory keeps the name so the
+  `hello-shared.challs…` Traefik host label is unchanged.
+- **The 404 mystery was a scheme/port mismatch**: hitting
+  `https://…:9487` (https scheme on the plain-HTTP entrypoint) makes Traefik
+  return "404 page not found". Descriptions now say
+  `http://…:9487` or `https://…:9488` explicitly — scheme follows the port.
+  Additionally `deploy-static.sh` only declared the `web` entrypoint, so
+  https on static challenge hosts did not exist; it now declares BOTH
+  (web + websecure/tls routers sharing one service). Verified: all four
+  static hosts answer 200 on http://9487 and https://9488 with the
+  `*.challs.ingeniums.club` LE wildcard cert.
+- **`remove-challenge.sh` had two latent bugs, found on its first live run**:
+  (1) admin GET kind is `goodAdminChallengeV2`, not `goodChallengeV2`;
+  (2) the hide-PUT must be `{data: {...}}` containing only writable fields —
+  round-tripping the raw admin-GET entity (with `id`/`solveCount` and
+  `sortWeight: null`) returns `badBody`. It now strips read-only fields and
+  drops null values (`sortWeight` rejects explicit null).
+
 ## Attachments sanity checks — `sanity-check-2`/-3; upload wiring PROVEN (2026-10-23)
 
 - **`register-challenge.sh` now uploads local handouts** (multipart

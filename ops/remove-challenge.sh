@@ -40,17 +40,21 @@ auth=(-H "Authorization: Bearer $token")
 # ---- fetch the live challenge -----------------------------------------------
 resp=$(curl -fsS "${auth[@]}" "$platform/api/v2/admin/challs/$challenge_id")
 kind=$(echo "$resp" | jq -r .kind)
-[[ $kind == "goodChallengeV2" ]] || {
+[[ $kind == "goodAdminChallengeV2" ]] || {
   echo "FAIL: unexpected GET kind '$kind' for '$challenge_id'" >&2
   echo "$resp" | jq . >&2
   exit 1
 }
 echo "$resp" > /tmp/remove-get.json
 
-# ---- 1. hide: PUT the same payload back with hidden=true --------------------
-# The GET data is already in the exact PUT shape (set PUT shape == entity), so
-# round-tripping it means nothing else changes. Only field we touch is hidden.
-data=$(jq '.data | .hidden = true' /tmp/remove-get.json)
+# ---- 1. hide: PUT the same challenge back with hidden=true --------------------
+# The admin GET returns the entity shape; the PUT wants {data:{...}} with only
+# the writable fields — strip id/solveCount/solve shape extras and wrap.
+data=$(jq '{data: (.data | {
+  name, category, author, description, flags, points, tiebreakEligible,
+  files, sortWeight, tags, hidden, releaseTime, instancerConfig,
+  adminBotConfig, scoring
+} | .hidden = true | with_entries(select(.value != null)))}' /tmp/remove-get.json)
 echo "hiding '$challenge_id' at $platform ..."
 resp=$(curl -fsS -X PUT "${auth[@]}" -H 'Content-Type: application/json' \
   -d "$data" "$platform/api/v2/admin/challs/$challenge_id")
