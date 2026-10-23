@@ -26,9 +26,14 @@ ssh -o StrictHostKeyChecking=accept-new -p "${HOST_SSH_PORT:?}" "${HOST_SSH:?}" 
      --restart unless-stopped \
      -e 'FLAG=$DECLARED_FLAG' \
      -l 'traefik.enable=true' \
-     -l 'traefik.http.routers.$NAME.rule=Host(\`$INTERNAL_HOST\`)' \
-     -l 'traefik.http.routers.$NAME.entryPoints=web' \
+     -l 'traefik.http.routers.$NAME-web.rule=Host(\`$INTERNAL_HOST\`)' \
+     -l 'traefik.http.routers.$NAME-web.entryPoints=web' \
+     -l 'traefik.http.routers.$NAME-web.service=$NAME-$PORT' \
+     -l 'traefik.http.routers.$NAME-https.rule=Host(\`$INTERNAL_HOST\`)' \
+     -l 'traefik.http.routers.$NAME-https.entryPoints=websecure' \
+     -l 'traefik.http.routers.$NAME-https.service=$NAME-$PORT' \
+     -l 'traefik.http.routers.$NAME-https.tls=true' \
      -l 'traefik.http.services.$NAME-$PORT.loadbalancer.server.port=$PORT' \
      '$IMAGE'
    docker inspect 'static-$NAME' --format '{{.State.Status}}'"
-printf 'deployed %s at %s (traefik labels, entrypoint web)\n' "$NAME" "$INTERNAL_HOST"
+printf 'deployed %s at %s (traefik labels: web + websecure/tls)\n' "$NAME" "$INTERNAL_HOST"

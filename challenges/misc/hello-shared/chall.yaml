@@ -1,12 +1,14 @@
-name: hello-shared
+name: sanity-check-shared
 author: hxuu
 category: misc
 description: |
-  This challenge runs on a **shared instance**: one server, every team hits the
+  Sanity check 2 — the **shared instance**: one server, every team hits the
   same copy at the same URL — no container of your own, no per-team flag. Visit
   the counter page and you'll see every other team's visits in the same number.
 
-  Reachable at **https://hello-shared.challs.ingeniums.club:9487/**.
+  Reachable at **http://hello-shared.challs.ingeniums.club:9487/** or
+  **https://hello-shared.challs.ingeniums.club:9488/** (scheme follows the
+  port: 9487 is plain HTTP, 9488 is TLS).
 
   1. Open the URL. The page keeps one visitor counter shared by everyone.
   2. The flag is served on a different path of the same host — but this time

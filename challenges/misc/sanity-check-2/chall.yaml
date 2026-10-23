@@ -6,7 +6,9 @@ description: |
   to the challenge repo; at register time CI uploads it and the platform
   hands it to you as a downloadable attachment on this page.
 
-  Reachable at **https://sanity-check-2.challs.ingeniums.club:9487/**.
+  Reachable at **http://sanity-check-2.challs.ingeniums.club:9487/** or
+  **https://sanity-check-2.challs.ingeniums.club:9488/** (scheme follows the
+  port: 9487 is plain HTTP, 9488 is TLS).
 
   1. On this challenge page, download the attachment listed under **Files**.
   2. Unzip it and read what's inside. Santa's list has an unusual entry this

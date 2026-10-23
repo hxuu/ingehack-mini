@@ -12,11 +12,11 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 PORT = 8080
 FLAG = os.environ.get("FLAG", "ingehack{undeployed}")
 PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8">
-<title>hello-shared</title>
+<title>sanity-check-shared</title>
 <style>body{font-family:ui-monospace,monospace;max-width:42em;margin:3em auto;padding:0 1em}
 code{background:#eee;padding:.15em .4em}#n{font-size:2em}</style></head>
 <body>
-<h1>hello-shared</h1>
+<h1>sanity-check-shared</h1>
 <p>This server is <strong>shared</strong>: every team in the event loads the
 same page right here. Proof — the counter below counts
 <em>everyone's</em> requests, and it keeps going up while you read this.</p>

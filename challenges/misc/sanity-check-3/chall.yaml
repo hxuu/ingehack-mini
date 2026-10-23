@@ -6,7 +6,9 @@ description: |
   with the challenge at all — it lives in the event's attachment bucket
   (attachments.ingeniums.club), and the challenge page just points at its URL.
 
-  Reachable at **https://sanity-check-3.challs.ingeniums.club:9487/**.
+  Reachable at **http://sanity-check-3.challs.ingeniums.club:9487/** or
+  **https://sanity-check-3.challs.ingeniums.club:9488/** (scheme follows the
+  port: 9487 is plain HTTP, 9488 is TLS).
 
   1. On this challenge page, download the attachment listed under **Files**
      (it comes straight from the bucket).

@@ -11,10 +11,10 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 PORT = 80
 FLAG = os.environ.get("RCTF_FLAG", "ingehack{no_team_no_flag}")
 PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8">
-<title>hello-instancer</title>
+<title>sanity-check-instanced</title>
 <style>body{font-family:ui-monospace,monospace;max-width:42em;margin:3em auto;padding:0 1em}</style>
 </head><body>
-<h1>hello-instancer — an instance just for you</h1>
+<h1>sanity-check-instanced — an instance just for you</h1>
 <p>You (or the button on the platform) asked for a <em>copy</em> of this
 challenge, and the CTF infra started one just for you — with an isolated
 container, its own network, and its own flag.</p>

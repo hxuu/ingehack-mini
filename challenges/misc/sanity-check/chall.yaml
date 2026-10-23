@@ -6,8 +6,10 @@ description: |
   page is a plain HTTP endpoint on the shared challenge server, and your
   browser reaches it directly.
 
-  Reachable at **https://sanity-check.challs.ingeniums.club:9487/** (plain
-  HTTP; the :9487 mapped port is the gateway's current number).
+  Reachable at **http://sanity-check.challs.ingeniums.club:9487/** or
+  **https://sanity-check.challs.ingeniums.club:9488/** (the https:// before
+  :9487 is exactly the mistake that makes Traefik 404 — port decides the
+  scheme here, not the URL bar's default).
 
   1. Open your browser's developer tools (F12) → **Network** tab and reload:
      that row in front of you is the request your browser made and this page
