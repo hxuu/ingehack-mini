@@ -429,3 +429,34 @@ rCTF v2 has no v2 challenge-delete route; the only hard delete is the v1
 Usage:
     ops/remove-challenge.sh --platform https://ctf.ingeniums.club \
       --challenge-id <id> --token "$CHALLENGE_BOT_TOKEN" [--wipe]
+
+## Platform lockdown before publish — 2026-10-24 (verified)
+
+Working state while challenges are being authored and the event is unpublished.
+
+- **Registration frozen**: `/opt/rctf/rctf.d/03-frozen.yaml` contains
+  `registrationsEnabled: false`, applied with
+  `docker compose up -d --force-recreate rctf`. Client config reads `false`;
+  `POST /api/v2/auth/register` → `badRegistrationsDisabled`.
+- **All five challenges hidden** (`hidden=true` on
+  `sanity-check`, `sanity-check-2`, `sanity-check-3`, `sanity-check-shared`,
+  `hello-instancer`). Anonymous `GET /api/v2/challs` returns 0 entries;
+  admins still see all five via `GET /api/v2/admin/challs`.
+- **Accounts cut to two**:
+  - `Team authors` (perms **63**) — the shared authors credential. Sign-in is
+    a **team token** pasted into the "Team token" field on `/login` (rCTF v2
+    is passwordless; there is no password). The token is held off-repo on the
+    maintainer machine, never in git.
+  - `ci-bot` (perms **3**) — kept deliberately: the `challenges` workflow
+    authenticates as it via the `CHALLENGE_BOT_TOKEN` Actions secret. Deleting
+    it breaks CI until a new bot account is created and the secret rotated.
+  - Deleted: `rootadmin`, `QA-Attach`, `boul3h14`, and the temporary cleanup
+    admin. There is no separate root identity any more; `Team authors` is the
+    only human admin.
+- **Gotcha — hiding is undone by CI**: a merged PR touching a challenge
+  directory re-registers it from `chall.yaml`, whose `hidden` defaults to
+  `false`. While authoring, add `hidden: true` to each manifest, or re-hide
+  after the merge.
+- **Unfreeze at publish**: delete `/opt/rctf/rctf.d/03-frozen.yaml`, then
+  `docker compose up -d --force-recreate rctf`; unhide challenges (manifest or
+  admin PUT) once the event is meant to be visible.
