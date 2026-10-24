@@ -1,0 +1,61 @@
+name: ghost-steel
+author: s4l1
+category: misc
+tiebreakEligible: true
+hidden: true
+
+description: |
+  For over three decades, it rolled through exercises, invaded a country,
+  and stared NATO in the face — and nobody knew what it was.
+  Some ghosts don't haunt you. They just watch.
+
+  You've intercepted a photo of a Soviet armored vehicle. Intel is cold,
+  the archives are scattered, and the West got the story wrong for years.
+
+  Four questions. One flag. No shortcuts.
+
+  ---
+
+  **Q1 — Identify the vehicle in the foreground of the photo (hull number 211).
+  What is its official designation?**
+
+  **Q2 — In September 1967 this vehicle was unexpectedly filmed during one of
+  the largest Soviet military exercises in history. What was the exercise called?**
+  Format: one word, 5 letters.
+
+  **Q3 — It was built in extremely small numbers. Reference sites quote a single
+  production total — how many vehicles?**
+  Sources don't all agree. Submit the figure most sites give.
+
+  **Q4 — A retired US Army officer wrote the most detailed Western analysis of
+  this vehicle, published in the US Army's armor journal. It describes a US
+  intelligence report from August 1969 that mentioned this vehicle but
+  misidentified it. What designation did that report give it?**
+  Hint: `"SU-122-54" Warford filetype:pdf`
+
+  ---
+
+  🚩 Combine the four answers into one flag: `ingehack{Q1_Q2_Q3_Q4}`
+
+  Formatting rules: join the answers with `_`. Inside an answer, spaces become
+  `_` and hyphens stay. Capitalization as written in the sources.
+  Example with made-up answers "Alpha-1" and "Beta Two": `ingehack{Alpha-1_Beta_Two}`
+
+points:
+  min: 50
+  max: 500
+
+tags:
+  - osint
+  - google-dorking
+  - reverse-image-search
+  - source-verification
+  - primary-sources
+
+flag: ingehack{SU-122-54_Dnepr_77_SU-100_M1968}
+instanced: false
+container: false
+
+files:
+  - name: ghost.png
+    path: files/ghost.png
