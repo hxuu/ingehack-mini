@@ -17,8 +17,11 @@ Two VMs: a **platform VM** running [rCTF v2](https://rctf.osec.io) behind a
 Cloudflare tunnel, and a **challenge VM** running rCTF v2's Docker instancer
 (traefik + redis + tiny-instancer). Per-team instances are spawned on demand
 with a **per-team flag baked at launch**; shared challenges are static
-containers behind the same traefik. Everything operational lives in the docs;
-challenge authors never touch any of it.
+containers behind the same traefik. A challenge can also be
+**description-only** (`container: false`) — description, flag, and optional
+handouts, no container at all, for tasks whose answer lives elsewhere.
+Everything operational lives in the docs; challenge authors never touch any
+of it.
 
 ## Prerequisites
 
@@ -39,7 +42,7 @@ secrets only.
 ```
 ├── challenges/<category>/<name>/     # The authoring body of work
 │   ├── chall.yaml                    #   the manifest (single source of truth)
-│   ├── Dockerfile + src/             #   the challenge itself
+│   ├── Dockerfile + src/             #   container challenges only
 │   ├── files/                        #   downloadable handouts (optional)
 │   └── solution/                     #   solver script or walkthrough (required)
 ├── docs/status.md                    # Live infra state + verified records
@@ -67,9 +70,10 @@ Before you open the PR, have your agent verify the work:
 ```
 
 The [`challenge-review`](/.agents/skills/challenge-review) skill checks the
-manifest, builds the image, and runs your solver path locally. **Merge = live.**
-CI builds your image, ships it inside the challenge VM, and registers or
-deploys it on the platform.
+manifest, builds the image when there is one, and runs your solver path
+locally. **Merge = live.** For container challenges, CI builds your image,
+ships it inside the challenge VM, and registers or deploys it; a
+description-only challenge is registered as metadata.
 
 > [!IMPORTANT]
 > Flags: write the literal string `${RCTF_FLAG}` in challenge code for per-team

@@ -12,14 +12,17 @@ platform. Creating one is `new-challenge`; taking one down is
 ## What kind of change is this? (always ask this first)
 
 1. **Manifest or handout text only** (description, points, tags,
-   `releaseTime`, flavor, expose layout) — no rebuild needed. Fast path:
+   `releaseTime`, flavor, expose layout) — no rebuild needed. For a
+   description-only challenge (`container: false`) every change is this kind.
+   Fast path:
    run `ops/update-challenge.sh --platform https://ctf.ingeniums.club
    --manifest <chall.yaml> --token <token>` on the maintainer machine. Done
    when the script prints `OK`.
    Environment gotcha worth caching: `$CHALLENGE_BOT_TOKEN` exists only in
    GitHub Actions secrets, never locally — manual writes authenticate with a
    maintainer admin token.
-2. **Code or Dockerfile change** — rebuild required. Commit and merge a PR:
+2. **Code or Dockerfile change** (container challenges only) — rebuild
+   required. Commit and merge a PR:
    CI jobs build the new image, ship, and re-register it (ADR 0005). Static
    challenges redeploy via `ops/deploy-static.sh`, which replaces the running
    container (a `docker rm -f` gap of a few seconds is part of the swap).

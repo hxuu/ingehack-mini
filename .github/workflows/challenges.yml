@@ -142,16 +142,29 @@ jobs:
           name=$(basename "${{ matrix.dir }}")
           sha=$(git rev-parse --short "$GITHUB_SHA")
           val=$(grep -oE "^instanced:[[:space:]]*(true|false)" \
-                "${{ matrix.dir }}/chall.yaml" | grep -oE "true|false" | head -1)
+                "${{ matrix.dir }}/chall.yaml" | grep -oE "true|false" | head -1 || true)
+          # container defaults ON for static challenges. `container: false`
+          # means description + flag + handouts only (e.g. OSINT with no
+          # service): skip build/ship/deploy, register metadata only.
+          # instanced always implies a container.
+          container=true
+          if [[ "${val:-false}" != "true" ]]; then
+            cval=$(grep -oE "^container:[[:space:]]*(true|false)" \
+                   "${{ matrix.dir }}/chall.yaml" | grep -oE "true|false" | head -1 || true)
+            container=${cval:-true}
+          fi
           echo "name=$name"    >> "$GITHUB_OUTPUT"
           echo "sha=$sha"      >> "$GITHUB_OUTPUT"
           echo "image=${name}:${sha}" >> "$GITHUB_OUTPUT"
           echo "instanced=${val:-false}" >> "$GITHUB_OUTPUT"
+          echo "container=$container" >> "$GITHUB_OUTPUT"
 
       - name: Build image
+        if: steps.chall.outputs.container == 'true'
         run: docker build -t "${{ steps.chall.outputs.image }}" "${{ matrix.dir }}"
 
       - name: Ship image to the challs VM (docker load)
+        if: steps.chall.outputs.container == 'true'
         run: |
           set -euo pipefail
           mkdir -p ~/.ssh
@@ -196,7 +209,7 @@ jobs:
             --token "$TOKEN"
 
       - name: Deploy static challenge (behind the challs Traefik)
-        if: steps.chall.outputs.instanced == 'false'
+        if: steps.chall.outputs.instanced == 'false' && steps.chall.outputs.container == 'true'
         env:
           SSH_DEPLOY_PRIVATE_KEY: ${{ secrets.SSH_DEPLOY_PRIVATE_KEY }}
           IMAGE: ${{ steps.chall.outputs.image }}
