@@ -1,6 +1,7 @@
 name: sanity-check-2
 author: hxuu
 category: misc
+hidden: true
 description: |
   Attached sanity check, part 1: the **local** handout. This file is committed
   to the challenge repo; at register time CI uploads it and the platform

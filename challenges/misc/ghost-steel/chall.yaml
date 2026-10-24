@@ -1,6 +1,7 @@
 name: ghost-steel
 author: s4l1
 category: misc
+hidden: true
 tiebreakEligible: true
 
 description: |
