@@ -2,7 +2,6 @@ name: bulletproof-tenant
 author: s4l1
 category: misc
 tiebreakEligible: true
-hidden: true
 
 description: |
   03:14 UTC. Your SSH honeypot wakes you up.
