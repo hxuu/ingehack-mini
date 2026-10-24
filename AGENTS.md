@@ -48,7 +48,10 @@ of truth.
 
 **A branch is scratch; a merge is everyone's.** Authors branch freely off
 `main` — a branch never touches the platform, and CI only ever detects a
-merged PR's directory diff (`HEAD^..HEAD` in `challenges.yml`). Other PRs
+merged PR's directory diff (`HEAD^..HEAD` in `challenges.yml`). Never commit
+author work on `main`: if you find the author there, move them to a branch
+named after their GitHub login (`gh api user --jq .login`) before editing;
+the `pr` skill's Branch guard has the exact procedure and opens the PR. Other PRs
 merging meanwhile only matter when they overlap the same directory — that
 shows up as an ordinary git conflict: rebase onto the new `main`, resolve,
 and re-run `challenge-review` locally (its earlier verdicts are stale the

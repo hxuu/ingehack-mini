@@ -9,6 +9,11 @@ Change an existing `challenges/<category>/<name>/` and get the change onto the
 platform. Creating one is `new-challenge`; taking one down is
 `remove-challenge`.
 
+Author work never happens on `main` — a push there is a merge. If
+`git branch --show-current` prints `main`, run the branch guard in the `pr`
+skill first: the branch is the author's GitHub login
+(`gh api user --jq .login`). Done when you are on `<login>`, not `main`.
+
 ## What kind of change is this? (always ask this first)
 
 1. **Manifest or handout text only** (description, points, tags,

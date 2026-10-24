@@ -1,6 +1,6 @@
 ---
 name: pr
-description: "Use when writing a PR body."
+description: "Use when opening a pull request or writing its body."
 metadata:
   credits:
     skill: show-me
@@ -8,6 +8,46 @@ metadata:
     organisation: Humanlayer
     url: "https://github.com/humanlayer/skills/blob/main/plugins/show-me/skills/show-me/SKILL.md"
 ---
+
+## Branch guard (before committing or opening a PR)
+
+Author work never lands on `main`: a push to `main` is a merge, and the
+`challenges` workflow treats it as one. If the author is on `main` — or a
+detached HEAD — get them onto their own branch before the first commit.
+
+1. `git branch --show-current`. Already off `main` → continue.
+2. Branch name = the author's GitHub login: `gh api user --jq .login`. If
+   `gh` is missing or unauthenticated, ask for the login; never guess and
+   never use `git config user.name`.
+3. `git fetch origin`, then switch:
+   - local `<login>` exists → `git switch <login>`
+   - only `origin/<login>` exists → `git switch --track origin/<login>`
+   - neither exists → `git switch -c <login>`
+
+   Uncommitted changes ride along. If the branch you land on is behind
+   `origin/main`, `git merge origin/main` before adding work; if it has
+   diverged from `origin/<login>`, stop and ask. Never force-push.
+4. If local `main` is ahead of `origin/main` (commits already made), carry
+   those commits onto `<login>` first (rebase/cherry-pick), verify they are
+   on the branch, then `git branch -f main origin/main`. If `<login>` has
+   divergent history, stop and ask — never force-push or reset away work.
+5. Done when `git branch --show-current` prints `<login>` and
+   `git log main..HEAD` holds the author's work. Commit there, never on
+   `main`.
+
+## Open the PR
+
+Push the branch and open it against `main`:
+
+```sh
+git push -u origin <login>
+gh pr create --base main --head <login> \
+  --title "<title>" --body-file <body-file>
+```
+
+If a PR already exists for the branch (`gh pr view <login> --json number`),
+update it with `gh pr edit <number> --body-file <body-file>` instead.
+Never run `git push origin main`.
 
 Use this template for writing the PR body:
 

@@ -44,6 +44,16 @@ Ask the author, and scaffold only once all six are answered:
    `${RCTF_FLAG}` (the instancer bakes the per-team value at launch);
    static: a fixed flag decided at ship time.
 
+## Branch guard (before writing files or committing)
+
+Never author on `main` — a push there is a merge. If
+`git branch --show-current` prints `main` (or you are detached), move onto
+the author's branch first: the branch name is their GitHub login
+(`gh api user --jq .login`). The exact switch procedure — including
+commits already made on `main` — and PR opening live in the `pr` skill's
+Branch guard. Done when you are off `main` on `<login>`, with nothing new
+committed to `main`.
+
 ## Scaffold
 
 Create `challenges/<category>/<name>/` with:

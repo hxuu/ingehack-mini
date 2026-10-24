@@ -6,6 +6,12 @@ description: Remove or retire a merged, live Ingehack Mini challenge — pulled,
 # remove-challenge
 
 Take a challenge that already went live (merged PR) off the platform, cleanly.
+
+Author work never happens on `main` — a push there is a merge. If
+`git branch --show-current` prints `main`, run the branch guard in the `pr`
+skill first: the branch is the author's GitHub login
+(`gh api user --jq .login`). Done when you are on `<login>`, not `main`.
+
 rCTF v2 has no v2 delete route — the only hard delete is v1's
 `DELETE /api/v1/admin/challs/:id` (`docs/research/rctf-v2-api-schema.md`) — so
 removal is hide-first, wipe-optional, sweep-manual.
