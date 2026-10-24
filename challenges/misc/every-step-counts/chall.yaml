@@ -2,7 +2,6 @@ name: every-step-counts
 author: s4l1
 category: misc
 tiebreakEligible: true
-hidden: true
 
 description: |
   In late 2017, a fitness company pushed a massive data update.
