@@ -439,9 +439,10 @@ Working state while challenges are being authored and the event is unpublished.
   `docker compose up -d --force-recreate rctf`. Client config reads `false`;
   `POST /api/v2/auth/register` → `badRegistrationsDisabled`.
 - **All eight challenges hidden** (`hidden: true` in every manifest under
-  `challenges/`). Anonymous `GET /api/v2/challs` returns 0 entries; admins
-  still see everything via `GET /api/v2/admin/challs`. Every manifest carries
-  the flag, so a CI re-registration cannot silently unhide a challenge.
+  `challenges/`). On merge CI re-registers them hidden and anonymous
+  `GET /api/v2/challs` returns 0 entries; admins still see everything via
+  `GET /api/v2/admin/challs`. Every manifest carries the flag, so a CI
+  re-registration cannot silently unhide a challenge.
 - **Accounts cut to two**:
   - `Team authors` (perms **63**) — the shared authors credential. Sign-in is
     a **team token** pasted into the "Team token" field on `/login` (rCTF v2
