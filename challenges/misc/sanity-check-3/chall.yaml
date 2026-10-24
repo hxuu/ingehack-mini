@@ -1,6 +1,7 @@
 name: sanity-check-3
 author: hxuu
 category: misc
+hidden: true
 description: |
   Attached sanity check, part 2: the **R2** handout. This file was not shipped
   with the challenge at all — it lives in the event's attachment bucket

@@ -1,6 +1,7 @@
 name: sanity-check-instanced
 author: hxuu
 category: misc
+hidden: true
 description: |
   You get your **own copy** of this challenge — the platform spawns a private
   instance just for you (button on the challenge page), with its own container

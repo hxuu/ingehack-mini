@@ -438,10 +438,10 @@ Working state while challenges are being authored and the event is unpublished.
   `registrationsEnabled: false`, applied with
   `docker compose up -d --force-recreate rctf`. Client config reads `false`;
   `POST /api/v2/auth/register` → `badRegistrationsDisabled`.
-- **All five challenges hidden** (`hidden=true` on
-  `sanity-check`, `sanity-check-2`, `sanity-check-3`, `sanity-check-shared`,
-  `hello-instancer`). Anonymous `GET /api/v2/challs` returns 0 entries;
-  admins still see all five via `GET /api/v2/admin/challs`.
+- **All eight challenges hidden** (`hidden: true` in every manifest under
+  `challenges/`). Anonymous `GET /api/v2/challs` returns 0 entries; admins
+  still see everything via `GET /api/v2/admin/challs`. Every manifest carries
+  the flag, so a CI re-registration cannot silently unhide a challenge.
 - **Accounts cut to two**:
   - `Team authors` (perms **63**) — the shared authors credential. Sign-in is
     a **team token** pasted into the "Team token" field on `/login` (rCTF v2
@@ -455,8 +455,18 @@ Working state while challenges are being authored and the event is unpublished.
     only human admin.
 - **Gotcha — hiding is undone by CI**: a merged PR touching a challenge
   directory re-registers it from `chall.yaml`, whose `hidden` defaults to
-  `false`. While authoring, add `hidden: true` to each manifest, or re-hide
-  after the merge.
+  `false`. PR #6 dropped `hidden: true` from the OSINT trio and CI
+  re-registered them public; it is now explicit in all eight manifests. Any
+  new challenge must set `hidden: true` until publish.
+- **Visibility rules** (rCTF v2, `packages/types/src/routes/v2/challenges.ts`
+  and `apps/api/src/services/challenge-queries.ts`):
+  - `GET /api/v2/challs` is `onlyWhenStarted`: before `startTime` it returns
+    `badNotStarted` to everyone except holders of `challsRead` (admins).
+  - After `startTime` the list is anonymous and filtered only by each
+    challenge's `hidden` and `releaseTime`; there is no login requirement.
+  - So once the test window is open, `hidden: true` is the only lever that
+    keeps challenges away from anonymous visitors — `startTime` alone stops
+    working the moment the competition starts.
 - **Unfreeze at publish**: delete `/opt/rctf/rctf.d/03-frozen.yaml`, then
   `docker compose up -d --force-recreate rctf`; unhide challenges (manifest or
   admin PUT) once the event is meant to be visible.

@@ -1,6 +1,7 @@
 name: sanity-check-shared
 author: hxuu
 category: misc
+hidden: true
 description: |
   Sanity check 2 — the **shared instance**: one server, every team hits the
   same copy at the same URL — no container of your own, no per-team flag. Visit
