@@ -1,7 +1,33 @@
 # Ingehack Mini — agent instructions
 
-Platform docs: `docs/status.md` (live state), `GLOSSARY.md` (domain
-language), `docs/adr/` (topology rationale).
+## What this repo is
+
+Ingehack Mini is a jeopardy CTF for first-year CS students at
+ingeniums.club, running on rCTF v2 across two OpenScaler VMs behind
+Cloudflare. This repo holds both the live infrastructure record and the
+challenge authoring workflow. **Merge = live**: a merged PR touching
+`challenges/<category>/<name>/` builds and ships the image when the
+challenge has a runtime (instanced or static container), and registers,
+deploys, or retires the challenge on the platform
+(`.github/workflows/challenges.yml`, ADR 0005). Challenge images never leave
+the VM; authors work through git alone and need no SSH key, token, or VM
+access.
+
+## Where things live
+
+| Path | Role |
+|---|---|
+| `challenges/<category>/<name>/` | One challenge. `chall.yaml` is its single source of truth; `Dockerfile` + `src/` exist when it runs a container (a description-only challenge has neither), `files/` downloadable handouts, `solution/` the required solver. |
+| `.agents/skills/` | Challenge lifecycle skills (list below). Single source of truth; other harness directories symlink here. |
+| `docs/status.md` | Live infrastructure state: VMs, DNS/TLS, mapped ports, gotchas, verified records. **Source of truth for anything running.** |
+| `GLOSSARY.md` | Domain language — read before naming anything in records or prose. |
+| `docs/adr/` | Decisions and non-negotiables; cite by number. |
+| `docs/research/` | rCTF v2 API schema notes the ops scripts depend on. |
+| `ops/` | Maintainer-side register/update/remove/deploy scripts. CI calls them; a hand-run needs a maintainer token. |
+| `.github/workflows/challenges.yml` | The deploy pipeline: detect directory diff → build/ship when the challenge has a runtime → register or retire. |
+
+For infrastructure work, read in this order: `docs/status.md`, then
+`GLOSSARY.md`, then the ADRs.
 
 ## Skills in this repo
 
@@ -14,8 +40,9 @@ actually works — author-side check and PR review are the same skill), and
 that creates, changes, or deletes a challenge directory ships, re-registers,
 or retires it automatically (the `challenges` workflow).
 
-Harnesses that need their own directory (e.g. `.claude/skills/`) symlink into
-`.agents/skills/` — that is the single source of truth.
+Harnesses that need their own directory symlink in here (`.claude` →
+`.agents`, `CLAUDE.md` → `AGENTS.md`); `.agents/skills/` is the single source
+of truth.
 
 ## Branching (authors)
 
