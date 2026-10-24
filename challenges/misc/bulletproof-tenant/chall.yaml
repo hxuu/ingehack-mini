@@ -1,0 +1,70 @@
+name: bulletproof-tenant
+author: s4l1
+category: misc
+tiebreakEligible: true
+hidden: true
+
+description: |
+  03:14 UTC. Your SSH honeypot wakes you up.
+
+  One address. Thousands of failed root logins. A password list old enough
+  to vote. You pull the IP — 179.43.153.2 — and every reputation service
+  you touch lights up. AbuseIPDB has it on file. GreyNoise tags it as
+  malicious noise. Public blocklists have already made up their minds.
+
+  But the IP is only the front door. Behind it sits a network with a much
+  longer rap sheet: a Swiss-hosted, Panama-registered provider that has
+  appeared in the USTR's Notorious Markets list for years, named alongside
+  some of the internet's most stubborn piracy operations.
+
+  Follow the records, not the hype. Five questions. One flag. No shortcuts.
+
+  ---
+
+  **Q1 — One IP, one network. Which autonomous system number (ASN) announces
+  179.43.153.2?**
+  Format: `AS#####`
+
+  **Q2 — That ASN belongs to a hosting company. Give its organization name
+  as it appears in the registry, without the legal suffix.**
+  Format: `Two_Words`
+
+  **Q3 — The company is registered in one country, but the IP itself
+  geolocates to another. In which country is the server located?**
+  Format: one word.
+
+  **Q4 — And in which country is the company registered / operated from,
+  according to its RIR record?**
+  Format: one word.
+  Hint: the same country appears in the USTR's 2018 Notorious Markets entry
+  for the provider.
+
+  **Q5 — Every blocklist carrying this IP files it under the same attack
+  category. What kind of attack is it notorious for?**
+  Format: `SSH_brute-force` (protocol + hyphenated attack type).
+  Hint: check `blocklist.de`, OpenDBL, or FireHOL.
+
+  ---
+
+  🚩 Combine the five answers into one flag: `ingehack{Q1_Q2_Q3_Q4_Q5}`
+
+  Formatting rules: join the answers with `_`. Inside an answer, spaces become
+  `_` and hyphens stay.
+  Example with made-up answers "Alpha-1" and "Beta Two": `ingehack{Alpha-1_Beta_Two}`
+
+points:
+  min: 50
+  max: 500
+
+tags:
+  - osint
+  - threat-intelligence
+  - abuseipdb
+  - whois
+  - bgp
+  - ssh-bruteforce
+  - hosting-infrastructure
+
+flag: ingehack{AS51852_Private_Layer_Switzerland_Panama_SSH_brute-force}
+instanced: false
+container: false
