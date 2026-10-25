@@ -1,0 +1,44 @@
+name: sudoers
+author: rafikder7
+category: linux
+hidden: true
+description: |
+  A small company built an internal audit tool. The developer swears it's
+  now secure:
+
+  > "We drop privileges before processing user input — no more command
+  > injection!"
+
+  He's wrong. Again.
+
+  **Connection:**
+  ssh ctf@ctf.ingeniums.club -p <MAPPED_PORT>
+  Password: ctf
+
+  **Goal:** Read /flag
+
+  **Files on the box:**
+  - /usr/local/bin/auditdrop — setuid-root binary
+  - /home/ctf/auditdrop.c — source code
+  - /home/ctf/notes/ — your notes directory
+
+  **Hint:** Understand the difference between seteuid() and setuid().
+difficulty: medium
+points:
+  min: 100
+  max: 300
+tiebreakEligible: true
+tags:
+  - medium
+  - setuid
+  - SUID
+  - privilege escalation
+  - linux
+  - seteuid
+flag: ingehack{seteuid_leaves_suid_restorable}
+instanced: false
+runtime:
+  container_port: 22
+  protocol: tcp
+files: []
+solution: solution/solve.sh
