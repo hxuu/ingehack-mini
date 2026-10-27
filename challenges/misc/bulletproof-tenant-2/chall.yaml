@@ -1,0 +1,47 @@
+name: bulletproof-tenant-2
+author: s4l1
+category: misc
+hidden: true
+tiebreakEligible: true
+
+description: |
+  **⚠️ Recommended prerequisite:** solve `bulletproof-tenant` (Part 1) first.
+  This challenge assumes you already know the story: the IP, the ASN, the
+  hosting provider, and the attack category. Part 1 builds that context;
+  Part 2 uses it. Skipping ahead is possible, but you'll be reading the
+  logs blind.
+
+  You've recovered the artifacts from the compromised honeypot:
+  the auth log from that night, the `deploy` user's shell history,
+  a snapshot of `/tmp`, and the file that used to be `flag.txt` —
+  now an unreadable hex blob.
+
+  Recover the flag.
+
+  Attachments: `auth.log`, `bash_history`, `encode.py`, `flag.txt.enc`
+
+points:
+  min: 50
+  max: 500
+
+tags:
+  - log-analysis
+  - forensics
+  - python
+  - reverse-engineering
+  - encoding
+  - linux
+
+flag: ingehack{x0r_1s_n0t_3ncryp1t10n}
+instanced: false
+container: false
+
+files:
+  - name: auth.log
+    path: files/auth.log
+  - name: bash_history
+    path: files/bash_history
+  - name: encode.py
+    path: files/encode.py
+  - name: flag.txt.enc
+    path: files/flag.txt.enc
