@@ -1,0 +1,38 @@
+name: luckypatcher
+author: RedhaIWNL
+category: rev
+hidden: true
+
+description: |
+  Alice wakes in the Whispering Woods with no memory of the way home. Ten
+  crossroads stand between her and the porch light, and the forest makes every
+  choice for her -- every choice is a dead end.
+
+  The handout is a statically linked **x86-64 Linux ELF**. It is **not
+  stripped**, so it will tell you where it is going. Convince it to take the
+  right branches and Alice walks home. The flag is printed only when she
+  arrives.
+
+  Download the attachment and make it executable:
+
+  ```sh
+  chmod +x luckypatcher
+  ./luckypatcher
+  ```
+
+  It runs on Linux (or WSL). A single byte can change a decision.
+
+  Flag format: `ingehack{...}`
+
+points: {min: 150, max: 300}
+tiebreakEligible: true
+tags: [beginner, Linux, ELF, binary patching, control flow, disassembly]
+
+flag: ingehack{alice_found_the_way_home}
+
+files:
+  - name: luckypatcher
+    path: files/luckypatcher
+
+instanced: false
+container: false
