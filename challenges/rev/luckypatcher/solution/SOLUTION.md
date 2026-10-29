@@ -74,6 +74,63 @@ Patch only some gates and the journey stops at the next dead end. Patching the
 value produced by all ten good paths. Otherwise it prints
 `The forest is still dark. Alice is not home yet.`
 
+## Patching in a GUI (Ghidra, IDA, Binary Ninja)
+
+The binary is not stripped, so all three tools show `gate_1` … `gate_10` by
+name. In every gate, find the conditional jump immediately after the
+`CMP EAX, N` / `CMP DWORD PTR [alice_step], N` instruction and invert it:
+`JNE` → `JE`. The target stays the same. Ten gates, ten patches.
+
+The byte-level equivalent is `75` → `74` (or `0F 85` → `0F 84` for a near
+jump). NOPing the two bytes (`90 90`) also works because the good branch is the
+fall-through.
+
+### Ghidra
+
+1. `File → Import File...`, select `luckypatcher`, accept the defaults, and
+   open it in the CodeBrowser (analyze when asked).
+2. Navigate to `gate_1` (Symbol Tree, or press `G` and type `gate_1`).
+3. Click the `JNE` instruction, right-click → **Patch Instruction**
+   (`Ctrl+Shift+G`), change the mnemonic to `JE` while keeping the operand,
+   then press Enter. The listing should show the patched `JE`.
+4. Repeat for `gate_2` … `gate_10`.
+5. `File → Export Program...` → Format **Original File** → save as
+   `luckypatcher.patched`. This writes the patched bytes back in ELF layout.
+6. `chmod +x luckypatcher.patched && ./luckypatcher.patched`
+
+If your Ghidra version exports the unchanged file with `Original File`, use
+`solution/solve.py` or a hex editor for the ten bytes; the analysis and the
+addresses from Ghidra are still useful.
+
+### IDA
+
+1. Open `luckypatcher` and let auto-analysis finish.
+2. Jump to `gate_1` (Functions window, or `G` → `gate_1`).
+3. Select the `jne` instruction at `0x403176` (the one after `cmp eax, 1`).
+4. Either:
+   - `Edit → Patch program → Change byte...` and change the first byte `75`
+     to `74`, or
+   - `Edit → Patch program → Assemble...` and change `jne` to `je` while
+     keeping the target.
+5. Repeat for all ten gates.
+6. `Edit → Patch program → Apply patches to input file...`, choose the input
+   file (IDA keeps a `.bak`), then run the patched file.
+
+### Binary Ninja
+
+1. Open `luckypatcher`.
+2. Jump to `gate_1` (Symbols, or `G` → `gate_1`).
+3. Right-click the `jne` instruction → **Patch → Invert Branch**. Binary
+   Ninja flips the condition to `je` for you. (Alternatively use
+   `Patch → Assembly...` or `Patch → Raw Bytes` and change `75` to `74`.)
+4. Repeat for `gate_2` … `gate_10`.
+5. `File → Save Contents As...` (not the analysis database) and save
+   `luckypatcher.patched`.
+6. `chmod +x luckypatcher.patched && ./luckypatcher.patched`
+
+Binary Ninja keeps patches in its `.bndb` database; `Save Contents As` is the
+step that writes a runnable patched binary.
+
 ## Solver
 
 `solution/solve.py` finds the first conditional jump in every `gate_N`
