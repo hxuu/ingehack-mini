@@ -15,7 +15,7 @@ RUN mkdir -p /var/run/sshd
 COPY src/sshd_config /etc/ssh/sshd_config
 
 COPY src/auditdrop.c /home/ctf/auditdrop.c
-RUN gcc -o /usr/local/bin/auditdrop /home/ctf/auditdrop.c && \
+RUN gcc -o /usr/local/bin/auditdrop /home/ctf/auditdrop.c -ldl && \
     chown root:root /usr/local/bin/auditdrop && \
     chmod 4755 /usr/local/bin/auditdrop && \
     chown ctf:ctf /home/ctf/auditdrop.c && \

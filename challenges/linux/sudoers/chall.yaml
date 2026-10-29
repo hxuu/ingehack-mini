@@ -8,7 +8,7 @@ description: |
   A small company built an internal audit tool. The developer swears it's
   now secure:
 
-  > "We drop privileges before processing user input — no more command
+  > "We drop privileges before we touch any user code — no more command
   > injection!"
 
   He's wrong. Again.
