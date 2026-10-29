@@ -56,6 +56,20 @@ An earlier version ran the note through `system("cat <path>")` and hoped the chi
 
 `solution/solve.sh` automates all three steps over SSH.
 
+### Connecting (TLS-wrapped SSH)
+The container is not published directly: a Traefik TCP router on the `tcp`
+entrypoint matches `HostSNI(sudoers.challs.ingeniums.club)` and terminates TLS
+with the `*.challs.ingeniums.club` wildcard, so plain `ssh` cannot speak to it.
+Wrap the client in `openssl s_client`:
+
+```sh
+ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' \
+    ctf@sudoers.challs.ingeniums.club -p 9450
+```
+
+Password `ctf`. `solve.sh` uses the same wrapper (host and port default to the
+values above).
+
 ### Remediation
 To drop privileges permanently and prevent regaining root:
 ```c

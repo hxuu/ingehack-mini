@@ -13,8 +13,15 @@ description: |
 
   He's wrong. Again.
 
-  **Connection:** `ssh ctf@sudoers.challs.ingeniums.club -p <MAPPED_PORT>`
-  — password `ctf`.
+  **Connection:** SSH runs behind a TLS terminator, so the client has to wrap
+  it (the `tcp-ssl` port is 9450):
+
+  ```sh
+  ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' \
+      ctf@sudoers.challs.ingeniums.club -p 9450
+  ```
+
+  Password: `ctf`.
 
   **Goal:** Read `/flag`.
 
@@ -40,3 +47,6 @@ tags:
 
 flag: ingehack{seteuid_leaves_suid_restorable}
 instanced: false
+# Raw-TCP route: ops/deploy-static.sh puts a Traefik TCP router on the tcp
+# entrypoint (published as the mapped tcp-ssl port) for this container port.
+tcpPort: 22
