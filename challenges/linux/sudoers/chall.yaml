@@ -1,0 +1,52 @@
+name: sudoers
+author: boul3h14
+category: linux
+hidden: true
+tiebreakEligible: true
+
+description: |
+  A small company built an internal audit tool. The developer swears it's
+  now secure:
+
+  > "We drop privileges before we touch any user code — no more command
+  > injection!"
+
+  He's wrong. Again.
+
+  **Connection:** SSH runs behind a TLS terminator, so the client has to wrap
+  it (the `tcp-ssl` port is 9450):
+
+  ```sh
+  ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' \
+      ctf@sudoers.challs.ingeniums.club -p 9450
+  ```
+
+  Password: `ctf`.
+
+  **Goal:** Read `/flag`.
+
+  **Files on the box:**
+  - `/usr/local/bin/auditdrop` — setuid-root binary
+  - `/home/ctf/auditdrop.c` — source code
+  - `/home/ctf/notes/` — your notes directory
+
+  **Hint:** Understand the difference between `seteuid()` and `setuid()`.
+
+difficulty: medium
+points:
+  min: 100
+  max: 300
+
+tags:
+  - medium
+  - setuid
+  - SUID
+  - privilege escalation
+  - linux
+  - seteuid
+
+flag: ingehack{seteuid_leaves_suid_restorable}
+instanced: false
+# Raw-TCP route: ops/deploy-static.sh puts a Traefik TCP router on the tcp
+# entrypoint (published as the mapped tcp-ssl port) for this container port.
+tcpPort: 22

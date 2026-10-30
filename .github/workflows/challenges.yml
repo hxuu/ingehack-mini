@@ -222,8 +222,12 @@ jobs:
           ssh-add ~/.ssh/id_ed25519 >/dev/null
           dir_name=$(basename "${{ matrix.dir }}")
           flagval=$(python3 -c 'import yaml,sys;print(yaml.safe_load(open(sys.argv[1])).get("flag",""))' "${{ matrix.dir }}/chall.yaml")
+          # tcpPort opts a static challenge into a raw-TCP route on the tcp
+          # entrypoint (Traefik terminates TLS); empty = normal HTTP router.
+          tcp_port=$(python3 -c 'import yaml,sys;print(yaml.safe_load(open(sys.argv[1])).get("tcpPort","") or "")' "${{ matrix.dir }}/chall.yaml")
           env NAME="$dir_name" \
               DECLARED_FLAG="$flagval" \
+              TCP_PORT="$tcp_port" \
               INTERNAL_HOST="$dir_name.challs.ingeniums.club" \
               IMAGE="$IMAGE" \
               HOST_SSH="root@ssh.alpha.openscaler.net" HOST_SSH_PORT="9305" \
