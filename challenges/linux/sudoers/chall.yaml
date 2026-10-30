@@ -1,7 +1,7 @@
 name: sudoers
 author: boul3h14
 category: linux
-hidden: true
+hidden: false
 tiebreakEligible: true
 
 description: |
