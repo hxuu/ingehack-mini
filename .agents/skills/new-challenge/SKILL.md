@@ -87,6 +87,13 @@ Create `challenges/<category>/<name>/` with:
   line baked into their `description`: scheme follows the port — the mapped
   HTTP port takes `http://`, the mapped HTTPS port takes `https://`; swapped,
   Traefik answers 404. Read the current mapped ports from `docs/status.md`.
+  A static service that is not HTTP (e.g. SSH) opts into a raw-TCP route with
+  `tcpPort: <container port>`: `ops/deploy-static.sh` then registers a Traefik
+  TCP router on the `tcp` entrypoint (published as the mapped `tcp-ssl` port,
+  `HostSNI(<name>.challs.ingeniums.club)`, TLS terminated by the wildcard
+  cert), and the description must tell players how to wrap the client — for
+  SSH, `ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect
+  %h:%p' ctf@<name>.challs.ingeniums.club -p <mapped tcp-ssl port>`.
   Description-only challenges have no URL line and no Traefik host at all.
 - `src/` — challenge code. Where the flag placeholder is used, it is
   literally the string `${RCTF_FLAG}`.
