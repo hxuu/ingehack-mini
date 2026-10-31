@@ -1,0 +1,45 @@
+name: "Is this actually pwn?"
+author: derrm
+category: pwn
+hidden: true
+description: |
+  **EsiMedia** is a tiny social network: register, log in, and set a profile
+  picture. The picture is cropped server-side by a helper binary.
+
+  1. Press **Start** on this page and open the instance URL you get.
+  2. Download `profile-pics.zip` from **Files** — it contains the cropping
+     binary and the sample images.
+  3. Find a way to run code on your instance. The flag is **not in a file**:
+     it lives in the environment of the app process (the `RCTF_FLAG`
+     variable), so once you have code execution, read it with e.g.
+     `cat /proc/1/environ`.
+  4. Submit the flag on the platform.
+
+  Hints: the app has a file-serving endpoint that is generous with paths,
+  and the cropping binary reads its arguments from stdin. Good luck.
+points: {min: 500, max: 1000}
+tiebreakEligible: true
+tags: [beginner, Buffer Overflow, Path Traversal, HTTP Protocol]
+flagsDynamicBase: ingehack{gets_you_every_time}
+flagsDynamicMode: auto
+files:
+  - name: profile-pics.zip
+    path: files/profile-pics.zip
+instanced: true
+instancer:
+  challengeIntegrationId: is-this-actually-pwn
+  timeoutMilliseconds: 1800000
+  extendable: true
+  expose:
+    - {kind: tcp-ssl, hostPrefix: is-this-actually-pwn, containerName: main, containerPort: 5000, shouldDisplay: true, title: "EsiMedia (HTTPS)"}
+  services:
+    main:
+      environment:
+        RCTF_FLAG: ${RCTF_FLAG}
+      user: "app"
+      mem_limit: 256m
+      read_only: false
+      pids_limit: 128
+      networks: [internal]
+  networks:
+    internal: {internal: true}
