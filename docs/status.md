@@ -516,8 +516,34 @@ built from the private fork `hxuu/ingehack-skin` (ADR 0006).
   "CTF ended" and no clock. Adding `<timer />` to `homeContent` (and a real
   window) is an event-content decision, not a skin one.
 - Next: extract the palette/art/wordmark behind one theme surface so a second
-  event reuses the Skin (`skin-v2`); the skin repo's README records the
-  procedure.
+  event reuses the Skin; the skin repo's README records the procedure.
+
+## Skin Release `ingehack-skin-v2` — edge-to-edge plate, live on the Platform (2026-11-01, verified)
+
+The v1 skin left a bare band down the right edge of every page. Cause: rCTF's
+own `layout.css` sets `scrollbar-gutter: stable`, reserving a ~15 px gutter even
+on pages that do not scroll; the fixed ship plate and the header cannot paint
+into that strip (only the flat page colour reaches it), so it showed as an empty
+column. Fixed skin-side with `scrollbar-gutter: auto` on `html[data-ih]`, so the
+gutter is reserved only when a scrollbar is actually needed.
+
+- Release: git `6f800f58` on branch `skin`, tag `ingehack-skin-v2`, based on
+  `ingehack-skin-v1`. Image `ghcr.io/otter-sec/rctf:ingehack-skin-v2`, shipped
+  registry-less and kept at `/opt/rctf/images/ingehack-skin-v2.tar.gz`;
+  deployed by `RCTF_GIT_REF=ingehack-skin-v2` + force-recreate. **Rollback**:
+  `RCTF_GIT_REF=ingehack-skin-v1` (or `main`) + force-recreate; both older images
+  remain on the VM.
+- **Delta from v1, checked**: a per-file SHA-256 manifest of `/app` in both
+  images differs in 120 files, all under `/app/static/_app/` (the content-hashed
+  CSS bundle and the JS chunks whose hashes roll with it, plus `index.html` and
+  `version.json`); no `/app` file outside `/app/static`.
+- **Behavioural parity**: anonymous API bodies byte-identical across the swap
+  (`/api/v2/challs`, `/api/v1/challs`, client config, auth 401s, `robots.txt`);
+  only the root document changed.
+- Verified live: `scrollbar-gutter` computed `auto`, the plate spans the full
+  viewport width on a short page, no console or CSP errors. Evidence and
+  before/after HTTP bodies: `~/work/ingehack-skin/notes/v2-verify/`.
+
 
 ## Platform accounts — `Hxuu` admin + view-only `authors` (2026-11-01, verified)
 
