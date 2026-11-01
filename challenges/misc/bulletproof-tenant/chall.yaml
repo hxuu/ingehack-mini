@@ -41,7 +41,7 @@ description: |
 
   **Q5 — Every blocklist carrying this IP files it under the same attack
   category. What kind of attack is it notorious for?**
-  Format: `SSH_brute-force` (protocol + hyphenated attack type).
+  Format: `<protocol>_<attack-type>`
   Hint: check `blocklist.de`, OpenDBL, or FireHOL.
 
   ---
@@ -62,7 +62,7 @@ tags:
   - abuseipdb
   - whois
   - bgp
-  - ssh-bruteforce
+  - blocklists
   - hosting-infrastructure
 
 flag: ingehack{AS51852_Private_Layer_Switzerland_Panama_SSH_brute-force}
