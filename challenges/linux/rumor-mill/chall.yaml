@@ -1,5 +1,5 @@
 name: rumor-mill
-author: rafikder7
+author: boul3h14
 category: linux
 hidden: true
 tiebreakEligible: false
@@ -34,7 +34,7 @@ description: |
 difficulty: easy
 points:
   min: 100
-  max: 100
+  max: 300
 
 tags:
   - beginner

@@ -1,6 +1,6 @@
 # Rumor Mill
 
-Linux CTF challenge — Rumor series, #1. Easy, 100 points.
+Linux CTF challenge — Rumor series, #1. Easy, 100–300 points.
 Flag format: `ingehack{...}`.
 
 A static SSH container. Four non-root accounts, chained handover notes, one
