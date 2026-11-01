@@ -568,7 +568,7 @@ Current platform users (was `ci-bot` + a second full admin):
 | user | email | perms | role |
 |---|---|---|---|
 | `Hxuu` | hxuu@ingeniums.club | 63 (all) | the sole full admin, owner's account |
-| `authors` | authors@ingeniums.club | 1 (`challsRead`) | the authors team: can see every challenge (incl. hidden) and nothing else |
+| `authors` | authors@ingeniums.club | 1 (`challsRead`) | the authors team: can see every challenge (incl. hidden) on the participant UI and nothing else |
 | `ci-bot` | ci-bot@ingeniums.club | 3 (`challsRead,challsWrite`) | CI identity only |
 | `Team authors` | ladis30704@hopefunder.com | 0 | **demoted** from 63; kept, not deleted |
 
@@ -612,4 +612,36 @@ Current platform users (was `ci-bot` + a second full admin):
 - **Open**: the demoted `Team authors` (an old second admin) is kept rather
   than deleted — deleting it is a separate call (`DELETE
   /api/v2/admin/users/:id`, or first demote while privileged).
+
+## Platform Patch `ingehack-author-preview-v1` — authors see hidden challenges as players do (2026-11-01, verified)
+
+The `authors` account holds `challsRead`, but on the participant UI the
+challenge list came back empty and opening a challenge answered `badChallenge`:
+every participant endpoint hard-filters `hidden`/`releaseTime` for everyone, and
+rCTF has no "preview as participant" mode or config key. This is the first
+**Platform Patch** (ADR 0007) — a behavioural change on the fork, distinct from
+a Skin Release.
+
+- Release: git `a3082c1a` on branch `platform/author-preview`, tag
+  `ingehack-author-preview-v1`, based on `ingehack-skin-v2` (so it carries the
+  Skin too). Image `ghcr.io/otter-sec/rctf:ingehack-author-preview-v1`, shipped
+  registry-less and kept at `/opt/rctf/images/ingehack-author-preview-v1.tar.gz`;
+  deployed by `RCTF_GIT_REF=ingehack-author-preview-v1` + force-recreate.
+  **Rollback**: `RCTF_GIT_REF=ingehack-skin-v2` (or `ingehack-skin-v1`, or
+  `main`) + force-recreate; all older images remain on the VM.
+- Change: `includeHidden` is plumbed through the participant challenge services
+  and set from the caller's `challsRead` bit on `GET /v1/challs`, `GET
+  /v2/challs`, the `/v1` and `/v2` solves routes, `GET /v2/challs/:id/scores`,
+  `POST /v1/challs/:id/submit`, and the v2 instance lifecycle routes. Without
+  the bit (no token or perms 0) the `hidden`/`releaseTime` filter is unchanged.
+- Tests: `tests/server/tests/integration/challenge-visibility.test.ts` extended
+  with list/solves/scores cases for a `challsRead` holder and a plain user;
+  full server suite 648 pass. Types/api/web typecheck clean, lint/format clean.
+- Verified live on `https://ctf.ingeniums.club` (anon and minted tokens):
+  anonymous `GET /api/v2/challs` → 0 challenges; `authors` → all 16 (hidden
+  included); a plain perms-0 account → 0. `sudoers` solves/scores: anonymous
+  `badChallenge`, `authors` `goodChallengeSolvesV2` / `goodChallengeScoresV2`.
+- Image parity: local build and VM-loaded image have identical md5 for
+  `/app/apps/api/dist/index.js` and its source map, so the loaded image is the
+  built one.
 
