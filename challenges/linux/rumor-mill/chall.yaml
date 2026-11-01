@@ -1,0 +1,51 @@
+name: rumor-mill
+author: rafikder7
+category: linux
+hidden: true
+tiebreakEligible: false
+
+description: |
+  Rumor Mill
+  ──────────
+  A rumor has been circulating among the team. Someone left a flag behind — but
+  it's locked inside another user's home directory, and only that user can read it.
+
+  You've been dropped into y4ss1n3's account with nothing but a handover note and
+  your wits. The trail passes through more than one person. Some of what you'll
+  find is a lie.
+
+  Find the flag. Trust nothing until you've verified it.
+
+  **Connection:** SSH runs behind the TLS terminator, so wrap the client (the
+  mapped `tcp-ssl` port is 9464):
+
+  ```sh
+  ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' \
+      y4ss1n3@rumor-mill.challs.ingeniums.club -p 9464
+  ```
+
+  Password: `Welcome123`. A TTY is required — `su` prompts on the terminal, so
+  a raw `nc` session cannot complete the chain.
+
+  **Goal:** read the real flag and submit it.
+
+  Flag format: `ingehack{...}`
+
+difficulty: easy
+points:
+  min: 100
+  max: 100
+
+tags:
+  - beginner
+  - linux
+  - privilege escalation
+  - su
+  - pam
+  - permissions
+
+flag: ingehack{su_1s_n0t_4lm1ghty_y0u_kn0w}
+instanced: false
+# Raw-TCP route: ops/deploy-static.sh puts a Traefik TCP router on the tcp
+# entrypoint (published as the mapped tcp-ssl port) for this container port.
+tcpPort: 2222
