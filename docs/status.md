@@ -519,3 +519,55 @@ built from the private fork `hxuu/ingehack-skin` (ADR 0006).
   event reuses the Skin (`skin-v2`); the skin repo's README records the
   procedure.
 
+## Platform accounts — `Hxuu` admin + view-only `authors` (2026-11-01, verified)
+
+Current platform users (was `ci-bot` + a second full admin):
+
+| user | email | perms | role |
+|---|---|---|---|
+| `Hxuu` | hxuu@ingeniums.club | 63 (all) | the sole full admin, owner's account |
+| `authors` | authors@ingeniums.club | 1 (`challsRead`) | the authors team: can see every challenge (incl. hidden) and nothing else |
+| `ci-bot` | ci-bot@ingeniums.club | 3 (`challsRead,challsWrite`) | CI identity only |
+| `Team authors` | ladis30704@hopefunder.com | 0 | **demoted** from 63; kept, not deleted |
+
+- **Registration is the only way to create a user.** `POST
+  /api/v2/auth/register` returns `{authToken, teamToken}`; perms are then set
+  with the container's CLI, `docker compose exec -T rctf rctf user promote
+  <email> [--perms <names>]` (no domain is appended to a bare `<email>`).
+  **`perms` is an option, not a second positional** — `promote <email>
+  challsRead` silently grants ALL perms; use `--perms challsRead`.
+  `demote <email>` zeroes perms. `create-user-token` and `updateAdminUser`
+  both refuse a target with `perms > 0`, so a fresh account is registered
+  first and promoted second.
+- Creating a limited-perms account needs registration open, so the freeze was
+  lifted for the two registrations and restored: `/opt/rctf/rctf.d/
+  03-frozen.yaml` moved aside → `docker compose up -d --force-recreate rctf`
+  (config reports `registrationsEnabled: true`) → register both → promote →
+  move the file back → recreate. End state verified: `registrationsEnabled:
+  false`, and a fresh register returns `badRegistrationsDisabled`.
+- **Tokens**: the owner's pasted token (`WqS5k0DPIuj_…`) does not decrypt with
+  the live `tokenKey` (`02-ctf.yaml`) — it was minted by a different install,
+  so it can never authenticate against this platform. Working tokens
+  were minted at registration. rCTF v2 tokens are stateless AES-GCM blobs keyed
+  by `tokenKey`; the value lives in `02-ctf.yaml` and **rotating it invalidates
+  every existing token at once**.
+  - The browser login consumes the **`teamToken`**, via
+    `https://ctf.ingeniums.club/login?token=<teamToken>` (the page shows "This
+    link contains a team token. Click Login to confirm"). Both tokens were
+    exercised live: login lands on `/` as `Hxuu` / `authors`, and both get the
+    `/admin/challenges` link. `POST /api/v2/auth/verify {verifyToken:
+    <teamToken>}` returns a fresh `authToken` if a script needs one.
+  - A script consumes the **`authToken`** as `Authorization: Bearer …`; it is
+    valid for the admin API and, because perms are read per request, keeps
+    working after a later `promote`.
+- Authorization boundary, checked with the `authors` token: `GET
+  /api/v2/admin/challs` → 200 (all 8 challenges, hidden included); `GET
+  /api/v2/admin/users?limit=5&offset=0` → 403 `badPerms` (`usersWrite` absent).
+  `Hxuu` gets 200 on both.
+- **No scoreboard leak**: `Hxuu` and `authors` are teams, but the public
+  leaderboard only ranks users with a recorded solve (`global_rank` stays NULL
+  otherwise), so privileged accounts with no solves do not appear.
+- **Open**: the demoted `Team authors` (an old second admin) is kept rather
+  than deleted — deleting it is a separate call (`DELETE
+  /api/v2/admin/users/:id`, or first demote while privileged).
+
