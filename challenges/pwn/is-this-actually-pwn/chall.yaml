@@ -1,0 +1,34 @@
+name: "Is this actually pwn?"
+author: derrm
+category: pwn
+hidden: true
+description: |
+  I wonder if this is actually a pwn challenge 
+
+  Hints: the flag is in the env
+points: {min: 500, max: 1000}
+tiebreakEligible: true
+tags: [beginner, Buffer Overflow, Path Traversal, HTTP Protocol]
+flagsDynamicBase: ingehack{gets_you_every_time}
+flagsDynamicMode: auto
+files:
+  - name: profile-pics.zip
+    path: files/profile-pics.zip
+instanced: true
+instancer:
+  challengeIntegrationId: is-this-actually-pwn
+  timeoutMilliseconds: 1800000
+  extendable: true
+  expose:
+    - {kind: tcp-ssl, hostPrefix: is-this-actually-pwn, containerName: main, containerPort: 5000, shouldDisplay: true, title: "EsiMedia (HTTPS)"}
+  services:
+    main:
+      environment:
+        RCTF_FLAG: ${RCTF_FLAG}
+      user: "app"
+      mem_limit: 256m
+      read_only: false
+      pids_limit: 128
+      networks: [internal]
+  networks:
+    internal: {internal: true}
