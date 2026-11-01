@@ -1,0 +1,41 @@
+name: rumor-mill-2
+author: boul3h14
+category: linux
+hidden: true
+tiebreakEligible: true
+
+description: |
+  Rumors spread fast, but this one was encoded all the way down.
+  
+  Welcome back to the box. You've got an entry account, some stale notes,
+  and a trail of rotated secrets. Can you follow the trail through the accounts
+  and extract the encrypted prize?
+
+  **Connection:** SSH runs behind a TLS terminator, so the client wraps it
+  (the `tcp-ssl` port is 9450):
+
+  ```sh
+  ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' \
+      y4ss1n3@rumor-mill-2.challs.ingeniums.club -p 9450
+  ```
+
+  Initial credentials: `y4ss1n3` / `Welcome123`.
+
+  **Goal:** Read and decrypt the real flag.
+
+difficulty: hard
+points:
+  min: 100
+  max: 400
+
+tags:
+  - hard
+  - linux
+  - privilege escalation
+  - base64
+  - openssl
+  - encryption
+
+flag: ingehack{rum0rs_4r3_b4s364_4ll_th3_w4y_d0wn}
+instanced: false
+tcpPort: 22
