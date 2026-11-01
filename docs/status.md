@@ -471,3 +471,51 @@ Working state while challenges are being authored and the event is unpublished.
 - **Unfreeze at publish**: delete `/opt/rctf/rctf.d/03-frozen.yaml`, then
   `docker compose up -d --force-recreate rctf`; unhide challenges (manifest or
   admin PUT) once the event is meant to be visible.
+
+## Skin Release `ingehack-skin-v1` live on the Platform — 2026-11-01 (verified)
+
+The Platform stopped running the stock rCTF image: it now runs a Skin Image
+built from the private fork `hxuu/ingehack-skin` (ADR 0006).
+
+- Release: git `b2e59e98` on branch `skin`, tag `ingehack-skin-v1`, based on
+  `cf80517c` — the upstream commit the Platform was already running, so the
+  release carries no upstream changes of its own. Image
+  `ghcr.io/otter-sec/rctf:ingehack-skin-v1` (the tag inherits upstream's repo
+  name from `compose.yml`; nothing is pulled from that registry). Local build id
+  `sha256:091a44c2…`; the VM reports `sha256:ad054d17…` because the two daemons
+  use different image stores — a per-file SHA-256 manifest of `/app` in both
+  shows only `/etc/hostname`, `/etc/hosts`, `/etc/resolv.conf` differ, i.e.
+  per-container runtime files, so the loaded image is the built one.
+- Shipped registry-less: `docker save | ssh minictf-platform docker load`,
+  tarball kept at `/opt/rctf/images/ingehack-skin-v1.tar.gz` (97 MB).
+- Deployed by `RCTF_GIT_REF=ingehack-skin-v1` in `/opt/rctf/.env` (previous file
+  kept as `.env.pre-skin-backup`) + `docker compose up -d --force-recreate rctf`.
+  **Rollback**: `RCTF_GIT_REF=main` + force-recreate; the upstream image is still
+  on the VM.
+- **Skin-only, checked**: an image-vs-image file manifest (before `:main` vs
+  after the release) differs in 427 files under `/app/static/**` and in **no**
+  `/app` file outside it; the remaining 124 differences are Alpine base-image
+  drift (`python3.12.14→3.12.16`, brotli, expat) and per-container `/etc` files.
+  Anonymous API responses are byte-identical across the swap (`/api/v2/challs`,
+  `/api/v1/challs`, client config, `/api/v1/leaderboard` 404, auth 401s,
+  `robots.txt`); the root document differs only in its pre-paint script
+  (`theme.js` → `ingehack/skin.js`).
+- **Favicon** (`faviconUrl` left at the stock redpwn default in config): the skin
+  now treats that default as unset, so the skin icons win; `/favicon.ico` serves
+  the skin art (`sha256 e2d34693…`) on the live domain.
+- Verified live on `https://ctf.ingeniums.club` in light and dark: skin namespace
+  stamped, `data-ih`; rope flanks beside the lockup (brown `#8a5a2b` light /
+  `#c79a63` dark, right-hand one mirrored); theme toggle flips and persists
+  `ih-theme-mode` across reloads; no new console or CSP errors (the only one is
+  the pre-existing Cloudflare Analytics beacon). Screenshots:
+  `~/work/ingehack-skin/notes/live-shots/`; the manifests, before/after HTTP
+  bodies and check scripts: `~/work/ingehack-skin/notes/skin-verify/`.
+- Known gap: the timer block (and its clock) renders only where config content
+  carries a `<timer>` tag. The live `homeContent` has none, and the test event
+  window (2026-10-22 22:47 → 10-24 22:47) has ended, so the home page shows
+  "CTF ended" and no clock. Adding `<timer />` to `homeContent` (and a real
+  window) is an event-content decision, not a skin one.
+- Next: extract the palette/art/wordmark behind one theme surface so a second
+  event reuses the Skin (`skin-v2`); the skin repo's README records the
+  procedure.
+

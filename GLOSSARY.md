@@ -37,6 +37,22 @@ An auto-assigned public gateway port forwarding to an internal VM port
 hard-code them in player-facing material without re-checking.
 _Avoid_: Port forward, NAT rule
 
+### Platform presentation
+
+**Skin**:
+The Ingehack visual layer over the Platform: palette, type, lockup, and art. It
+changes how the Platform looks and nothing about how it behaves.
+_Avoid_: Theme, template, branding
+
+**Skin Image**:
+A Platform image that carries a Skin. Built from the Skin's fork of rCTF, never
+from an upstream release.
+_Avoid_: Custom image, themed build
+
+**Skin Release**:
+A tagged Skin revision deployed to the Platform as a Skin Image.
+_Avoid_: Skin version, deploy, rollout
+
 ### Challenges and instances
 
 **Challenge**:
