@@ -295,6 +295,22 @@ Operational notes / follow-ups:
   per-team leet flag (`ingehack{7H15_B453_h45_pl3N7y_10W3Rca5e_l3t73Rs_f0r_133t}`);
   wrong submit → `badFlag`, correct submit → `goodFlag` + solve recorded.
 
+## Static raw-TCP exposure (2026-10-30, verified)
+
+- `ops/deploy-static.sh` gained a `tcpPort:` branch: a static challenge whose
+  manifest sets `tcpPort: <container port>` gets a Traefik **TCP** router on
+  the `tcp` entrypoint (1337 → public 9450), `HostSNI(<name>.challs…)`, TLS
+  terminated by the wildcard cert. No new mapped port, no VM change; static
+  HTTP challenges take the unchanged `web`/`websecure` path.
+- `sudoers` (`challenges/linux/sudoers`, author boul3h14) is the first user:
+  sshd on container port 22, reached at `sudoers.challs.ingeniums.club:9450`
+  with `ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect
+  %h:%p' ctf@sudoers.challs.ingeniums.club -p 9450` (password `ctf`).
+- Verified live on the CI-deployed container: SSH banner
+  `SSH-2.0-OpenSSH_8.9p1`, password auth, and the solver's payload
+  (`dlopen` plugin calling `seteuid(0)`) returns
+  `ingehack{seteuid_leaves_suid_restorable}`.
+
 ## Pre-event cleanup round (2026-10-23, done)
 
 - **Users swept: 4,068 → 4.** Deleted all `loadtest-*` (4,048 bulk copies from

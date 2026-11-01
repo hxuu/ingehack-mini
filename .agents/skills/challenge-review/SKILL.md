@@ -35,7 +35,11 @@ container/URL check below is out of scope.
      in a static challenge's description the URL line maps scheme to port
      exactly (`http://` on the HTTP port, `https://` on the HTTPS port —
      swapped, Traefik 404s; current ports via `docs/status.md`) with a host
-     matching the directory name (what CI labels the Traefik host).
+     matching the directory name (what CI labels the Traefik host). A static
+     challenge with `tcpPort:` serves raw TCP instead: there is no URL line,
+     and the description must carry the client wrapper plus the mapped
+     `tcp-ssl` port (for SSH: `ProxyCommand='openssl s_client -quiet
+     -servername %h -connect %h:%p'`, `-p <mapped tcp-ssl port>`).
    - **Description-only** (`container: false`): there is no `Dockerfile`,
      no expose block, and no URL line. Confirm the description actually
      contains what a player needs (the external source(s), the question, and
