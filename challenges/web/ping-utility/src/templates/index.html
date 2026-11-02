@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NetCheck &mdash; Ping Utility</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <h1>NetCheck</h1>
+    <p>Internal network diagnostics for the IT team.</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Ping a host</h2>
+      <p class="lede">
+        Type a hostname or IP address. NetCheck runs <code>ping -c 2</code>
+        and shows the raw output.
+      </p>
+
+      <form class="ping-form" method="post" action="{{ url_for('ping') }}">
+        <label for="host">Hostname or IP</label>
+        <div class="row">
+          <input
+            id="host"
+            type="text"
+            name="host"
+            value="{{ host or '' }}"
+            placeholder="e.g. 127.0.0.1 or example.com"
+            aria-label="Hostname or IP address"
+            autofocus
+            autocomplete="off"
+          >
+          <button type="submit">Ping</button>
+        </div>
+      </form>
+    </section>
+
+    {% if output is defined and output is not none %}
+    <section class="card output-card">
+      <h2>Output</h2>
+      {% if host %}
+      <p class="command"><span>$</span> ping -c 2 {{ host }}</p>
+      {% endif %}
+      <pre class="output">{{ output }}</pre>
+    </section>
+    {% endif %}
+  </main>
+
+  <footer>
+    <p>NetCheck v1.2 &mdash; a tiny tool for a big network.</p>
+  </footer>
+</body>
+</html>

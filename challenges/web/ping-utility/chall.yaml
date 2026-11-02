@@ -1,0 +1,27 @@
+name: ping-utility
+author: hxuu
+category: web
+hidden: true
+description: |
+  NetCheck is a small internal tool for the IT team: type a hostname or IP
+  address, and the server pings it and shows the raw output.
+
+  The tool feels helpful and harmless. But somewhere behind that little input
+  box, a shell is listening. Can you make NetCheck do more than ping?
+
+  This is a **shared** server: every team plays on the same copy.
+
+  Reachable at **http://ping-utility.challs.ingeniums.club:9487/** or
+  **https://ping-utility.challs.ingeniums.club:9488/** (scheme follows the
+  port: 9487 is plain HTTP, 9488 is TLS).
+
+  ### Hints — read only as many as you need
+
+  1. What happens if you add more than a hostname?
+  2. Shells let you run several commands on one line.
+  3. Where do CTFs usually keep flags?
+points: {min: 120, max: 200}
+tiebreakEligible: false
+tags: [beginner, Command Injection, Operating Systems, Input Validation]
+flag: ingehack{s3m1c0l0ns_ch41n_c0mm4nds}
+instanced: false

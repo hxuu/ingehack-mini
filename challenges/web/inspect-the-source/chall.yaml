@@ -1,0 +1,27 @@
+name: inspect-the-source
+author: hxuu
+category: web
+hidden: true
+description: |
+  Vault Co. has just launched a brand-new login portal and the admin is
+  convinced it is locked down tight. Before going live they removed the debug
+  pages and promised that no secrets were left behind.
+
+  Something tells you they missed a few things. Can you find the flag?
+
+  This is a **shared** server: every team plays on the same copy.
+
+  Reachable at **http://inspect-the-source.challs.ingeniums.club:9487/** or
+  **https://inspect-the-source.challs.ingeniums.club:9488/** (scheme follows
+  the port: 9487 is plain HTTP, 9488 is TLS).
+
+  ### Hints — read only as many as you need
+
+  1. Right-click is not the only way to look at a page.
+  2. Comments and scripts are part of the page too.
+  3. Base64 is encoding, not encryption.
+points: {min: 30, max: 50}
+tiebreakEligible: false
+tags: [beginner, Browser Trust Boundaries, HTTP Protocol, Data Encoding]
+flag: ingehack{view_source_1s_y0ur_fr13nd}
+instanced: false

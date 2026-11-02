@@ -1,0 +1,28 @@
+name: flash-coupon
+author: hxuu
+category: web
+hidden: true
+description: |
+  FlashMart gives every new shopper 10 credits. The promo code FLASH50 adds 50
+  more, but it is strictly single-use. The Flag Pack costs 200 credits and is
+  the only item that reveals the flag.
+
+  One honest redemption is not enough to afford it. Can you make FlashMart
+  honour the same coupon more than once?
+
+  This is a **shared** server: every team plays on the same copy.
+
+  Reachable at **http://flash-coupon.challs.ingeniums.club:9487/** or
+  **https://flash-coupon.challs.ingeniums.club:9488/** (scheme follows the
+  port: 9487 is plain HTTP, 9488 is TLS).
+
+  ### Hints — read only as many as you need
+
+  1. Redeeming once is not enough.
+  2. What happens if two requests arrive at the same moment?
+  3. Burp Repeater can send a group of requests in parallel.
+points: {min: 240, max: 400}
+tiebreakEligible: false
+tags: [beginner, Race Conditions, Concurrency, Databases]
+flag: ingehack{ch3ck_th3n_us3_th3n_l0s3}
+instanced: false

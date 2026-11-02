@@ -1,0 +1,162 @@
+:root {
+  --ink: #2b2118;
+  --paper: #f7f1e3;
+  --card: #fffaf0;
+  --accent: #8a4b2a;
+  --accent-dark: #6d3a20;
+  --line: #e0d3bd;
+  --error-bg: #fdecec;
+  --error-ink: #8b1e1e;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.site-header {
+  background: var(--accent);
+  color: #fff8ea;
+  padding: 1.5rem 1rem 1.25rem;
+  text-align: center;
+}
+
+.site-header h1 {
+  margin: 0;
+  font-size: 2.1rem;
+  letter-spacing: 0.04em;
+}
+
+.site-header p {
+  margin: 0.35rem 0 0;
+  font-style: italic;
+  opacity: 0.9;
+}
+
+main {
+  flex: 1;
+  width: min(860px, 100%);
+  margin: 0 auto;
+  padding: 1.75rem 1rem 2.5rem;
+}
+
+.search {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.search input {
+  flex: 1;
+  padding: 0.7rem 0.85rem;
+  font-size: 1rem;
+  font-family: inherit;
+  color: var(--ink);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.search input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.search button {
+  padding: 0.7rem 1.3rem;
+  font-size: 1rem;
+  font-family: inherit;
+  color: #fff8ea;
+  background: var(--accent);
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.search button:hover {
+  background: var(--accent-dark);
+}
+
+.error {
+  margin: 0 0 1.25rem;
+  padding: 0.8rem 1rem;
+  background: var(--error-bg);
+  color: var(--error-ink);
+  border: 1px solid #f3c7c7;
+  border-radius: 6px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
+.result-count {
+  margin: 0 0 0.6rem;
+  font-size: 0.9rem;
+  color: #6b5a48;
+}
+
+table.books {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+table.books th,
+table.books td {
+  padding: 0.65rem 0.85rem;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+
+table.books th {
+  background: #efe4d0;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+table.books tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+table.books tbody tr:hover {
+  background: #fdf6e7;
+}
+
+.price {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.empty {
+  padding: 1.5rem;
+  text-align: center;
+  background: var(--card);
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  color: #6b5a48;
+}
+
+footer {
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #7a6a58;
+  border-top: 1px solid var(--line);
+}
+
+footer p {
+  margin: 0;
+}

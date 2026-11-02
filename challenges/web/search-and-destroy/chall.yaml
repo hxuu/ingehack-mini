@@ -1,0 +1,27 @@
+name: search-and-destroy
+author: hxuu
+category: web
+hidden: true
+description: |
+  BookNook is a small online shop for used books. Its search bar looks up
+  titles, and the staff keep a few unreleased books off the public shelves.
+
+  The developers say the search is simple and safe. One of those hidden books
+  would disagree. Can you make the page show what it was told to hide?
+
+  This is a **shared** server: every team plays on the same copy.
+
+  Reachable at **http://search-and-destroy.challs.ingeniums.club:9487/** or
+  **https://search-and-destroy.challs.ingeniums.club:9488/** (scheme follows
+  the port: 9487 is plain HTTP, 9488 is TLS).
+
+  ### Hints — read only as many as you need
+
+  1. What happens if you search for just a quote?
+  2. The page hides some rows. Can you change the WHERE logic?
+  3. SQL comments cut off the rest of a query.
+points: {min: 60, max: 100}
+tiebreakEligible: false
+tags: [beginner, SQL Injection, Databases, Input Validation]
+flag: ingehack{qu0tes_br34k_qu3r13s}
+instanced: false
