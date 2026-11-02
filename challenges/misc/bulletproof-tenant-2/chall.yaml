@@ -1,6 +1,6 @@
 name: bulletproof-tenant-2
 author: s4l1
-category: osint
+category: misc
 hidden: true
 tiebreakEligible: true
 
@@ -25,7 +25,6 @@ points:
   max: 500
 
 tags:
-  - osint
   - log-analysis
   - forensics
   - python
