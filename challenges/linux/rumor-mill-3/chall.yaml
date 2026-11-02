@@ -1,0 +1,49 @@
+name: rumor-mill-3
+author: boul3h14
+category: linux
+hidden: true
+tiebreakEligible: false
+
+description: |
+  The rumor stopped being spoken and started being hidden. Three accounts, one
+  encrypted note, and a maintenance job that trusts whatever it finds in its
+  working directory. Follow it all the way to root.
+
+  Find the flag. Trust nothing until you've verified it.
+
+  **Connection:** SSH runs behind the TLS terminator, so wrap the client (the
+  mapped `tcp-ssl` port is 9464):
+
+  ```sh
+  ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' \
+      y4ss1n3@rumor-mill-3.challs.ingeniums.club -p 9464
+  ```
+
+  Password: `Welcome123`. A TTY is required — `su` prompts on the terminal, so
+  a raw `nc` session cannot complete the chain.
+
+  **Goal:** read the real flag and submit it.
+
+  Flag format: `ingehack{...}`
+
+difficulty: hard
+points:
+  min: 400
+  max: 800
+
+tags:
+  - hard
+  - linux
+  - privilege escalation
+  - su
+  - pam
+  - git
+  - gpg
+  - sudo
+  - tar
+
+flag: ingehack{d34d_dr0ps_sp34k_l0ud3r_th4n_w0rds}
+instanced: false
+# Raw-TCP route: ops/deploy-static.sh puts a Traefik TCP router on the tcp
+# entrypoint (published as the mapped tcp-ssl port) for this container port.
+tcpPort: 2222
