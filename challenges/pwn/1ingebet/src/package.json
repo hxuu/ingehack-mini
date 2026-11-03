@@ -1,0 +1,14 @@
+{
+  "name": "1ingebet",
+  "version": "1.0.0",
+  "private": true,
+  "description": "1ingeBet — a provably fair blackjack CTF challenge (zero dependencies)",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/acceptance.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
