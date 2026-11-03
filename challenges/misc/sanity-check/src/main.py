@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Ingehack Mini — sanity-check (static shared challenge).
+"""Ingehack Mini — sanity-check (the welcome challenge, shared static).
 
-Serves a beginner instructions page and hands over the flag on a plain path.
+Serves a welcome page and hands over the flag on a plain path. Worth 0 points;
+the point is to teach the request/response loop before the event gets hard.
 The flag is injected once at deploy time via the FLAG env var.
 """
 import os
@@ -10,23 +11,26 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 PORT = 8080
 FLAG = os.environ.get("FLAG", "ingehack{undeployed}")
 PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8">
-<title>hello</title>
+<title>welcome</title>
 <style>body{font-family:ui-monospace,monospace;max-width:42em;margin:3em auto;padding:0 1em}
 code{background:#eee;padding:.15em .4em}</style></head>
 <body>
-<h1>sanity-check — your first flag</h1>
-<p>This is a plain HTTP endpoint like any website you visit. Your browser sent a
-<code>GET</code> request and this server answered with this page.</p>
+<h1>Welcome to Ingehack Mini</h1>
+<p>This is a real website answering a real request: your browser sent a
+<code>GET</code> request for <code>/</code> and this server answered with this
+page. That exchange, request and response, is the whole game.</p>
 <ol>
-<li>Open your browser's developer tools (F12), <strong>Network</strong> tab,
-and reload — see the request your browser made and this response.</li>
-<li>To <em>read</em> a different part of the response, try a different path —
-append <code>/flag</code> to the URL in the address bar and hit Enter.</li>
+<li>Open your browser's developer tools (F12), switch to the
+<strong>Network</strong> tab, and reload. You will see the request above and
+this page coming back.</li>
+<li>The flag is served on a different path of this same host. Try adding
+<code>/flag</code> to the URL in the address bar and hit Enter.</li>
 <li>Copy what you find there, paste it into the flag box for this challenge on
 the platform, and submit.</li>
 </ol>
-<p>The flag stays intact for every team here: this challenge is shared, not
-instanced. Read more in the platform's challenge description.</p>
+<p>This challenge is shared and worth 0 points — nobody's score depends on
+you finishing it in a hurry. Ask a mentor if anything is unclear, and enjoy
+the event.</p>
 </body></html>"""
 
 

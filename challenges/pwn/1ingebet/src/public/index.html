@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1ingeBet — provably fair blackjack</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main class="table">
+  <h1>1ingeBet</h1>
+  <p class="tagline">The provably fair blackjack table. Win 10 rounds in a row to collect the prize.</p>
+
+  <div id="seedBox" class="seed-box" hidden></div>
+
+  <section class="hand">
+    <h2>Dealer <span id="dealerTotal" class="total"></span></h2>
+    <div id="dealerCards" class="cards"></div>
+  </section>
+
+  <section class="hand">
+    <h2>You <span id="playerTotal" class="total"></span></h2>
+    <div id="playerCards" class="cards"></div>
+  </section>
+
+  <div class="hud">
+    <div id="streak" class="streak">Streak: 0 / 10</div>
+    <div id="round" class="round">Round: –</div>
+    <div id="message" class="message"></div>
+  </div>
+
+  <div class="buttons">
+    <button id="btnDeal" onclick="act('deal')">Deal</button>
+    <button id="btnHit" onclick="act('hit')">Hit</button>
+    <button id="btnStand" onclick="act('stand')">Stand</button>
+    <button id="btnSitout" onclick="act('sitout')">Sit out</button>
+  </div>
+
+  <div id="prizeArea" hidden>
+    <button id="btnPrize" onclick="showPrize()">Collect prize 🏆</button>
+    <div id="flagOut" class="flag" hidden></div>
+  </div>
+
+  <footer>
+    <a href="/fairness.html">read our certified source</a>:
+    <a href="/rng.js">rng.js</a> ·
+    <a href="/deck.js">deck.js</a> ·
+    <a href="/engine.js">engine.js</a>
+  </footer>
+</main>
+<script src="/app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+{% block title %}Your Profile{% endblock %}
+
+{% block content %}
+<!-- Add Cropper.js CSS from CDN to the head (via a block) -->
+{% block head_extra %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
+<style>
+    /* Custom styles for the modal and cropper */
+    #cropModal {
+        display: none; /* Hidden by default */
+        position: fixed;
+        z-index: 2000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.6);
+        justify-content: center;
+        align-items: center;
+    }
+    .modal-content {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 600px;
+        border-radius: 10px;
+    }
+    #imageToCrop {
+        display: block;
+        max-width: 100%;
+    }
+    .modal-actions {
+        margin-top: 15px;
+        text-align: right;
+    }
+</style>
+{% endblock %}
+
+<div class="container">
+    <div class="profile-grid">
+        <!-- Left Column: User Info Card (Unchanged) -->
+        <div class="profile-card">
+            <img src="{{ url_for('static', filename='profile_pics/' + user.profile_pic) }}" alt="Profile Picture" class="profile-main-pic">
+            <h2>{{ user.full_name }}</h2>
+            <p class="username">@{{ user.username }}</p>
+            <p class="bio">{{ user.bio }}</p>
+            <a href="{{ url_for('serve_file', filename='profile_pics/' + user.profile_pic) }}" target="_blank" class="btn-view-image">View Full Size</a>
+            <p class="join-date">Joined {{ user.join_date.strftime('%B %Y') }}</p>
+        </div>
+
+        <!-- Right Column: Edit Forms (Upload form is now just a button) -->
+        <div class="profile-edit-card">
+            <h3>Edit Profile Information</h3>
+            <form method="POST">
+                <div class="form-group">
+                    <label for="full_name">Full Name</label>
+                    <input type="text" name="full_name" id="full_name" value="{{ user.full_name }}">
+                </div>
+                <div class="form-group">
+                    <label for="bio">Bio</label>
+                    <textarea name="bio" id="bio" placeholder="Tell us about yourself...">{{ user.bio }}</textarea>
+                </div>
+                <button type="submit" class="btn-form">Save Changes</button>
+            </form>
+
+            <h3 style="margin-top: 2rem;">Update Profile Picture</h3>
+            <!-- This input is now hidden, we'll trigger it with the button -->
+            <input type="file" id="profilePicInput" accept="image/png, image/jpeg, image/gif" style="display: none;">
+            <button type="button" class="btn-form" onclick="document.getElementById('profilePicInput').click();">
+                Choose New Picture
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- The Modal for Cropping -->
+<div id="cropModal">
+    <div class="modal-content">
+        <h2>Crop Your Image</h2>
+        <div>
+            <img id="imageToCrop" src="" alt="Image to crop">
+        </div>
+        <div class="modal-actions">
+            <button id="cropButton" class="btn-form">Crop & Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Cropper.js and our custom script -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const fileInput = document.getElementById('profilePicInput');
+        const modal = document.getElementById('cropModal');
+        const image = document.getElementById('imageToCrop');
+        const cropButton = document.getElementById('cropButton');
+        let cropper;
+        let tempFilename; // To store the temporary filename from the backend
+
+        // 1. When a user selects a file
+        fileInput.addEventListener('change', (e) => {
+            const files = e.target.files;
+            if (files && files.length > 0) {
+                const formData = new FormData();
+                formData.append('temp_image', files[0]);
+
+                // 2. Send the file to the backend to be saved temporarily
+                fetch('/upload_temp_image', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        tempFilename = data.filename;
+                        // Use the /serve_file route to display the temporary image
+                        image.src = `/serve_file?filename=${data.filename}`;
+                        modal.style.display = 'flex';
+                        
+                        // 3. Initialize Cropper.js
+                        if (cropper) {
+                            cropper.destroy();
+                        }
+                        cropper = new Cropper(image, {
+                            aspectRatio: 1 / 1, // Square crop
+                            viewMode: 1,
+                        });
+                    } else {
+                        alert('Error uploading file: ' + data.error);
+                    }
+                })
+                .catch(error => console.error('Upload Error:', error));
+            }
+        });
+
+        // 4. When the "Crop & Save" button is clicked
+        cropButton.addEventListener('click', () => {
+            if (!cropper) return;
+
+            const cropData = cropper.getData(true); // Get rounded crop data
+            
+            // 5. Send the crop data and temporary filename to the backend
+            fetch('/crop_and_save', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    filename: tempFilename,
+                    x: cropData.x.toString(),
+                    y: cropData.y.toString(),
+                    width: cropData.width.toString(),
+                    height: cropData.height.toString()
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 6. Success! Reload the page to see the new profile picture
+                    window.location.reload();
+                } else {
+                    alert('Error ' + data.error);
+                    modal.style.display = 'none';
+                }
+            })
+            .catch(error => console.error('Crop Error:', error));
+        });
+
+        // Close modal if user clicks outside the content
+        window.onclick = (event) => {
+            if (event.target == modal) {
+                modal.style.display = "none";
+                if(cropper) cropper.destroy();
+                fileInput.value = ''; // Reset file input
+            }
+        };
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Feed{% endblock %}
+
+{% block content %}
+<div class="feed-container">
+    <!-- Posts with profile pictures still use the direct static route for simplicity -->
+    <div class="post-card">
+        <div class="post-header">
+            <img src="{{ url_for('static', filename='profile_pics/' + current_user.profile_pic) }}" alt="User Avatar" class="post-avatar">
+            <!-- ... -->
+        </div>
+    </div>
+
+    <!-- Post with a post_image -->
+    <div class="post-card">
+        <div class="post-header">
+            <img src="{{ url_for('static', filename='profile_pics/user1.jpg') }}" alt="User Avatar" class="post-avatar">
+            <div class="post-user-info">
+                <h4>Jane Doe</h4>
+                <p>@janetravels</p>
+            </div>
+        </div>
+        <div class="post-content">
+            <p>What a beautiful view from the hike today! Absolutely breathtaking.</p>
+            <!-- === THIS LINE IS UPDATED TO USE THE NEW ROUTE === -->
+            <img src="{{ url_for('serve_file', filename='post_images/post1.jpg') }}" alt="Mountain landscape" class="post-image">
+        </div>
+        <div class="post-actions">
+             <!-- ... -->
+        </div>
+    </div>
+
+    <!-- Another post with a post_image -->
+    <div class="post-card">
+        <div class="post-header">
+            <img src="{{ url_for('static', filename='profile_pics/user3.jpg') }}" alt="User Avatar" class="post-avatar">
+            <div class="post-user-info">
+                 <h4>Emily Carter</h4>
+                <p>@emilybakes</p>
+            </div>
+        </div>
+        <div class="post-content">
+            <p>The perfect start to a morning.</p>
+            <!-- === THIS LINE IS ALSO UPDATED === -->
+            <img src="{{ url_for('serve_file', filename='post_images/post2.jpg') }}" alt="Coffee cup on a desk" class="post-image">
+        </div>
+        <div class="post-actions">
+            <!-- ... -->
+        </div>
+    </div>
+</div>
+{% endblock %}

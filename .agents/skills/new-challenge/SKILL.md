@@ -72,10 +72,14 @@ Create `challenges/<category>/<name>/` with:
   Description-only challenges add `container: false` (default is `true` for
   `instanced: false`); `instanced: true` always means a container.
   Copy the shape from the exemplars instead of writing from memory:
-  - `challenges/misc/sanity-check/` — static, plain page
-  - `challenges/misc/hello-shared/` — static, shared-instance flavor
-  - `challenges/misc/hello-instancer/` — instanced, all three expose kinds
-  - `challenges/misc/sanity-check-2/` and `-3/` — the two handout forms
+  - `challenges/misc/sanity-check/` — static container, plain page, 0 points
+    (the event's welcome challenge)
+  - `challenges/linux/sudoers/` — static container with a raw-TCP
+    (`tcpPort:`) route and the TLS-wrapped client instructions
+  - `challenges/misc/bulletproof-tenant-2/` — description-only, local
+    (`path:`) handouts
+  - `challenges/pwn/is-this-actually-pwn/` — instanced, `tcp-ssl` expose,
+    per-team flag, committed handout
   CI injects the `image:` at register time.
 - Gotchas not visible in the schema doc: the instancer's `services` block
   bakes in `mem_limit: "6m"`, `read_only: true`, `cap_drop: ['ALL']`
@@ -87,6 +91,13 @@ Create `challenges/<category>/<name>/` with:
   line baked into their `description`: scheme follows the port — the mapped
   HTTP port takes `http://`, the mapped HTTPS port takes `https://`; swapped,
   Traefik answers 404. Read the current mapped ports from `docs/status.md`.
+  A static service that is not HTTP (e.g. SSH) opts into a raw-TCP route with
+  `tcpPort: <container port>`: `ops/deploy-static.sh` then registers a Traefik
+  TCP router on the `tcp` entrypoint (published as the mapped `tcp-ssl` port,
+  `HostSNI(<name>.challs.ingeniums.club)`, TLS terminated by the wildcard
+  cert), and the description must tell players how to wrap the client — for
+  SSH, `ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect
+  %h:%p' ctf@<name>.challs.ingeniums.club -p <mapped tcp-ssl port>`.
   Description-only challenges have no URL line and no Traefik host at all.
 - `src/` — challenge code. Where the flag placeholder is used, it is
   literally the string `${RCTF_FLAG}`.

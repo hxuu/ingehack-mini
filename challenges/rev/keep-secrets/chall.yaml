@@ -1,0 +1,31 @@
+name: keep-secrets
+author: RedhaIWNL
+category: rev
+hidden: true
+
+description: |
+  Lelouch keeps a private ledger for the Black Knights. Five entries, five
+  secrets, one command. One entry is the flag.
+
+  The app seals every entry with a cipher and never shows the plaintext
+  again. There is no reveal button, no server, and no plaintext in the APK.
+  Reverse the app, find how the key is derived, and decrypt the five entries.
+
+  The handout is a signed Android APK. Install it on a device or emulator if
+  you want to see it run, or open it with `jadx` / `apktool`. The app is
+  offline and asks for no runtime permissions.
+
+  Flag format: `ingehack{...}`
+
+points: {min: 300, max: 500}
+tiebreakEligible: true
+tags: [medium, Android, APK, Kotlin, AES-GCM, reverse engineering]
+
+flag: ingehack{zero_keeps_his_secrets}
+
+files:
+  - name: keep-secrets.apk
+    path: files/keep-secrets.apk
+
+instanced: false
+container: false

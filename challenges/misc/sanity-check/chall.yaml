@@ -3,29 +3,33 @@ author: hxuu
 category: misc
 hidden: true
 description: |
-  Your first flag — a sanity check that the challenge plumbing works: this
-  page is a plain HTTP endpoint on the shared challenge server, and your
-  browser reaches it directly.
+  **Welcome to Ingehack Mini.**
 
-  Reachable at **http://sanity-check.challs.ingeniums.club:9487/** or
-  **https://sanity-check.challs.ingeniums.club:9488/** (the https:// before
-  :9487 is exactly the mistake that makes Traefik 404 — port decides the
-  scheme here, not the URL bar's default).
+  There is nothing to prove here — this one exists so you can get comfortable
+  with the platform. It is worth **0 points**, so it never moves the
+  scoreboard. Take your time.
 
-  1. Open your browser's developer tools (F12) → **Network** tab and reload:
-     that row in front of you is the request your browser made and this page
-     coming back.
-  2. The flag is served on a different path of the same host.
-  3. Submit it on the platform.
+  What you need:
 
-  This one is shared — every team sees the same flag. When you're done, you'll
-  have used: HTTP requests and paths, and reading a response.
-points: {min: 100, max: 250}
+  1. Most challenges give you a description, a flag box, and sometimes files.
+     This one has no files: the challenge *is* a website.
+  2. Open **http://sanity-check.challs.ingeniums.club:9487/** (plain HTTP) or
+     **https://sanity-check.challs.ingeniums.club:9488/** (TLS). The port
+     decides the scheme — `https://` on :9487 is the mistake that makes
+     Traefik answer 404, not your browser being broken.
+  3. Read the page it serves, follow the one instruction on it, and paste the
+     flag into the box below.
+
+  While you are there, open your browser's developer tools (F12) and switch to
+  the **Network** tab, then reload. Every request your browser made and every
+  answer it got back is in that list. A good part of this event is just
+  reading that list.
+
+  Stuck? Ask a mentor — that is what they are for. Good luck, and have fun.
+
+  This one is shared: every team sees the same flag.
+points: {min: 0, max: 0}
 tiebreakEligible: false
-tags: [beginner, HTTP Protocol]
+tags: [beginner, welcome, HTTP Protocol]
 flag: ingehack{http_is_just_requests}
 instanced: false
-
-
-
-

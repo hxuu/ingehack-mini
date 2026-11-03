@@ -295,6 +295,22 @@ Operational notes / follow-ups:
   per-team leet flag (`ingehack{7H15_B453_h45_pl3N7y_10W3Rca5e_l3t73Rs_f0r_133t}`);
   wrong submit → `badFlag`, correct submit → `goodFlag` + solve recorded.
 
+## Static raw-TCP exposure (2026-10-30, verified)
+
+- `ops/deploy-static.sh` gained a `tcpPort:` branch: a static challenge whose
+  manifest sets `tcpPort: <container port>` gets a Traefik **TCP** router on
+  the `tcp` entrypoint (1337 → public 9450), `HostSNI(<name>.challs…)`, TLS
+  terminated by the wildcard cert. No new mapped port, no VM change; static
+  HTTP challenges take the unchanged `web`/`websecure` path.
+- `sudoers` (`challenges/linux/sudoers`, author boul3h14) is the first user:
+  sshd on container port 22, reached at `sudoers.challs.ingeniums.club:9450`
+  with `ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect
+  %h:%p' ctf@sudoers.challs.ingeniums.club -p 9450` (password `ctf`).
+- Verified live on the CI-deployed container: SSH banner
+  `SSH-2.0-OpenSSH_8.9p1`, password auth, and the solver's payload
+  (`dlopen` plugin calling `seteuid(0)`) returns
+  `ingehack{seteuid_leaves_suid_restorable}`.
+
 ## Pre-event cleanup round (2026-10-23, done)
 
 - **Users swept: 4,068 → 4.** Deleted all `loadtest-*` (4,048 bulk copies from
@@ -471,3 +487,190 @@ Working state while challenges are being authored and the event is unpublished.
 - **Unfreeze at publish**: delete `/opt/rctf/rctf.d/03-frozen.yaml`, then
   `docker compose up -d --force-recreate rctf`; unhide challenges (manifest or
   admin PUT) once the event is meant to be visible.
+
+## Skin Release `ingehack-skin-v1` live on the Platform — 2026-11-01 (verified)
+
+The Platform stopped running the stock rCTF image: it now runs a Skin Image
+built from the private fork `hxuu/ingehack-skin` (ADR 0006).
+
+- Release: git `b2e59e98` on branch `skin`, tag `ingehack-skin-v1`, based on
+  `cf80517c` — the upstream commit the Platform was already running, so the
+  release carries no upstream changes of its own. Image
+  `ghcr.io/otter-sec/rctf:ingehack-skin-v1` (the tag inherits upstream's repo
+  name from `compose.yml`; nothing is pulled from that registry). Local build id
+  `sha256:091a44c2…`; the VM reports `sha256:ad054d17…` because the two daemons
+  use different image stores — a per-file SHA-256 manifest of `/app` in both
+  shows only `/etc/hostname`, `/etc/hosts`, `/etc/resolv.conf` differ, i.e.
+  per-container runtime files, so the loaded image is the built one.
+- Shipped registry-less: `docker save | ssh minictf-platform docker load`,
+  tarball kept at `/opt/rctf/images/ingehack-skin-v1.tar.gz` (97 MB).
+- Deployed by `RCTF_GIT_REF=ingehack-skin-v1` in `/opt/rctf/.env` (previous file
+  kept as `.env.pre-skin-backup`) + `docker compose up -d --force-recreate rctf`.
+  **Rollback**: `RCTF_GIT_REF=main` + force-recreate; the upstream image is still
+  on the VM.
+- **Skin-only, checked**: an image-vs-image file manifest (before `:main` vs
+  after the release) differs in 427 files under `/app/static/**` and in **no**
+  `/app` file outside it; the remaining 124 differences are Alpine base-image
+  drift (`python3.12.14→3.12.16`, brotli, expat) and per-container `/etc` files.
+  Anonymous API responses are byte-identical across the swap (`/api/v2/challs`,
+  `/api/v1/challs`, client config, `/api/v1/leaderboard` 404, auth 401s,
+  `robots.txt`); the root document differs only in its pre-paint script
+  (`theme.js` → `ingehack/skin.js`).
+- **Favicon** (`faviconUrl` left at the stock redpwn default in config): the skin
+  now treats that default as unset, so the skin icons win; `/favicon.ico` serves
+  the skin art (`sha256 e2d34693…`) on the live domain.
+- Verified live on `https://ctf.ingeniums.club` in light and dark: skin namespace
+  stamped, `data-ih`; rope flanks beside the lockup (brown `#8a5a2b` light /
+  `#c79a63` dark, right-hand one mirrored); theme toggle flips and persists
+  `ih-theme-mode` across reloads; no new console or CSP errors (the only one is
+  the pre-existing Cloudflare Analytics beacon). Screenshots:
+  `~/work/ingehack-skin/notes/live-shots/`; the manifests, before/after HTTP
+  bodies and check scripts: `~/work/ingehack-skin/notes/skin-verify/`.
+- Known gap: the timer block (and its clock) renders only where config content
+  carries a `<timer>` tag. The live `homeContent` has none, and the test event
+  window (2026-10-22 22:47 → 10-24 22:47) has ended, so the home page shows
+  "CTF ended" and no clock. Adding `<timer />` to `homeContent` (and a real
+  window) is an event-content decision, not a skin one.
+- Next: extract the palette/art/wordmark behind one theme surface so a second
+  event reuses the Skin; the skin repo's README records the procedure.
+
+## Skin Release `ingehack-skin-v2` — edge-to-edge plate, live on the Platform (2026-11-01, verified)
+
+The v1 skin left a bare band down the right edge of every page. Cause: rCTF's
+own `layout.css` sets `scrollbar-gutter: stable`, reserving a ~15 px gutter even
+on pages that do not scroll; the fixed ship plate and the header cannot paint
+into that strip (only the flat page colour reaches it), so it showed as an empty
+column. Fixed skin-side with `scrollbar-gutter: auto` on `html[data-ih]`, so the
+gutter is reserved only when a scrollbar is actually needed.
+
+- Release: git `6f800f58` on branch `skin`, tag `ingehack-skin-v2`, based on
+  `ingehack-skin-v1`. Image `ghcr.io/otter-sec/rctf:ingehack-skin-v2`, shipped
+  registry-less and kept at `/opt/rctf/images/ingehack-skin-v2.tar.gz`;
+  deployed by `RCTF_GIT_REF=ingehack-skin-v2` + force-recreate. **Rollback**:
+  `RCTF_GIT_REF=ingehack-skin-v1` (or `main`) + force-recreate; both older images
+  remain on the VM.
+- **Delta from v1, checked**: a per-file SHA-256 manifest of `/app` in both
+  images differs in 120 files, all under `/app/static/_app/` (the content-hashed
+  CSS bundle and the JS chunks whose hashes roll with it, plus `index.html` and
+  `version.json`); no `/app` file outside `/app/static`.
+- **Behavioural parity**: anonymous API bodies byte-identical across the swap
+  (`/api/v2/challs`, `/api/v1/challs`, client config, auth 401s, `robots.txt`);
+  only the root document changed.
+- Verified live: `scrollbar-gutter` computed `auto`, the plate spans the full
+  viewport width on a short page, no console or CSP errors. Evidence and
+  before/after HTTP bodies: `~/work/ingehack-skin/notes/v2-verify/`.
+
+
+## Platform accounts — `Hxuu` admin + view-only `authors` (2026-11-01, verified)
+
+Current platform users (was `ci-bot` + a second full admin):
+
+| user | email | perms | role |
+|---|---|---|---|
+| `Hxuu` | hxuu@ingeniums.club | 63 (all) | the sole full admin, owner's account |
+| `authors` | authors@ingeniums.club | 1 (`challsRead`) | the authors team: can see every challenge (incl. hidden) on the participant UI and nothing else |
+| `ci-bot` | ci-bot@ingeniums.club | 3 (`challsRead,challsWrite`) | CI identity only |
+| `Team authors` | ladis30704@hopefunder.com | 0 | **demoted** from 63; kept, not deleted |
+
+- **Registration is the only way to create a user.** `POST
+  /api/v2/auth/register` returns `{authToken, teamToken}`; perms are then set
+  with the container's CLI, `docker compose exec -T rctf rctf user promote
+  <email> [--perms <names>]` (no domain is appended to a bare `<email>`).
+  **`perms` is an option, not a second positional** — `promote <email>
+  challsRead` silently grants ALL perms; use `--perms challsRead`.
+  `demote <email>` zeroes perms. `create-user-token` and `updateAdminUser`
+  both refuse a target with `perms > 0`, so a fresh account is registered
+  first and promoted second.
+- Creating a limited-perms account needs registration open, so the freeze was
+  lifted for the two registrations and restored: `/opt/rctf/rctf.d/
+  03-frozen.yaml` moved aside → `docker compose up -d --force-recreate rctf`
+  (config reports `registrationsEnabled: true`) → register both → promote →
+  move the file back → recreate. End state verified: `registrationsEnabled:
+  false`, and a fresh register returns `badRegistrationsDisabled`.
+- **Tokens**: the owner's pasted token (`WqS5k0DPIuj_…`) does not decrypt with
+  the live `tokenKey` (`02-ctf.yaml`) — it was minted by a different install,
+  so it can never authenticate against this platform. Working tokens
+  were minted at registration. rCTF v2 tokens are stateless AES-GCM blobs keyed
+  by `tokenKey`; the value lives in `02-ctf.yaml` and **rotating it invalidates
+  every existing token at once**.
+  - The browser login consumes the **`teamToken`**, via
+    `https://ctf.ingeniums.club/login?token=<teamToken>` (the page shows "This
+    link contains a team token. Click Login to confirm"). Both tokens were
+    exercised live: login lands on `/` as `Hxuu` / `authors`, and both get the
+    `/admin/challenges` link. `POST /api/v2/auth/verify {verifyToken:
+    <teamToken>}` returns a fresh `authToken` if a script needs one.
+  - A script consumes the **`authToken`** as `Authorization: Bearer …`; it is
+    valid for the admin API and, because perms are read per request, keeps
+    working after a later `promote`.
+- Authorization boundary, checked with the `authors` token: `GET
+  /api/v2/admin/challs` → 200 (all 8 challenges, hidden included); `GET
+  /api/v2/admin/users?limit=5&offset=0` → 403 `badPerms` (`usersWrite` absent).
+  `Hxuu` gets 200 on both.
+- **No scoreboard leak**: `Hxuu` and `authors` are teams, but the public
+  leaderboard only ranks users with a recorded solve (`global_rank` stays NULL
+  otherwise), so privileged accounts with no solves do not appear.
+- **Open**: the demoted `Team authors` (an old second admin) is kept rather
+  than deleted — deleting it is a separate call (`DELETE
+  /api/v2/admin/users/:id`, or first demote while privileged).
+
+## Platform Patch `ingehack-author-preview-v1` — authors see hidden challenges as players do (2026-11-01, verified)
+
+The `authors` account holds `challsRead`, but on the participant UI the
+challenge list came back empty and opening a challenge answered `badChallenge`:
+every participant endpoint hard-filters `hidden`/`releaseTime` for everyone, and
+rCTF has no "preview as participant" mode or config key. This is the first
+**Platform Patch** (ADR 0007) — a behavioural change on the fork, distinct from
+a Skin Release.
+
+- Release: git `a3082c1a` on branch `platform/author-preview`, tag
+  `ingehack-author-preview-v1`, based on `ingehack-skin-v2` (so it carries the
+  Skin too). Image `ghcr.io/otter-sec/rctf:ingehack-author-preview-v1`, shipped
+  registry-less and kept at `/opt/rctf/images/ingehack-author-preview-v1.tar.gz`;
+  deployed by `RCTF_GIT_REF=ingehack-author-preview-v1` + force-recreate.
+  **Rollback**: `RCTF_GIT_REF=ingehack-skin-v2` (or `ingehack-skin-v1`, or
+  `main`) + force-recreate; all older images remain on the VM.
+- Change: `includeHidden` is plumbed through the participant challenge services
+  and set from the caller's `challsRead` bit on `GET /v1/challs`, `GET
+  /v2/challs`, the `/v1` and `/v2` solves routes, `GET /v2/challs/:id/scores`,
+  `POST /v1/challs/:id/submit`, and the v2 instance lifecycle routes. Without
+  the bit (no token or perms 0) the `hidden`/`releaseTime` filter is unchanged.
+- Tests: `tests/server/tests/integration/challenge-visibility.test.ts` extended
+  with list/solves/scores cases for a `challsRead` holder and a plain user;
+  full server suite 648 pass. Types/api/web typecheck clean, lint/format clean.
+- Verified live on `https://ctf.ingeniums.club` (anon and minted tokens):
+  anonymous `GET /api/v2/challs` → 0 challenges; `authors` → all 16 (hidden
+  included); a plain perms-0 account → 0. `sudoers` solves/scores: anonymous
+  `badChallenge`, `authors` `goodChallengeSolvesV2` / `goodChallengeScoresV2`.
+- Image parity: local build and VM-loaded image have identical md5 for
+  `/app/apps/api/dist/index.js` and its source map, so the loaded image is the
+  built one.
+
+
+## Welcome challenge consolidation (2026-11-03, merged PR)
+
+- The five-strong sanity-check family is now a single challenge:
+  `challenges/misc/sanity-check/` — id `sanity-check` (static challenge, id is
+  its `name`), shared container at
+  `http://sanity-check.challs.ingeniums.club:9487/` /
+  `https://…:9488/`, flag `ingehack{http_is_just_requests}`.
+- It is the event's **welcome challenge** and pays **0 points**
+  (`points: {min: 0, max: 0}`, `tiebreakEligible: false`) so finishing it never
+  moves the scoreboard. rCTF's decay provider clamps to `[min, max]` and does
+  not divide by `max - min`, so a 0/0 challenge is well-defined; raising it to
+  100 is a one-line manifest edit (points changes are allowed while solves
+  exist, unlike `scoring.kind`).
+- Retired in the same merge (hide + wipe via the `retire` job; statics also get
+  their `static-<dirname>` container torn down):
+  `sanity-check-2`, `sanity-check-3`, `sanity-check-shared` (dir
+  `hello-shared`), `sanity-check-instanced` (id `hello-instancer`, instanced —
+  live per-team instances expire through `timeoutMilliseconds`).
+- Consequence worth knowing: the beginner drills those directories demonstrated
+  (local `path:` handout, R2 `url:` handout, per-team instanced flag, all three
+  expose kinds) no longer have in-tree beginner exemplars. The real challenges
+  still cover the shapes — `bulletproof-tenant-2` (description-only + local
+  handouts), `keep-secrets`/`luckypatcher` (local handouts),
+  `is-this-actually-pwn` (instanced + handout), `sudoers` (static raw TCP) —
+  and the per-team flag path is exercised by any instanced challenge.
+- Side effect: historical sections above still mention
+  `hello-instancer`/`hello-shared` as the E2E fixtures; that is the record of
+  what happened, not the current state.
