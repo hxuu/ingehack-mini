@@ -4,7 +4,7 @@ Connect over the TLS-wrapped SSH route (TTY required):
 
 ```sh
 ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' \
-    y4ss1n3@rumor-mill.challs.ingeniums.club -p 9464
+    y4ss1n3@rumor-mill.challs.ingeniums.club -p 9450
 # password: Welcome123
 ```
 

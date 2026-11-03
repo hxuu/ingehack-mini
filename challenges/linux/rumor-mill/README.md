@@ -37,11 +37,11 @@ only when all pass.
 
 ```sh
 ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' \
-    y4ss1n3@rumor-mill.challs.ingeniums.club -p 9464
+    y4ss1n3@rumor-mill.challs.ingeniums.club -p 9450
 # password: Welcome123
 ```
 
-The mapped `tcp-ssl` port comes from `docs/status.md` (`1337 → 9464`).
+The mapped `tcp-ssl` port comes from `docs/status.md` (`1337 → 9450`).
 `tcpPort: 2222` is the container port Traefik forwards to.
 
 ## Notes and deviations
