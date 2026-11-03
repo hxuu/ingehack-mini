@@ -14,11 +14,11 @@ description: |
   Find the flag. Trust nothing until you've verified it.
 
   **Connection:** SSH runs behind the TLS terminator, so wrap the client (the
-  mapped `tcp-ssl` port is 9464):
+  mapped `tcp-ssl` port is 9450):
 
   ```sh
   ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' \
-      y4ss1n3@rumor-mill-2.challs.ingeniums.club -p 9464
+      y4ss1n3@rumor-mill-2.challs.ingeniums.club -p 9450
   ```
 
   Password: `Welcome123`. A TTY is required — `su` prompts on the terminal, so

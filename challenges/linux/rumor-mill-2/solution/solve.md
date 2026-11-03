@@ -9,11 +9,11 @@
 
 ### Step 1: SSH as y4ss1n3
 The deployed route is wrapped by Traefik's TLS terminator (`tcp-ssl` port
-9464):
+9450):
 
 ```bash
 ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' \
-    y4ss1n3@rumor-mill-2.challs.ingeniums.club -p 9464
+    y4ss1n3@rumor-mill-2.challs.ingeniums.club -p 9450
 # Password: Welcome123
 ```
 
