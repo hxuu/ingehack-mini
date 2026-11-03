@@ -72,10 +72,14 @@ Create `challenges/<category>/<name>/` with:
   Description-only challenges add `container: false` (default is `true` for
   `instanced: false`); `instanced: true` always means a container.
   Copy the shape from the exemplars instead of writing from memory:
-  - `challenges/misc/sanity-check/` — static, plain page
-  - `challenges/misc/hello-shared/` — static, shared-instance flavor
-  - `challenges/misc/hello-instancer/` — instanced, all three expose kinds
-  - `challenges/misc/sanity-check-2/` and `-3/` — the two handout forms
+  - `challenges/misc/sanity-check/` — static container, plain page, 0 points
+    (the event's welcome challenge)
+  - `challenges/linux/sudoers/` — static container with a raw-TCP
+    (`tcpPort:`) route and the TLS-wrapped client instructions
+  - `challenges/misc/bulletproof-tenant-2/` — description-only, local
+    (`path:`) handouts
+  - `challenges/pwn/is-this-actually-pwn/` — instanced, `tcp-ssl` expose,
+    per-team flag, committed handout
   CI injects the `image:` at register time.
 - Gotchas not visible in the schema doc: the instancer's `services` block
   bakes in `mem_limit: "6m"`, `read_only: true`, `cap_drop: ['ALL']`
