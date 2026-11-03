@@ -1,0 +1,36 @@
+name: sherlock
+author: Ch1Hub
+category: forensics
+hidden: true
+tiebreakEligible: true
+
+description: |
+  Not so long ago, Raleigh Family Practice: a certified Level 3 Patient-Centered Medical Home (as they statin) was compromised by an advanced threat actor (poor them xD).
+  Highly confidential, sensitive Protected Health Information (PHI) was exfiltrated and leaked online.
+
+  Your mission as a Cyber Threat Intelligence (CTI) Analyst is to explore the leaked archive and verify the authenticity of the compromise.
+
+  **Proof of Possession:**
+  According to the 2025 clinic records, what is the patient chart number for Emma Martin, and on what date was her referral appointment scheduled?
+
+  🚩 **Flag format:** `ingehack{ChartNumber_YYYY-MM-DD}`
+
+  ---
+  *Personal Advice:*
+  *Dont waste tokens on this one :)*
+
+points:
+  min: 50
+  max: 500
+
+tags:
+  - osint
+  - cti
+  - threat-intelligence
+  - forensics
+  - data-breach
+  - leak-analysis
+
+flag: ingehack{30469_2025-10-21}
+instanced: false
+container: false
