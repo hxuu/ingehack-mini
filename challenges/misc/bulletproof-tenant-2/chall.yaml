@@ -13,10 +13,11 @@ description: |
 
   You've recovered the artifacts from the compromised honeypot:
   the auth log from that night, the `deploy` user's shell history,
-  a snapshot of `/tmp`, and the file that used to be `flag.txt` —
+  the encoder they ran, and the file that used to be `flag.txt` —
   now an unreadable hex blob.
 
-  Recover the flag.
+  The encoder carries no key of its own: it derives one from the SSH
+  session it runs inside. Reconstruct that session, then recover the flag.
 
   Attachments: `auth.log`, `bash_history`, `encode.py`, `flag.txt.enc`
 
