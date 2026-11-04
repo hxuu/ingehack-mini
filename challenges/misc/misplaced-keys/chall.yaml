@@ -1,0 +1,35 @@
+name: misplaced-keys
+author: s4l1
+category: misc
+hidden: true
+tiebreakEligible: true
+
+description: |
+  23:41. I just sent my teammate something important.
+
+  It arrived as nonsense.
+
+  My keyboard is acting up: the keys aren't where they should be anymore,
+  and what I type isn't what gets sent. Here is the chat export.
+
+  Read what I actually wrote.
+
+  🚩 The flag is inside my message.
+
+points:
+  min: 50
+  max: 500
+
+tags:
+  - misc
+  - encoding
+  - substitution
+  - beginner
+
+flag: ingehack{wr0ng_l4y0ut_r1ght_m3ss4g3}
+instanced: false
+container: false
+
+files:
+  - name: chat.txt
+    path: files/chat.txt
