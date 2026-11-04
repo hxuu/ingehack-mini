@@ -2,11 +2,10 @@
 
 ## Intended path
 
-1. **Start the instance** on the platform and open its URL (a `tcp-ssl`
-   expose, so browse it as `https://is-this-actually-pwn-<uid>.challs.ingeniums.club:<tcp-mapped-port>`).
-   Download `profile-pics.zip` from Files — it contains the `crop_image`
-   binary. (The same binary is also fetchable through the app's LFI:
-   `/serve_file?filename=profile_pics/crop_image`.)
+1. **Start the instance** on the platform and open its URL (an `http` expose,
+   so browse it as `http://is-this-actually-pwn-<uid>.challs.ingeniums.club:<tcp-mapped-port>`).
+   There is no Files section — the `crop_image` binary is fetched through the
+   app's LFI (`/serve_file?filename=profile_pics/crop_image`).
 2. **Analyze the binary** (`checksec`): No PIE, no stack canary, NX on.
    `main` reads two lines with `gets()` into `input_file` (rbp-0x210) and
    `output_file` (rbp-0x110), so the second `gets` reaches the saved RIP at
@@ -40,7 +39,7 @@
 ## Solver
 
 ```sh
-python3 solution/solve.py https://is-this-actually-pwn-<uid>.challs.ingeniums.club:<port>
+python3 solution/solve.py http://is-this-actually-pwn-<uid>.challs.ingeniums.club:<port>
 # locally: docker run -p 5000:5000 -e RCTF_FLAG=ingehack{local_test} <image>
 #          python3 solution/solve.py http://127.0.0.1:5000
 ```

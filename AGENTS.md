@@ -58,6 +58,20 @@ and re-run `challenge-review` locally (its earlier verdicts are stale the
 moment the base moved). Force-push during an open review only invalidates
 reviewed evidence; avoid it while a review is in flight.
 
+## Agent skills
+
+### Issue tracker
+
+Issues live in GitHub Issues (`hxuu/ingehack-mini`) via the `gh` CLI; PRs not used as a triage surface. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Five canonical triage labels, label string equals role name (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: root `GLOSSARY.md` + `docs/adr/`. See `docs/agents/domain.md`.
+
 ## Hard rules
 
 - Zero dollars, no payment verification with any vendor (ADR 0002/0004).

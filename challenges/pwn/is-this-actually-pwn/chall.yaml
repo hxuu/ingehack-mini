@@ -6,21 +6,21 @@ description: |
   I wonder if this is actually a pwn challenge 
 
   Hints: the flag is in the env
+
+  Reachable at **http://is-this-actually-pwn-<team-id>.challs.ingeniums.club:<tcp-mapped-port>** —
+  plain HTTP, no TLS.
 points: {min: 500, max: 1000}
 tiebreakEligible: true
 tags: [beginner, Buffer Overflow, Path Traversal, HTTP Protocol]
 flagsDynamicBase: ingehack{gets_you_every_time}
 flagsDynamicMode: auto
-files:
-  - name: profile-pics.zip
-    path: files/profile-pics.zip
 instanced: true
 instancer:
   challengeIntegrationId: is-this-actually-pwn
   timeoutMilliseconds: 1800000
   extendable: true
   expose:
-    - {kind: tcp-ssl, hostPrefix: is-this-actually-pwn, containerName: main, containerPort: 5000, shouldDisplay: true, title: "EsiMedia (HTTPS)"}
+    - {kind: http, hostPrefix: is-this-actually-pwn, containerName: main, containerPort: 5000, shouldDisplay: true, title: "EsiMedia (HTTP)"}
   services:
     main:
       environment:

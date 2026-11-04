@@ -2,7 +2,7 @@
 """Solver for "Is this actually pwn?" (EsiMedia).
 
 Usage: python3 solve.py <base-url> [path-to-crop_image]
-  e.g. python3 solve.py https://is-this-actually-pwn-<uid>.challs.ingeniums.club:9450
+  e.g. python3 solve.py http://is-this-actually-pwn-<uid>.challs.ingeniums.club:<port>
        python3 solve.py http://127.0.0.1:5000
 
 Chain: register -> login -> upload stage-2 as a temp "image" -> /crop_and_save
