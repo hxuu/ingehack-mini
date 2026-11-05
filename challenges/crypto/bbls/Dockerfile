@@ -11,4 +11,4 @@ COPY src/ /app/
 USER ctf
 EXPOSE 13415
 
-CMD ["sh", "-c", "exec socat -T300 TCP-LISTEN:13415,reuseaddr,fork EXEC:\"python3 -u test.py\""]
+CMD ["sh", "-c", "exec socat -T300 TCP-LISTEN:13415,reuseaddr,fork EXEC:\"python3 -u chall.py\""]
