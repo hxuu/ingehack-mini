@@ -8,9 +8,9 @@ description: |
   such as R1CS a headache. This is a super-genius layer 2 blub. I have no idea
   what I am talking about btw :3
 
-  This is a raw TCP service behind TLS. Connect with pwntools using:
+  This is a raw TCP service. Connect with:
 
-  `python3 -c 'from pwn import remote; remote("bbls.challs.ingeniums.club", 9450, ssl=True).interactive()'`
+  `openssl s_client -quiet -verify_quiet -servername bbls.challs.ingeniums.club -connect bbls.challs.ingeniums.club:9450`
 
   Send one JSON object per line.
 difficulty: easy
