@@ -10,7 +10,7 @@ description: |
 
   This is a raw TCP service. Connect with:
 
-  `openssl s_client -quiet -servername bbls.challs.ingeniums.club -connect bbls.challs.ingeniums.club:9450`
+  `openssl s_client -quiet -verify_quiet -servername bbls.challs.ingeniums.club -connect bbls.challs.ingeniums.club:9450`
 
   Send one JSON object per line.
 difficulty: easy
