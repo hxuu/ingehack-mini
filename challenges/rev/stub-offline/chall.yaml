@@ -1,0 +1,28 @@
+name: stub-offline
+author: 4ym3n
+category: rev
+hidden: true
+
+description: |
+  Find the input this stub accepts.
+
+  Python 3.9+, Linux x86-64 (WSL2 works). No extra packages.
+
+  ```sh
+  python3 stub.py 'ingehack{your_candidate}'
+  ```
+
+  Flag format: `ingehack{...}`
+
+points: {min: 350, max: 500}
+tiebreakEligible: true
+tags: [hard, Python, ELF, control flow, byte manipulation, modular arithmetic]
+
+flag: ingehack{l0ck3d_up5p4gh3tt1c0mp1ed4ef3918097054d3lfhdr0ffl1n3_r4t3}
+
+files:
+  - name: stub.py
+    path: files/stub.py
+
+instanced: false
+container: false
