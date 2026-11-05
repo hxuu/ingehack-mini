@@ -2,7 +2,7 @@
 """Solve BBLS by forcing M to zero through the broken EC addition.
 
 Remote TLS endpoint:
-    HOST=bbls.challs.ingeniums.club PORT=9450 TLS=1 python3 solve.py
+    python3 solve.py
 
 Local plain-TCP container:
     HOST=127.0.0.1 PORT=13415 TLS=0 python3 solve.py
@@ -14,9 +14,9 @@ import os
 from pwn import context, remote
 
 
-HOST = os.environ.get("HOST", "127.0.0.1")
-PORT = int(os.environ.get("PORT", "13415"))
-TLS = os.environ.get("TLS", "0").lower() in {"1", "true", "yes"}
+HOST = os.environ.get("HOST", "bbls.challs.ingeniums.club")
+PORT = int(os.environ.get("PORT", "9450"))
+TLS = os.environ.get("TLS", "1").lower() in {"1", "true", "yes"}
 
 context.log_level = "error"
 
