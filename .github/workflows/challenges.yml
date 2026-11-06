@@ -62,7 +62,10 @@ jobs:
             | cut -d/ -f1-3 \
             | sort -u \
             | while read -r d; do
-                test -d "$d" || echo "$d"
+                # Only process as deleted if the directory is gone AND it contained a chall.yaml in HEAD^
+                if [ ! -d "$d" ] && git show HEAD^:"$d/chall.yaml" >/dev/null 2>&1; then
+                  echo "$d"
+                fi
               done \
             | jq -R -s -c 'split("\n") | map(select(length > 0))')
           echo "dirs=$dirs"       >> "$GITHUB_OUTPUT"
