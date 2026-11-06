@@ -1,0 +1,21 @@
+name: Bursary
+category: web
+author: hxuu
+hidden: true
+description: |
+  The bursary moved refunds online over the summer. You are a student with an
+  account balance that is smaller than you would like.
+
+  The bursar approves refunds, and she will open any link you send her.
+
+  Convince her browser to approve one for you. When your page is ready, send
+  her the link with the run-bot form on this challenge page.
+
+  Reachable at **http://campus-refund.challs.ingeniums.club:9487/** or
+  **https://campus-refund.challs.ingeniums.club:9488/** (scheme follows the port).
+points: {min: 150, max: 500}
+tiebreakEligible: true
+tags: [medium, Browser Trust Boundaries, HTTP Protocol]
+flag: ingehack{cr0ss_site_forgery_used_y0ur_c00kie}
+instanced: false
+adminBot: admin-bot.ts

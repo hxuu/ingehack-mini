@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}{{ thread.subject }} &mdash; PackSwift support{% endblock %}
+{% block tab %}{{ "%04d"|format(ticket_id) }} &middot; {{ thread.reference }}{% endblock %}
+{% block leaf %}
+<div class="b-leaf">
+  <header class="b-head">
+    <div class="b-fileline"><span>File 04 / Customer complaints</span><span>Card {{ "%04d"|format(ticket_id) }}</span></div>
+    <h1>{{ thread.subject }}</h1>
+    <dl class="b-meta">
+      <div><dt>Account</dt><dd>{{ thread.owner }}</dd></div>
+      <div><dt>Opened</dt><dd>{{ thread.opened }}</dd></div>
+      <div><dt>Reference</dt><dd>{{ thread.reference }}</dd></div>
+      <div><dt>Status</dt><dd>{{ thread.status }}</dd></div>
+    </dl>
+    <nav class="b-nav" aria-label="PackSwift support">
+      <a href="/tickets/{{ ticket_id }}" aria-current="page">Ticket</a>
+      <a href="/agent/guidelines">Guidelines</a>
+      <a href="/src">Source</a>
+    </nav>
+  </header>
+
+  <div class="b-forms">
+    {% for message in thread.messages %}
+    {% include "_message.html" %}
+    {% endfor %}
+  </div>
+
+  <form class="b-slip" action="/tickets/{{ ticket_id }}" method="post">
+    <div class="b-slip-top"><span>Add a message</span><span>Triplicate</span></div>
+    <label for="body">Type on the top sheet. It carries through.</label>
+    <textarea id="body" name="body" rows="4" spellcheck="false" placeholder="Write the reply here."></textarea>
+    <div class="b-slip-foot">
+      <span>White to customer &middot; canary to file</span>
+      <button type="submit">Send</button>
+    </div>
+  </form>
+
+  <footer class="b-foot">
+    <span>Pulled from cabinet 4 &middot; 15 Oct</span>
+    <span><a href="/agent/guidelines">agent guidelines</a> &middot; <a href="/src">source</a></span>
+  </footer>
+</div>
+{% endblock %}

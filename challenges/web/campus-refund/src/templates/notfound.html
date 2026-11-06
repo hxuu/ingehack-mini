@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}No such page &mdash; Bursary{% endblock %}
+{% block main_class %}a-book a-book--single{% endblock %}
+{% block content %}
+<div class="a-slipwrap">
+  <section class="a-slip a-slip--void">
+    <span class="a-slip-corner" aria-hidden="true"></span>
+    <p class="a-kicker">Bursary counter</p>
+    <h1>No such page</h1>
+    <p>That address is not an account in this ledger. Check the address, or start again
+    from the statement.</p>
+    <p><a class="a-btn" href="{{ url_for('statement') }}">Back to the statement</a></p>
+    <span class="a-bigstamp" aria-hidden="true">Void</span>
+  </section>
+</div>
+{% endblock %}

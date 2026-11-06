@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Not on file &mdash; PackSwift{% endblock %}
+{% block content %}
+<p class="c-kicker">Depot 04 &middot; notices</p>
+<div class="c-loose">
+  <span class="c-tape" aria-hidden="true"></span>
+  <p class="c-404">404</p>
+  <p class="c-stamp c-stamp--small">Not on file</p>
+  <h1 class="c-h1 c-h1--small">No such page</h1>
+  <p>This address is not on the depot register. Check the slip, or start again from tracking.</p>
+  <p class="c-hint"><a href="{{ url_for('home') }}">Track a parcel</a></p>
+</div>
+{% endblock %}

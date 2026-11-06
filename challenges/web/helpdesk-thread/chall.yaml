@@ -1,0 +1,22 @@
+name: Open Ticket
+category: web
+author: hxuu
+hidden: true
+description: |
+  You opened a support ticket about a parcel that never arrived. A support agent
+  replied, and her reply is visible only to her.
+
+  She reads every new message in the thread. She also keeps something in her
+  browser that lets her act on the ticket.
+
+  Post your message, then the run-bot form on this challenge page sends her to
+  the desk view of the thread.
+
+  Reachable at **http://helpdesk-thread.challs.ingeniums.club:9487/** or
+  **https://helpdesk-thread.challs.ingeniums.club:9488/** (scheme follows the port).
+points: {min: 150, max: 500}
+tiebreakEligible: true
+tags: [hard, Browser Trust Boundaries, Client-Side Rendering]
+flag: ingehack{st0red_xss_t00k_y0ur_cookie}
+instanced: false
+adminBot: admin-bot.ts

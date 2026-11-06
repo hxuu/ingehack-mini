@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}No such page &mdash; Course Finder{% endblock %}
+{% block content %}
+<section class="b-sheet b-notfound">
+  <p class="b-cardlabel">Card catalogue</p>
+  <h1>No such page</h1>
+  <p>The card you asked for is not in this drawer. Check the address, or start again from the course index.</p>
+  <p class="b-notfound-link"><a href="{{ url_for('search') }}">Return to the course index</a></p>
+  <span class="b-stamp" aria-hidden="true">Not in the drawer</span>
+</section>
+{% endblock %}

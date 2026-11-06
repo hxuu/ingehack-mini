@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Source &mdash; Course Finder{% endblock %}
+{% block content %}
+<section class="b-source">
+  <div class="b-sheet-head">
+    <p class="b-cardlabel">Reference copy</p>
+    <span class="b-who">read only</span>
+  </div>
+  <h1>Source</h1>
+  <p class="b-lede">The application's own source, exactly as it runs.</p>
+  {% for file in files %}
+  <h2 class="b-source-name">{{ file.name }}</h2>
+  <pre class="b-pre">{% for number, line in file.lines %}<span class="b-ln">{{ "%3d"|format(number) }} | </span>{{ line }}
+{% endfor %}</pre>
+  {% endfor %}
+</section>
+{% endblock %}

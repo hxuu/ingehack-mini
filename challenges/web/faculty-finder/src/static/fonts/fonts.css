@@ -1,0 +1,31 @@
+/* latin subset, downloaded from Google Fonts 2026-11-04. Prototype only.
+   EB Garamond, Libre Baskerville and Archivo Narrow are variable files, so one
+   file per family covers every weight the page uses. */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('eb-garamond.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Libre Baskerville';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('libre-baskerville.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Cutive Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('cutive-mono-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Archivo Narrow';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('archivo-narrow.woff2') format('woff2');
+}

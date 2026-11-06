@@ -646,6 +646,32 @@ a Skin Release.
   built one.
 
 
+## Platform admin-bot worker — live (2026-11-06, verified)
+
+The platform's admin-bot integration (rctf.osec.io/integrations/admin-bot) is live:
+web challenges that need a victim browser no longer ship their own bot; the
+participant pastes a link into the challenge's run-bot form and the worker runs the
+challenge's `admin-bot.ts` handler in a fresh Chrome context.
+
+- Setup matches the doc's deployment files. Prebuilt image
+  `ingehack-adminbot:author-preview-v1` (same sha locally and on the VM) — built from
+  the platform fork (`~/work/rctf-preview`, worker source identical to upstream
+  cf80517c), Chrome + Firefox prewarmed in-image (`/data/browser-cache`, 735 MB also
+  seeded into the `adminbot_browser-cache` volume).
+- Deployed at `/opt/rctf/adminbot/` (compose.yml + .env): external network
+  `rctf_network` (the same network the rctf API container is on), **nothing
+  published on the host**; `RCTF_BASE_URL=http://rctf:80`, shared 64-hex secret (in
+  `/opt/rctf/adminbot/.env`), poll 3 s, tmpfs scratch, `read_only`, cap_drop ALL,
+  2 CPU / 3 GB / 1024 pids. Redeploy = `docker compose -f /opt/rctf/adminbot/compose.yml up -d`.
+- Provider wired in `/opt/rctf/rctf.d/05-providers.yaml`: `adminBot.provider`
+  (`admin-bots/rctf-ts`, endpoint `http://adminbot:21337`, same secret) +
+  `maxLogsPerUserChallenge: 5`; `docker compose up -d --force-recreate rctf`.
+- Verified: the previously-404 `/api/v2/admin/admin-bot/queue-depth` now answers
+  `goodAdminBotQueueDepth` (depth 0) with the shared secret; the worker's
+  `/v1/test` builds all three September web handlers and extracts their
+  inputs/timeout. Challenge-side contract: `chall.yaml` gains `adminBot:
+  admin-bot.ts` and `ops/chall-payload.py` emits `adminBotConfig: {code}`.
+
 ## Welcome challenge consolidation (2026-11-03, merged PR)
 
 - The five-strong sanity-check family is now a single challenge:

@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}PackSwift{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='fonts/fonts.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='skin.css') }}">
+</head>
+<body>
+<div class="c-board">
+  <div class="c-sheet">
+    <span class="c-clip" aria-hidden="true"></span>
+    <header class="c-head">
+      <p class="c-mark">PackSwift<span>courier services</span></p>
+      <nav class="c-nav" aria-label="PackSwift">
+        <a href="{{ url_for('home') }}"{% if request.path == '/' %} aria-current="page"{% endif %}>Track a parcel</a>
+        <a href="{{ url_for('portal') }}"{% if request.path.startswith('/portal') %} aria-current="page"{% endif %}>Staff area</a>
+        <a href="{{ url_for('status') }}"{% if request.path == '/status' %} aria-current="page"{% endif %}>Connection status</a>
+      </nav>
+    </header>
+    <main class="c-main">
+      {% block content %}{% endblock %}
+    </main>
+    <footer class="c-foot">
+      <p>PackSwift internal systems. If a page looks wrong, note the time and tell the desk.</p>
+      <p class="c-meta"><a href="/src">source</a> <span aria-hidden="true">&middot;</span> <a href="{{ url_for('status') }}">connection status</a></p>
+    </footer>
+  </div>
+</div>
+</body>
+</html>

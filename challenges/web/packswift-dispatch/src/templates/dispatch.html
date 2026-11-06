@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Dispatch console &mdash; PackSwift Dispatch{% endblock %}
+{% block body %}
+<p class="b-kicker">Restricted output</p>
+<h1 class="b-h1">Dispatch console</h1>
+<div class="b-dump-wrap">
+  <span class="b-bulldog" aria-hidden="true"></span>
+  <pre class="b-dump">Route board: 14 vans active.
+Handover code: <mark>{{ flag }}</mark></pre>
+  <p class="b-dump-label">Console dump &middot; 06:14</p>
+</div>
+<p class="b-margin-note">Pulled from the app, not the edge.</p>
+{% endblock %}

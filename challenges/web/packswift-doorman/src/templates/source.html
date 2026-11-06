@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Source &mdash; PackSwift{% endblock %}
+{% block content %}
+<p class="c-kicker">Reference copy</p>
+<h1 class="c-h1">Source</h1>
+<p class="c-lede">The application's own source, exactly as it runs.</p>
+{% for file in files %}
+<h2 class="c-source-name">{{ file.name }}</h2>
+<pre class="c-pre">{% for number, line in file.lines %}<span class="c-ln">{{ "%3d"|format(number) }} | </span>{{ line }}
+{% endfor %}</pre>
+{% endfor %}
+{% endblock %}

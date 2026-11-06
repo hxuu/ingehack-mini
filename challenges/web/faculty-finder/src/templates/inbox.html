@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Inbox &mdash; Course Finder{% endblock %}
+{% block content %}
+<section class="b-sheet">
+  <div class="b-sheet-head">
+    <p class="b-cardlabel">Notice tray</p>
+    <span class="b-who">Signed in as {{ username }}.</span>
+  </div>
+  <h1>Inbox</h1>
+  {% if messages %}
+  <ul class="b-messages">
+    {% for message in messages %}
+    <li>
+      <p class="b-from">From {{ message.from }}:</p>
+      <p class="b-body">{{ message.body }}</p>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="b-empty">Nothing here yet.</p>
+  {% endif %}
+</section>
+{% endblock %}

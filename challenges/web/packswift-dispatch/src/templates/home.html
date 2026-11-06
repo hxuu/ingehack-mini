@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block body %}
+{% set code = request.args.get("code", "").strip() %}
+<p class="b-kicker">Customer enquiries</p>
+<h1 class="b-h1">Track a parcel</h1>
+<p class="b-lede">Customer tracking for the northern depot.</p>
+<p class="b-copy">Track a parcel with the code on your receipt. Staff tools are handled by
+the edge.</p>
+<form class="b-slip" action="/" method="get">
+  <p class="b-slip-head">Parcel enquiry <span>No. 04-1182</span></p>
+  <label for="code">Tracking code</label>
+  <div class="b-slip-row">
+    <input id="code" name="code" value="{{ code }}" autocomplete="off" spellcheck="false">
+    <button type="submit">Check</button>
+  </div>
+</form>
+{% if code %}
+<div class="b-result">
+  <p>Parcel <b>{{ code }}</b> was last scanned at the Callow Street depot this morning.</p>
+  <p class="b-result-meta">Depot 04 &middot; 06:12 &middot; route north</p>
+  <span class="b-pen" aria-hidden="true"></span>
+</div>
+{% endif %}
+{% endblock %}

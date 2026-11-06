@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Sign in &mdash; PackSwift support{% endblock %}
+{% block tab %}NEW ENQUIRY{% endblock %}
+{% block leaf %}
+<div class="b-leaf b-leaf--card">
+  <p class="b-kicker">New enquiry</p>
+  <h1>Open a support ticket</h1>
+  <p class="b-lede">Customers sign in with the details from their confirmation email.</p>
+  {% if error %}<p class="b-error">{{ error }}</p>{% endif %}
+  <p class="b-small">Your confirmation email carries: user <code>student</code> &middot;
+  passphrase <code data-pin-for="student">{{ student_password }}</code>.
+  Desk staff use a different route.</p>
+  <form class="b-form-fields" action="/login" method="post">
+    <p class="b-form-top">
+      <span class="b-cell"><i>Form</i><b>New enquiry</b></span>
+      <span class="b-cell"><i>Card</i><b>0001</b></span>
+    </p>
+    <label for="username">Username</label>
+    <input id="username" name="username" autocomplete="username">
+    <label for="password">Password</label>
+    <input id="password" name="password" type="password" autocomplete="current-password">
+    <button type="submit">Sign in</button>
+  </form>
+  <footer class="b-foot">
+    <span>Leave the card in the drawer.</span>
+    <span><a href="/src">source</a></span>
+  </footer>
+</div>
+{% endblock %}
