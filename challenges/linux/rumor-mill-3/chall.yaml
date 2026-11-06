@@ -5,28 +5,28 @@ hidden: true
 tiebreakEligible: false
 
 description: |
-  Rumor Mill #3 — The Liars' Club
-  ────────────────────────────────
-  Every note on this box is a lie. Every history. Every confession.
-  Every "audit copy." Even the filenames lie.
+  **Briefing**
+  Three people administered this box. Three people left notes. None of them
+  told the whole truth.
 
-  You start as y4ss1n3. You'll need to become n0d4, then boul3h14. At
-  each step, someone is lying to you.
+  You start with a shell and a handover note that was already stale when it
+  was written. The flag is deeper in the box, behind accounts that were never
+  meant to be yours. At every step, the box offers a shortcut that looks right.
 
-  Find the flag. Trust nothing until you've verified it yourself.
+  **Objective**
+  Recover the flag. Verify what you are told.
 
-  Flag format: ingehack{...}
-
-  **Connection:** SSH runs behind the TLS terminator, so wrap the client
-  (the mapped `tcp-ssl` port is 9450):
-
+  **Connection**
+  SSH sits behind the TLS terminator, so wrap the client:
   ```sh
   ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' \
       y4ss1n3@rumor-mill-3.challs.ingeniums.club -p 9450
   ```
-
-  Password: `4rt4z4`. A TTY is required — `su` prompts on the terminal, so a
+  Password: `4rt4z4`. A TTY is required: `su` prompts on the terminal, so a
   raw `nc` session cannot complete the chain.
+
+  **Flag format**
+  `ingehack{...}`
 
 difficulty: hard
 # The ingest schema (ops/chall-payload.py) reads points.min/max. Both are 500
