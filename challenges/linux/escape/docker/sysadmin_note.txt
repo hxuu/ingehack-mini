@@ -1,0 +1,15 @@
+========================================
+Ops Note - November 2026
+========================================
+
+During the last system audit, our monitoring agent left
+some temporary cache files scattered under /usr.
+
+We haven't had time to clean this up yet - if you're
+chasing down an old artifact, you'll need to dig through
+the subdirectories manually. 
+
+Reminder: the file you're looking for is named flag.txt.
+
+- Maintenance Team
+========================================
