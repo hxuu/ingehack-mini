@@ -5,37 +5,34 @@ hidden: true
 tiebreakEligible: true
 
 description: |
-  A small company built an internal audit tool. The developer swears it's
-  now secure:
+  **Briefing**
+  A small company built an internal audit tool and moved on. The developer's
+  final note claims the dangerous part is solved:
 
-  > "We drop privileges before we touch any user code — no more command
-  > injection!"
+  > "We drop privileges before we touch any user code. No more command
+  > injection."
 
-  He's wrong. Again.
+  The claim has never been tested. You have a shell on the box. The rest is
+  yours to discover.
 
-  **Connection:** SSH runs behind a TLS terminator, so the client has to wrap
-  it (the `tcp-ssl` port is 9450):
+  **Objective**
+  Read `/flag`.
 
+  **Connection**
+  SSH sits behind the TLS terminator, so wrap the client:
   ```sh
   ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' \
       ctf@sudoers.challs.ingeniums.club -p 9450
   ```
+  Password: `ctf`
 
-  Password: `ctf`.
-
-  **Goal:** Read `/flag`.
-
-  **Files on the box:**
-  - `/usr/local/bin/auditdrop` — setuid-root binary
-  - `/home/ctf/auditdrop.c` — source code
-  - `/home/ctf/notes/` — your notes directory
-
-  **Hint:** Understand the difference between `seteuid()` and `setuid()`.
+  **Hint**
+  A privilege drop is only as strong as the API that performs it.
 
 difficulty: medium
 points:
-  min: 100
-  max: 300
+  min: 200
+  max: 500
 
 tags:
   - medium
