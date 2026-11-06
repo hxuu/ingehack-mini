@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Sign in &mdash; Course Finder{% endblock %}
+{% block content %}
+<section class="b-sheet">
+  <p class="b-cardlabel">Registrar &middot; sign in</p>
+  <h1>Sign in</h1>
+  <p class="b-lede">Use the account issued to you by the faculty office.</p>
+  <form class="b-stack" action="/login" method="post">
+    {% if error %}<p class="b-error">{{ error }}</p>{% endif %}
+    <label for="username">Username</label>
+    <input id="username" name="username" autocomplete="username">
+    <label for="password">Password</label>
+    <input id="password" name="password" type="password" autocomplete="current-password">
+    <button type="submit">Sign in</button>
+  </form>
+  <p class="b-small">Your faculty pass, printed this morning:
+  user <code>student</code> &middot;
+  passphrase <code data-pin-for="student">{{ student_password }}</code>.
+  Library staff use a different form &mdash; ask the office.</p>
+</section>
+{% endblock %}

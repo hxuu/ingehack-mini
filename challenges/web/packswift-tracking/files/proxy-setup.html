@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Request tool setup &mdash; PackSwift IT onboarding</title>
+<style>
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 400 700;
+  font-stretch: 62% 125%;
+  font-display: swap;
+  src: url('/fonts/archivo-var.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Overpass Mono';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('/fonts/overpass-mono-var.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Courier Prime';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/courier-prime-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Courier Prime';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/courier-prime-700.woff2') format('woff2');
+}
+
+:root {
+  --vellum: #f3efe0;
+  --paper: #f7f3e6;
+  --grid: #c9c4b4;
+  --graphite: #33322e;
+  --blue: #1f4e79;
+  --red: #b23a2e;
+  --highlighter: #d9c24a;
+  --mono: "Overpass Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --sans: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --rfc: "Courier Prime", "Courier New", monospace;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--graphite);
+  background: #ddd6c3;
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, p, ol, ul { margin-top: 0; }
+a { color: var(--blue); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { text-decoration-thickness: 2px; }
+code { font-family: var(--mono); font-size: 0.9em; }
+strong { font-weight: 700; }
+::selection { background: rgba(217, 194, 74, 0.55); }
+:focus-visible { outline: 2px dashed var(--blue); outline-offset: 3px; }
+
+.a-wall {
+  min-height: 100vh;
+  padding: 34px 22px 48px;
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.14), transparent 40%),
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.035) 0 1px, transparent 1px 96px),
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.025) 0 1px, transparent 1px 96px),
+    #d9d2bf;
+}
+
+.a-sheet {
+  position: relative;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 36px;
+  background:
+    repeating-linear-gradient(0deg, rgba(201, 196, 180, 0.22) 0 1px, transparent 1px 24px),
+    repeating-linear-gradient(90deg, rgba(201, 196, 180, 0.22) 0 1px, transparent 1px 24px),
+    repeating-linear-gradient(0deg, rgba(201, 196, 180, 0.4) 0 1px, transparent 1px 120px),
+    repeating-linear-gradient(90deg, rgba(201, 196, 180, 0.4) 0 1px, transparent 1px 120px),
+    linear-gradient(160deg, #f7f2e2, var(--vellum) 55%, #ebe5d2);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.7) inset,
+    0 18px 45px rgba(40, 36, 25, 0.28),
+    0 2px 4px rgba(40, 36, 25, 0.18);
+}
+
+.a-sheet::before {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border: 1px solid rgba(51, 50, 46, 0.35);
+  pointer-events: none;
+}
+
+.a-tape {
+  position: absolute;
+  z-index: 3;
+  width: 108px;
+  height: 27px;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.16) 0 2px, transparent 2px 7px),
+    rgba(226, 216, 184, 0.55);
+  box-shadow: 0 1px 3px rgba(60, 54, 38, 0.22);
+  opacity: 0.9;
+}
+.a-tape--tl { top: -7px; left: 28px; transform: rotate(-4deg); }
+.a-tape--tr { top: -9px; right: 42px; transform: rotate(3deg); }
+.a-tape--bl { bottom: -6px; left: 60px; transform: rotate(2.5deg); }
+.a-tape--br { bottom: -7px; right: 30px; transform: rotate(-3deg); }
+
+.a-head {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: end;
+  gap: 30px;
+  padding: 34px 6px 12px;
+  border-bottom: 2px solid var(--graphite);
+}
+
+.a-brand {
+  margin: 0;
+  font-weight: 700;
+  font-size: 30px;
+  font-stretch: 78%;
+  letter-spacing: 0.16em;
+  line-height: 1;
+}
+.a-brand span {
+  display: block;
+  margin-top: 5px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.52em;
+  color: var(--blue);
+}
+
+.a-doc {
+  margin: 0;
+  text-align: right;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  line-height: 1.65;
+}
+.a-doc span { color: #6c685d; }
+
+.a-rev {
+  margin: 0;
+  padding-left: 16px;
+  border-left: 1px solid var(--grid);
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  line-height: 1.5;
+  text-align: right;
+}
+.a-rev b { display: block; font-size: 24px; line-height: 1; }
+.a-rev span { color: #6c685d; }
+
+.a-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 246px;
+  gap: 30px;
+  padding: 28px 6px 0;
+}
+
+.a-main { min-width: 0; padding-bottom: 30px; }
+
+.a-margin {
+  min-width: 0;
+  padding: 2px 0 26px 22px;
+  border-left: 1px solid var(--graphite);
+}
+
+.a-notes-head {
+  margin: 0 0 8px;
+  font-family: var(--mono);
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: #74705f;
+}
+
+.a-sheet-link {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  padding: 4px 0;
+  border-bottom: 1px dotted var(--grid);
+  color: var(--graphite);
+  font-size: 12px;
+  line-height: 1.3;
+  text-decoration: none;
+}
+.a-sheet-link:hover { color: var(--blue); }
+.a-sheet-link[aria-current="page"] { color: var(--blue); font-weight: 600; }
+.a-sheet-link[aria-current="page"] .a-sheet-num { background: var(--blue); color: var(--vellum); }
+
+.a-sheet-num {
+  min-width: 20px;
+  padding: 1px 2px;
+  border: 1px solid var(--grid);
+  font-family: var(--mono);
+  font-size: 8.5px;
+  text-align: center;
+}
+
+.a-note {
+  margin-top: 20px;
+  padding-top: 12px;
+  border-top: 1px solid var(--grid);
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+.a-note p { margin-bottom: 0; }
+.a-note--blue { border-top-color: var(--blue); }
+.a-note--blue .a-notes-head { color: var(--blue); }
+
+.a-margin-foot {
+  margin: 36px 0 0;
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 0.15em;
+  line-height: 1.7;
+  color: #8a8574;
+}
+
+.a-sec { margin-bottom: 20px; }
+.a-kicker {
+  margin-bottom: 7px;
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.23em;
+  color: var(--blue);
+}
+.a-sec h1 {
+  margin-bottom: 7px;
+  font-size: clamp(30px, 4.4vw, 46px);
+  font-weight: 600;
+  font-stretch: 76%;
+  letter-spacing: 0.01em;
+  line-height: 1.02;
+}
+.a-lede, .a-copy {
+  max-width: 60ch;
+  color: #47453f;
+  font-size: 14px;
+}
+.a-lede { font-size: 15px; }
+
+.a-procedure {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 26px;
+  margin-top: 20px;
+}
+
+.a-proc {
+  padding-top: 12px;
+  border-top: 2px solid var(--graphite);
+}
+
+.a-proc-title {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  margin-bottom: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  font-stretch: 86%;
+}
+
+.a-proc-title span {
+  display: inline-grid;
+  place-items: center;
+  width: 23px;
+  height: 23px;
+  background: var(--blue);
+  color: var(--vellum);
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
+.a-steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: a-step;
+}
+
+.a-steps li {
+  position: relative;
+  margin-bottom: 11px;
+  padding-left: 27px;
+  font-family: var(--rfc);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.a-steps li::before {
+  counter-increment: a-step;
+  content: counter(a-step) ".";
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--blue);
+}
+
+.a-steps code,
+.a-four code,
+.a-it-note code {
+  padding: 1px 3px;
+  background: rgba(31, 78, 121, 0.08);
+  font-size: 0.9em;
+}
+
+.a-four {
+  margin-top: 26px;
+  padding-top: 14px;
+  border-top: 2px solid var(--graphite);
+}
+
+.a-four > h2 {
+  margin-bottom: 12px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.17em;
+}
+
+.a-four-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 24px;
+}
+
+.a-four-grid article {
+  padding-left: 12px;
+  border-left: 1px solid var(--grid);
+}
+
+.a-four-num {
+  margin-bottom: 2px;
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--red);
+}
+
+.a-four-grid h3 {
+  margin-bottom: 5px;
+  font-size: 13px;
+  font-stretch: 88%;
+}
+
+.a-four-grid p:last-child {
+  margin: 0;
+  font-family: var(--rfc);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.a-it-note {
+  margin-top: 24px;
+  padding: 13px 15px;
+  border: 1px solid var(--grid);
+  border-left: 4px solid var(--highlighter);
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.a-it-note p {
+  margin-bottom: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.a-it-note p:last-child { margin-bottom: 0; }
+
+.a-figcaption {
+  margin: 14px 0 0;
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 0.13em;
+  color: #7a7564;
+}
+
+.a-titleblock {
+  display: grid;
+  grid-template-columns: 2.4fr 1.1fr 0.55fr 0.8fr 0.7fr 0.7fr 0.8fr 0.8fr;
+  border-top: 2px solid var(--graphite);
+  border-left: 1px solid var(--graphite);
+  background: rgba(255, 255, 255, 0.2);
+}
+.a-tb-cell {
+  min-height: 46px;
+  padding: 5px 8px;
+  border-right: 1px solid var(--graphite);
+  border-bottom: 1px solid var(--graphite);
+}
+.a-tb-cell span {
+  display: block;
+  margin-bottom: 4px;
+  font-family: var(--mono);
+  font-size: 6.8px;
+  letter-spacing: 0.16em;
+  color: #7c7766;
+}
+.a-tb-cell b {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+@media (max-width: 1040px) {
+  .a-layout { grid-template-columns: minmax(0, 1fr) 210px; gap: 22px; }
+  .a-titleblock { grid-template-columns: 2fr 1.1fr 0.6fr 0.8fr 0.7fr 0.7fr 0.8fr; }
+  .a-tb-cell:nth-child(6) { display: none; }
+}
+
+@media (max-width: 860px) {
+  .a-wall { padding-left: 12px; padding-right: 12px; }
+  .a-sheet { padding: 0 20px; }
+  .a-head { grid-template-columns: 1fr auto; gap: 14px; }
+  .a-doc { grid-column: 1 / -1; grid-row: 2; text-align: left; }
+  .a-layout { grid-template-columns: minmax(0, 1fr); }
+  .a-margin { padding: 18px 0 0; border-left: none; border-top: 1px solid var(--graphite); }
+  .a-margin-foot { display: none; }
+  .a-procedure { grid-template-columns: 1fr; }
+  .a-four-grid { grid-template-columns: 1fr; }
+  .a-titleblock { grid-template-columns: 1fr 1fr 1fr; }
+  .a-tb-cell:nth-child(6) { display: block; }
+  .a-tb-cell span { font-size: 6.5px; }
+}
+
+@media (max-width: 560px) {
+  .a-head { grid-template-columns: 1fr; }
+  .a-rev { border-left: none; padding-left: 0; text-align: left; }
+  .a-rev b { display: inline; font-size: 16px; }
+  .a-titleblock { grid-template-columns: 1fr 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { transition: none !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+<div class="a-wall">
+<div class="a-sheet">
+<span class="a-tape a-tape--tl" aria-hidden="true"></span>
+<span class="a-tape a-tape--tr" aria-hidden="true"></span>
+<span class="a-tape a-tape--bl" aria-hidden="true"></span>
+<span class="a-tape a-tape--br" aria-hidden="true"></span>
+
+<header class="a-head">
+  <p class="a-brand">PACKSWIFT <span>TRACKING</span></p>
+  <p class="a-doc">DRAWING SET PS-TRK-06<br><span>TRACKING TIER &middot; NORTHERN HUB</span></p>
+  <p class="a-rev">REV <b>C</b><br><span>14 MAR</span></p>
+</header>
+
+<div class="a-layout">
+<main class="a-main">
+  <header class="a-sec">
+    <p class="a-kicker">SHEET 06 &middot; ONBOARDING</p>
+    <h1>Request tool setup</h1>
+    <p class="a-lede">PackSwift IT &middot; for new starters &middot; five minutes</p>
+  </header>
+
+  <p class="a-copy">Some support work needs us to look at the exact text a browser sends to
+  one of our sites, and to send that text again with a small change. A browser will not
+  show you that text. The request tool sits between the browser and the site and records
+  it.</p>
+
+  <p class="a-copy">Use either tool below. Both are free and both do the same four things.
+  Pick one and finish the whole page; you do not need the other.</p>
+
+  <div class="a-procedure">
+    <section class="a-proc">
+      <h2 class="a-proc-title"><span>A</span>Burp Suite Community</h2>
+      <ol class="a-steps">
+        <li>Download Burp Suite Community from <code>portswigger.net/burp/communitydownload</code>
+            and run the installer. Accept the default options. Community is enough; do not
+            buy anything.</li>
+        <li>Open Burp. On the first screen choose <strong>Temporary project</strong> and then
+            <strong>Use Burp defaults</strong>. The window that follows is the workbench.</li>
+        <li>Open the <strong>Proxy</strong> tab, then <strong>Intercept</strong>. Check that
+            <em>Intercept is on</em> is not blocking everything yet; we turn it on in step 5.</li>
+        <li>In the same <strong>Proxy</strong> tab open <strong>Options</strong> (or
+            <strong>Settings</strong>, depending on version) and find the proxy listener. It
+            should say <code>127.0.0.1:8080</code>. If it is off, turn it on.</li>
+        <li>In your browser, set the HTTP proxy to <code>127.0.0.1</code> port
+            <code>8080</code>, and make sure <code>localhost</code> and
+            <code>127.0.0.1</code> are <em>not</em> bypassed if the browser offers that
+            setting. Reload any page. A request should now wait in the
+            <strong>Intercept</strong> tab.</li>
+        <li>Open the tool's own certificate page at <code>http://burp</code> in the same
+            browser and follow the install link, so the browser trusts the tool. On Firefox
+            this is enough; on Chrome import the certificate into the system store.</li>
+      </ol>
+    </section>
+
+    <section class="a-proc">
+      <h2 class="a-proc-title"><span>B</span>Caido</h2>
+      <ol class="a-steps">
+        <li>Download Caido from <code>caido.io/download</code> and run the installer. The
+            free plan is enough.</li>
+        <li>Start Caido and create a local project. Open the project.</li>
+        <li>Open <strong>Settings</strong>, then <strong>Network</strong>, and note the proxy
+            address, usually <code>127.0.0.1:8080</code>. Start the proxy if it is stopped.</li>
+        <li>Open <strong>Settings</strong>, then <strong>Certificate</strong>, and install the
+            certificate in the browser you will use, following the on-screen instructions.</li>
+        <li>Set the browser's HTTP proxy to <code>127.0.0.1</code> port <code>8080</code>, and
+            keep <code>localhost</code> and <code>127.0.0.1</code> out of the bypass list if
+            the browser offers one.</li>
+        <li>Open <strong>HTTP History</strong> and reload any page. The request should appear
+            in the list.</li>
+      </ol>
+    </section>
+  </div>
+
+  <section class="a-four">
+    <h2>THE FOUR THINGS YOU WILL DO</h2>
+    <div class="a-four-grid">
+      <article>
+        <p class="a-four-num">01</p>
+        <h3>Scope</h3>
+        <p>Tell the tool which host belongs to work. In Burp, right click the host in
+        <strong>HTTP history</strong> and choose <strong>Add to scope</strong>. In Caido,
+        right click the request and choose <strong>Add to scope</strong>. Everything else is
+        background noise and can be ignored.</p>
+      </article>
+      <article>
+        <p class="a-four-num">02</p>
+        <h3>Intercept</h3>
+        <p>Turn interception on, then load the page you are working on. The request pauses
+        before it leaves. Read the first line and the headers: they are plain text, one per
+        line.</p>
+      </article>
+      <article>
+        <p class="a-four-num">03</p>
+        <h3>Edit</h3>
+        <p>Change the part you came to change. Keep the line endings as they are; the page
+        reads them literally.</p>
+      </article>
+      <article>
+        <p class="a-four-num">04</p>
+        <h3>Send it again</h3>
+        <p>To resend, in Burp press <strong>Forward</strong> to send the request you are
+        holding, or right click it in <strong>HTTP history</strong> and choose
+        <strong>Send to Repeater</strong>, then press <strong>Send</strong> in Repeater.
+        In Caido use <strong>Replay</strong> and press <strong>Send</strong>. The response
+        appears beside the request.</p>
+      </article>
+    </div>
+  </section>
+
+  <div class="a-it-note">
+    <p><strong>If no request appears:</strong> check that the browser proxy is
+    <code>127.0.0.1:8080</code>, that the tool's proxy listener is running on the same
+    port, and that the site's address is not in the browser's bypass list. Turn the proxy
+    off again when you are done with work.</p>
+    <p>New starters: post in the IT channel with the page you are on and the step number.
+    Do not paste request contents into the channel.</p>
+  </div>
+
+  <p class="a-copy"><a href="/">Back to tracking</a> &middot; <a href="/deploy-log">Deploy log</a></p>
+
+  <p class="a-figcaption">FIG. 2 &mdash; PROCEDURE SHEET, REV A &middot; ISSUED FOR ONBOARDING</p>
+</main>
+
+<aside class="a-margin">
+  <nav class="a-sheet-index" aria-label="Sheets in this set">
+    <p class="a-notes-head">SHEETS IN THIS SET</p>
+    <a class="a-sheet-link" href="/"><span class="a-sheet-num">01</span><span>Tracking index</span></a>
+    <a class="a-sheet-link" href="/deploy-log"><span class="a-sheet-num">02</span><span>Deploy log</span></a>
+    <a class="a-sheet-link" href="/proxy-setup" aria-current="page"><span class="a-sheet-num">06</span><span>Request tool setup</span></a>
+  </nav>
+  <div class="a-note">
+    <p class="a-notes-head">MARGIN NOTE 7</p>
+    <p>Read the first line and the headers. They are text, one line at a time.</p>
+  </div>
+  <div class="a-note a-note--blue">
+    <p class="a-notes-head">MARGIN NOTE 8</p>
+    <p>Keep the line endings as they are. The page reads them literally.</p>
+  </div>
+  <p class="a-margin-foot">FIELD COPY<br>DO NOT REMOVE FROM THE CLOSET</p>
+</aside>
+</div>
+
+<footer class="a-titleblock">
+  <div class="a-tb-cell"><span>PROJECT</span><b>PackSwift tracking tier</b></div>
+  <div class="a-tb-cell"><span>DRAWING</span><b>PS-TRK-06</b></div>
+  <div class="a-tb-cell"><span>REV</span><b>C</b></div>
+  <div class="a-tb-cell"><span>DATE</span><b>14 MAR</b></div>
+  <div class="a-tb-cell"><span>DRAWN</span><b>R.M.</b></div>
+  <div class="a-tb-cell"><span>CHECKED</span><b>J.H.</b></div>
+  <div class="a-tb-cell"><span>SCALE</span><b>N.T.S.</b></div>
+  <div class="a-tb-cell"><span>SHEET</span><b>06 OF 07</b></div>
+</footer>
+</div>
+</div>
+</body>
+</html>

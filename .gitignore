@@ -1,0 +1,4 @@
+# Python bytecode from local author-side runs (images set
+# PYTHONDONTWRITEBYTECODE, local runs don't)
+__pycache__/
+*.pyc

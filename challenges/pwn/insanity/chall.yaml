@@ -1,0 +1,37 @@
+name: insanity
+author: nothoudaifa
+category: pwn
+hidden: true
+
+description: |
+  good luck ;)
+
+points: {min: 150, max: 300}
+tiebreakEligible: true
+tags: [beginner, Buffer Overflow, Stack Memory, Memory Safety]
+
+flagsDynamicBase: ingehack{why_guess_when_you_can_overflow}
+flagsDynamicMode: auto
+
+instanced: true
+instancer:
+  challengeIntegrationId: insanity
+  timeoutMilliseconds: 1800000
+  extendable: true
+  expose:
+    - {kind: tcp-ssl, hostPrefix: insanity, containerName: main, containerPort: 1337, shouldDisplay: true, title: "insanity (TLS)"}
+  services:
+    main:
+      environment:
+        RCTF_FLAG: ${RCTF_FLAG}
+      user: "ctf"
+      mem_limit: 128m
+      read_only: false
+      pids_limit: 128
+      networks: [internal]
+  networks:
+    internal: {internal: true}
+
+files:
+  - name: chall
+    path: files/chall

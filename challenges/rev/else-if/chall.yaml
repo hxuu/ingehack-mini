@@ -1,0 +1,34 @@
+name: else-if
+author: 4ym3n
+category: rev
+hidden: true
+
+description: |
+  αυτοματοποίηση
+
+  There are plenty of decisions to follow. Can you teach your tools to do
+  the work?
+
+  Download the stripped **x86-64 Linux ELF** and recover the input it accepts:
+
+  ```sh
+  chmod +x else_if
+  ./else_if 'candidate'
+  ```
+
+  It runs on Linux or WSL. The accepted input is the flag.
+
+  Flag format: `1ngh4ck{...}`
+
+points: {min: 300, max: 500}
+tiebreakEligible: true
+tags: [medium, Linux, ELF, control flow, byte manipulation, automation]
+
+flag: 1ngh4ck{100_l4y3rs_d33p_4nd_st1ll_just_4_vm}
+
+files:
+  - name: else_if
+    path: files/else_if
+
+instanced: false
+container: false

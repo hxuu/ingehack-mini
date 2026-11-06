@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Source &mdash; PackSwift Dispatch{% endblock %}
+{% block body %}
+<p class="b-kicker">Reference copy</p>
+<h1 class="b-h1">Source</h1>
+<p class="b-lede">The application and the edge, as they run.</p>
+<div class="b-stack">
+  <span class="b-stack-edge" aria-hidden="true"></span>
+  {% for file in files %}
+  <div class="listing">
+    <p class="listing-name">{{ file.name }}</p>
+    <pre class="listing-pre">{% for number, line in file.lines %}<span class="listing-ln">{{ "%3d"|format(number) }} | </span>{{ line }}
+{% endfor %}</pre>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

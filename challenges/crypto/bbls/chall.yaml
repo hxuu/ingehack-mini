@@ -1,0 +1,27 @@
+name: bbls
+author: koyphshi
+category: crypto
+hidden: true
+tiebreakEligible: true
+description: |
+  Pairings can't go on top of each other, which makes circuits based on pairings
+  such as R1CS a headache. This is a super-genius layer 2 blub. I have no idea
+  what I am talking about btw :3
+
+  This is a raw TCP service. Connect with:
+
+  `ncat --ssl --ssl-verify bbls.challs.ingeniums.club 9450`
+
+  Send one JSON object per line.
+difficulty: easy
+points:
+  min: 100
+  max: 300
+tags:
+  - crypto
+  - pairing
+  - bls
+  - bn128
+flag: "ingehack{seems_like_you_are_ready_for_v2_?_:/}"
+instanced: false
+tcpPort: 13415

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}PackSwift support{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='fonts/fonts.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='skin.css') }}">
+</head>
+<body>
+{% block shell %}
+<div class="b-room">
+  <div class="b-cabinet">
+    <div class="b-drawer">
+      <div class="b-tabs" aria-hidden="true"><span>A</span><span>B</span><span>C</span></div>
+      <div class="b-folder{% block folder_class %}{% endblock %}">
+        <span class="b-tab">{% block tab %}{% endblock %}</span>
+        <span class="b-clip" aria-hidden="true"></span>
+        {% block leaf %}{% endblock %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+</body>
+</html>

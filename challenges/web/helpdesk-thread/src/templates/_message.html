@@ -1,0 +1,9 @@
+<article class="b-form b-form--{{ message.role }}">
+  <span class="b-hole" aria-hidden="true"></span>
+  <div class="b-form-top">
+    <span class="b-cell"><i>From</i><b>{{ message.author }}</b></span>
+    <span class="b-cell"><i>Received</i><b>{{ message.when }}</b></span>
+    <span class="b-cell"><i>Copy</i><b>{{ message.copy_label }}</b></span>
+  </div>
+  <p class="b-form-body">{{ message.body }}</p>
+</article>

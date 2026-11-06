@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Dispatch dashboard &mdash; PackSwift{% endblock %}
+{% block content %}
+<p class="c-kicker">Manifest &middot; shift 06:00</p>
+<h1 class="c-h1">Dispatch dashboard</h1>
+<p class="c-lede">Shift change is at 06:00. The north route is closed until the bridge reopens.</p>
+<div class="c-slips">
+  <div class="c-pin-card">
+    <span class="c-pin" aria-hidden="true"></span>
+    <span class="c-count">41</span>
+    <span class="c-count-label">Parcels waiting on a route</span>
+  </div>
+  <div class="c-pin-card">
+    <span class="c-pin" aria-hidden="true"></span>
+    <span class="c-count">12</span>
+    <span class="c-count-label">Vans on the road</span>
+  </div>
+  <div class="c-pin-card">
+    <span class="c-pin" aria-hidden="true"></span>
+    <span class="c-count c-count--text">North</span>
+    <span class="c-count-label">Route closed until the bridge reopens</span>
+  </div>
+</div>
+<div class="c-index">
+  <span class="c-tab">Handover</span>
+  <h2>Handover note</h2>
+  <p class="c-flag">{{ flag }}</p>
+  <p class="c-index-foot">Leave the card on the board for the next shift.</p>
+</div>
+{% endblock %}

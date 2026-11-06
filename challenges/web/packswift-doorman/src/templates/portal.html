@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Staff area &mdash; PackSwift{% endblock %}
+{% block content %}
+<p class="c-kicker">Staff entrance</p>
+{% if allowed %}
+<h1 class="c-h1">Staff console</h1>
+<p class="c-lede">Signed in as dispatcher. The depot board is open for your shift.</p>
+<div class="c-slip">
+  <span class="c-tab">Shift pass</span>
+  <p class="c-slip-row"><span>Role</span><b>dispatcher</b></p>
+  <p class="c-slip-row"><span>Depot</span><b>Callow Street</b></p>
+  <p class="c-slip-row"><span>Shift</span><b>06:00&ndash;14:00</b></p>
+</div>
+<a class="c-card-link" href="{{ url_for('dispatch') }}">
+  <b>Dispatch dashboard</b>
+  <span>Parcels waiting on a route</span>
+  <span class="c-arrow" aria-hidden="true">&rarr;</span>
+</a>
+{% else %}
+<h1 class="c-h1">Staff area</h1>
+<p class="c-lede">This part of the portal is for PackSwift staff. Your account does not carry a staff role.</p>
+<p class="c-stamp">No staff role</p>
+<p class="c-hint">Parcels can be tracked from the <a href="{{ url_for('home') }}">tracking page</a> without an account.</p>
+{% endif %}
+{% endblock %}

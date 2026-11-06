@@ -1,0 +1,79 @@
+#!/usr/bin/env python3
+
+import base64
+import ctypes
+import gzip
+import hashlib
+import hmac
+import os
+import platform
+import sys
+
+
+KEY = @KEY@
+NONCE = @NONCE@
+TAG = @TAG@
+PAYLOAD = (
+@PAYLOAD@
+)
+
+
+def unpack():
+    key = bytes.fromhex(KEY)
+    nonce = bytes.fromhex(NONCE)
+    encrypted = base64.b64decode(PAYLOAD, validate=True)
+    actual = hmac.new(key, nonce + encrypted, hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(TAG, actual):
+        raise ValueError("damaged payload")
+    clear = bytearray()
+    for offset in range(0, len(encrypted), 32):
+        counter = (offset // 32).to_bytes(4, "little")
+        stream = hashlib.sha256(key + nonce + counter).digest()
+        clear.extend(a ^ b for a, b in zip(encrypted[offset:offset + 32], stream))
+    return gzip.decompress(clear)
+
+
+def main():
+    if len(sys.argv) != 2:
+        print("usage: python3 stub.py 'ingehack{candidate}'", file=sys.stderr)
+        return 2
+    token = sys.argv[1]
+    if token.startswith("ingehack{") and token.endswith("}"):
+        token = token[9:-1]
+    try:
+        token = token.encode("ascii")
+    except UnicodeEncodeError:
+        print("false")
+        return 1
+    if len(token) != 57:
+        print("false")
+        return 1
+    if (sys.platform != "linux" or platform.machine().lower() not in ("x86_64", "amd64")
+            or ctypes.sizeof(ctypes.c_void_p) != 8):
+        print("requires x86-64 Linux and 64-bit Python 3.9+", file=sys.stderr)
+        return 2
+
+    fd = os.memfd_create("stub-offline", flags=0)
+    try:
+        with os.fdopen(fd, "wb", closefd=False) as target:
+            target.write(unpack())
+        library = ctypes.CDLL("/proc/self/fd/" + str(fd))
+        cuts = (0, 9, 18, 23, 39, 45, 57)
+        passed = True
+        for i in range(6):
+            check = getattr(library, "check" + str(i + 1))
+            check.argtypes = (ctypes.c_char_p, ctypes.c_size_t)
+            check.restype = ctypes.c_int
+            part = token[cuts[i]:cuts[i + 1]]
+            passed &= check(part, len(part)) == 1
+    finally:
+        os.close(fd)
+    if passed:
+        print("ingehack{" + token.decode("ascii") + "}")
+        return 0
+    print("false")
+    return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

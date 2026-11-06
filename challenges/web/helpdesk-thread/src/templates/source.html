@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Source &mdash; PackSwift support{% endblock %}
+{% block shell %}
+<div class="b-room">
+  <div class="b-stack">
+    <div class="b-page b-page--back" aria-hidden="true"></div>
+    {% for file in files %}
+    <div class="b-page">
+      <div class="b-page-head"><span>{{ file.name }}</span><span>PackSwift support</span></div>
+      <pre class="b-code">{% for number, line in file.lines %}{{ number }} | {{ line }}
+{% endfor %}</pre>
+      <div class="b-page-foot"><span>Printed 15 Oct 94</span><span>1 of 1</span></div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

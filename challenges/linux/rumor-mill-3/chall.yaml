@@ -1,0 +1,51 @@
+name: rumor-mill-3
+author: boul3h14
+category: linux
+hidden: true
+tiebreakEligible: false
+
+description: |
+  **Briefing**
+  Three people administered this box. Three people left notes. None of them
+  told the whole truth.
+
+  You start with a shell and a handover note that was already stale when it
+  was written. The flag is deeper in the box, behind accounts that were never
+  meant to be yours. At every step, the box offers a shortcut that looks right.
+
+  **Objective**
+  Recover the flag. Verify what you are told.
+
+  **Connection**
+  SSH sits behind the TLS terminator, so wrap the client:
+  ```sh
+  ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' \
+      y4ss1n3@rumor-mill-3.challs.ingeniums.club -p 9450
+  ```
+  Password: `4rt4z4`. A TTY is required: `su` prompts on the terminal, so a
+  raw `nc` session cannot complete the chain.
+
+  **Flag format**
+  `ingehack{...}`
+
+difficulty: hard
+# The ingest schema (ops/chall-payload.py) reads points.min/max. Both are 500
+# so the challenge is exactly the spec's 500 points.
+points:
+  min: 500
+  max: 500
+
+tags:
+  - hard
+  - linux
+  - forensics
+  - su
+  - base64
+  - openssl
+  - decoy
+
+flag: ingehack{3v3ry0n3_l13d_bu7_th3_l0g_d1dn7}
+instanced: false
+# Raw-TCP route: ops/deploy-static.sh puts a Traefik TCP router on the tcp
+# entrypoint (published as the mapped tcp-ssl port, 9450) for this port.
+tcpPort: 2222

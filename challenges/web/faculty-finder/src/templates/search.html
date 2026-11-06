@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Course Finder &mdash; Faculty of Sciences{% endblock %}
+{% block content %}
+<section class="b-searchcard">
+  <p class="b-cardlabel">Search the index</p>
+  <form class="b-form" action="/search" method="get">
+    <label for="q">Course code or keyword</label>
+    <div class="b-form-row">
+      <input id="q" name="q" value="{{ query }}" autocomplete="off">
+      <button type="submit">Search</button>
+    </div>
+  </form>
+  <p class="b-hint">Type a course code or a word from the title.</p>
+</section>
+
+<p class="b-results-label">
+  {% if query %}Results for <span class="term">{{ query|safe }}</span>:{% else %}Course list &mdash; Michaelmas term{% endif %}
+</p>
+
+<div class="b-grid">
+  <article class="b-card">
+    <span class="b-hole" aria-hidden="true"></span>
+    <span class="b-tab-letter" aria-hidden="true">B</span>
+    <p class="b-code">BIO 101</p>
+    <h3 class="b-title">Cells and Their Habits</h3>
+    <p class="b-dept">Biology &middot; 3 credits</p>
+    <p class="b-note">Michaelmas term &middot; entry 04-118</p>
+  </article>
+  <article class="b-card">
+    <span class="b-hole" aria-hidden="true"></span>
+    <span class="b-tab-letter" aria-hidden="true">B</span>
+    <p class="b-code">BIO 204</p>
+    <h3 class="b-title">Laboratory Notes</h3>
+    <p class="b-dept">Biology &middot; 2 credits</p>
+    <p class="b-note">Hilary term &middot; entry 04-204</p>
+  </article>
+  <article class="b-card">
+    <span class="b-hole" aria-hidden="true"></span>
+    <span class="b-tab-letter" aria-hidden="true">C</span>
+    <p class="b-code">CHEM 118</p>
+    <h3 class="b-title">Reactions in Practice</h3>
+    <p class="b-dept">Chemistry &middot; 4 credits</p>
+    <p class="b-note">Michaelmas term &middot; entry 07-032</p>
+  </article>
+</div>
+
+<aside class="b-noticecard">
+  <span class="b-notice-stamp" aria-hidden="true">IT</span>
+  <h2 class="b-cardlabel">From IT</h2>
+  <p>The old course widget still calls <code>/api/jsonp</code> every time this page
+  loads. It was supposed to go when the new search arrived. It did not, and nobody
+  here can get it to render properly any more. Please stop asking us about it.</p>
+</aside>
+
+<div class="b-suggest">
+  <h2>Popular this term</h2>
+  <ul class="suggestions"></ul>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='widget.js') }}"></script>
+<script src="/api/jsonp?cb=renderSuggestions"></script>
+{% endblock %}

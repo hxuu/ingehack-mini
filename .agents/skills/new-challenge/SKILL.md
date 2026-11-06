@@ -35,6 +35,20 @@ Ask the author, and scaffold only once all six are answered:
    If unsure between static and instanced, recommend based on parallel-team
    use and whether each team needs an isolated copy. Prefer description-only
    over shipping a dummy container.
+3b. **Victim browser (web bot challenges)** - the platform's admin-bot
+    worker (docs/status.md, rctf.osec.io/integrations/admin-bot) runs a
+    Chrome context per submitted job; a challenge never ships its own bot
+    inside the container. Scaffold shape: a trusted handler `admin-bot.ts`
+    in the challenge dir (imports only the `Challenge` type module, cf. the
+    web bots in challenges/web/), manifest field `adminBot: admin-bot.ts`
+    whose contents `ops/chall-payload.py` attaches as `adminBotConfig:
+    {code}`. The handler source is PUBLIC through the platform API, so it
+    never holds a secret: the victim signs in with the team's flag read
+    from `ctx.job.flags[0].flag` at run time, and `restrictDomains`
+    allow-lists the challenge host with a catch-all deny. In the app, the
+    victim account's password IS the flag (read from the env at boot), and
+    the players' own account passwords are per-boot random and shown on the
+    login page - credentials never live in the dumped `/src`.
 4. **Concept tag(s)** — the first-year CS concept this teaches (e.g. HTTP
    Protocol, Data Encoding, Browser Trust Boundaries). rCTF takes these as
    free-form tags.
@@ -72,10 +86,14 @@ Create `challenges/<category>/<name>/` with:
   Description-only challenges add `container: false` (default is `true` for
   `instanced: false`); `instanced: true` always means a container.
   Copy the shape from the exemplars instead of writing from memory:
-  - `challenges/misc/sanity-check/` — static, plain page
-  - `challenges/misc/hello-shared/` — static, shared-instance flavor
-  - `challenges/misc/hello-instancer/` — instanced, all three expose kinds
-  - `challenges/misc/sanity-check-2/` and `-3/` — the two handout forms
+  - `challenges/misc/sanity-check/` — static container, plain page, 0 points
+    (the event's welcome challenge)
+  - `challenges/linux/sudoers/` — static container with a raw-TCP
+    (`tcpPort:`) route and the TLS-wrapped client instructions
+  - `challenges/misc/bulletproof-tenant-2/` — description-only, local
+    (`path:`) handouts
+  - `challenges/pwn/is-this-actually-pwn/` — instanced, `tcp-ssl` expose,
+    per-team flag, committed handout
   CI injects the `image:` at register time.
 - Gotchas not visible in the schema doc: the instancer's `services` block
   bakes in `mem_limit: "6m"`, `read_only: true`, `cap_drop: ['ALL']`

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Agent guidelines &mdash; PackSwift support{% endblock %}
+{% block shell %}
+<div class="b-room">
+  <div class="b-memo">
+    <span class="b-paperclip" aria-hidden="true"></span>
+    <p class="b-memo-head">Desk note &middot; support &middot; photocopy</p>
+    <h1>Agent guidelines</h1>
+    <ol class="b-clauses">
+      <li><b>Keep replies on the ticket.</b> The customer reads the thread, not the desk note.</li>
+      <li><b>Do not alter the customer&rsquo;s words.</b> Quote the message as it was typed, then answer it.</li>
+      <li><b>Use the desk note for what the customer must not see.</b> The desk note is copied to the agent view only.</li>
+      <li><b>File the white copy. Send the canary.</b> The third copy stays in the ticket book.</li>
+    </ol>
+    <div class="b-memo-body">
+      <p>Desk screens work inside the customer&rsquo;s own ticket. Keep replies on the ticket so
+      the customer can read them, and use the desk note only for what the customer should
+      not see.</p>
+      <h2>Tokens we keep in cookies so the front end can read them</h2>
+      <ul>
+        <li><code>agent_token</code> &mdash; the ticket token. The reply form reads it from the
+        cookie and sends it back in the <code>X-Agent-Token</code> header.</li>
+      </ul>
+    </div>
+    <p class="b-underlined">Keeping the token in a cookie means every desk screen works
+    without a separate setup step for each browser tab.</p>
+    <footer class="b-foot">
+      <span>Supersedes procedure 3 (1987)</span>
+      <span><a href="/agent/tickets/1">open ticket</a></span>
+    </footer>
+    <span class="b-stamp" aria-hidden="true">Posted</span>
+  </div>
+</div>
+{% endblock %}

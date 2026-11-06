@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Deploy log &mdash; PackSwift Dispatch{% endblock %}
+{% block body %}
+<p class="b-kicker">Shift log</p>
+<h1 class="b-h1">Deploy log</h1>
+<p class="b-lede">What changed at the northern depot.</p>
+<ol class="b-log">
+  <li>
+    <p class="b-log-time">11 March <b>09:12</b></p>
+    <p class="b-log-actor">Edge</p>
+    <p class="b-log-text">requests whose path starts with <code>/internal/</code> are answered at
+    the edge with a 403. The edge does not contact the dispatch application for these.</p>
+  </li>
+  <li>
+    <p class="b-log-time">11 March <b>09:12</b></p>
+    <p class="b-log-actor">Application</p>
+    <p class="b-log-text">address decoding left at the default. The application still decodes
+    the address before it chooses a page; this was already the behaviour and was not changed.</p>
+  </li>
+  <li>
+    <p class="b-log-time">11 March <b>09:30</b></p>
+    <p class="b-log-actor">Edge</p>
+    <p class="b-log-text">rule deployed to every node. No application deploy.</p>
+  </li>
+</ol>
+<p class="b-signoff">Signed off at 09:41 &middot; S. Rennie</p>
+{% endblock %}

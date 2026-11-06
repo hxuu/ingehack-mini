@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Bursary help{% endblock %}
+{% block main_class %}a-book a-book--single{% endblock %}
+{% block content %}
+<div class="a-slipwrap">
+  <section class="a-slip a-slip--wide">
+    <span class="a-slip-corner" aria-hidden="true"></span>
+    <p class="a-kicker">Advice sheet 4</p>
+    <h1>Refunds and transfers</h1>
+    <ol class="a-faq">
+      <li>
+        <h2>Are transfers safe?</h2>
+        <p>Yes. Every transfer is protected because the session cookie is signed. If anyone changed the sign-in details, the server would notice and refuse the request, so a transfer can only come from an account that has signed in.</p>
+      </li>
+      <li>
+        <h2>Can a student approve their own refund?</h2>
+        <p>No. Only a bursary account can approve a refund, and the console checks the account before it moves any money.</p>
+      </li>
+      <li>
+        <h2>Do I need to do anything before I share a link?</h2>
+        <p>No. Open the link in the usual browser and the bursary's account is used automatically.</p>
+      </li>
+      <li>
+        <h2>Who do I contact?</h2>
+        <p>The faculty office on the second floor, or the bursar at the counter between ten and four.</p>
+      </li>
+    </ol>
+  </section>
+</div>
+{% endblock %}

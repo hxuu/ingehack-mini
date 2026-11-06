@@ -645,3 +645,58 @@ a Skin Release.
   `/app/apps/api/dist/index.js` and its source map, so the loaded image is the
   built one.
 
+
+## Platform admin-bot worker — live (2026-11-06, verified)
+
+The platform's admin-bot integration (rctf.osec.io/integrations/admin-bot) is live:
+web challenges that need a victim browser no longer ship their own bot; the
+participant pastes a link into the challenge's run-bot form and the worker runs the
+challenge's `admin-bot.ts` handler in a fresh Chrome context.
+
+- Setup matches the doc's deployment files. Prebuilt image
+  `ingehack-adminbot:author-preview-v1` (same sha locally and on the VM) — built from
+  the platform fork (`~/work/rctf-preview`, worker source identical to upstream
+  cf80517c), Chrome + Firefox prewarmed in-image (`/data/browser-cache`, 735 MB also
+  seeded into the `adminbot_browser-cache` volume).
+- Deployed at `/opt/rctf/adminbot/` (compose.yml + .env): external network
+  `rctf_network` (the same network the rctf API container is on), **nothing
+  published on the host**; `RCTF_BASE_URL=http://rctf:80`, shared 64-hex secret (in
+  `/opt/rctf/adminbot/.env`), poll 3 s, tmpfs scratch, `read_only`, cap_drop ALL,
+  2 CPU / 3 GB / 1024 pids. Redeploy = `docker compose -f /opt/rctf/adminbot/compose.yml up -d`.
+- Provider wired in `/opt/rctf/rctf.d/05-providers.yaml`: `adminBot.provider`
+  (`admin-bots/rctf-ts`, endpoint `http://adminbot:21337`, same secret) +
+  `maxLogsPerUserChallenge: 5`; `docker compose up -d --force-recreate rctf`.
+- Verified: the previously-404 `/api/v2/admin/admin-bot/queue-depth` now answers
+  `goodAdminBotQueueDepth` (depth 0) with the shared secret; the worker's
+  `/v1/test` builds all three September web handlers and extracts their
+  inputs/timeout. Challenge-side contract: `chall.yaml` gains `adminBot:
+  admin-bot.ts` and `ops/chall-payload.py` emits `adminBotConfig: {code}`.
+
+## Welcome challenge consolidation (2026-11-03, merged PR)
+
+- The five-strong sanity-check family is now a single challenge:
+  `challenges/misc/sanity-check/` — id `sanity-check` (static challenge, id is
+  its `name`), shared container at
+  `http://sanity-check.challs.ingeniums.club:9487/` /
+  `https://…:9488/`, flag `ingehack{http_is_just_requests}`.
+- It is the event's **welcome challenge** and pays **0 points**
+  (`points: {min: 0, max: 0}`, `tiebreakEligible: false`) so finishing it never
+  moves the scoreboard. rCTF's decay provider clamps to `[min, max]` and does
+  not divide by `max - min`, so a 0/0 challenge is well-defined; raising it to
+  100 is a one-line manifest edit (points changes are allowed while solves
+  exist, unlike `scoring.kind`).
+- Retired in the same merge (hide + wipe via the `retire` job; statics also get
+  their `static-<dirname>` container torn down):
+  `sanity-check-2`, `sanity-check-3`, `sanity-check-shared` (dir
+  `hello-shared`), `sanity-check-instanced` (id `hello-instancer`, instanced —
+  live per-team instances expire through `timeoutMilliseconds`).
+- Consequence worth knowing: the beginner drills those directories demonstrated
+  (local `path:` handout, R2 `url:` handout, per-team instanced flag, all three
+  expose kinds) no longer have in-tree beginner exemplars. The real challenges
+  still cover the shapes — `bulletproof-tenant-2` (description-only + local
+  handouts), `keep-secrets`/`luckypatcher` (local handouts),
+  `is-this-actually-pwn` (instanced + handout), `sudoers` (static raw TCP) —
+  and the per-team flag path is exercised by any instanced challenge.
+- Side effect: historical sections above still mention
+  `hello-instancer`/`hello-shared` as the E2E fixtures; that is the record of
+  what happened, not the current state.
