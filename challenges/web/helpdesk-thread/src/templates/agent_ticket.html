@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}{{ thread.subject }} &mdash; support desk{% endblock %}
+{% block folder_class %} b-folder--desk{% endblock %}
+{% block tab %}AGENT &middot; {{ "%04d"|format(ticket_id) }}{% endblock %}
+{% block leaf %}
+<div class="b-leaf">
+  <header class="b-head">
+    <div class="b-fileline"><span>File 04 / Customer complaints</span><span>Card {{ "%04d"|format(ticket_id) }}</span></div>
+    <p class="b-staff">Agent copy &mdash; do not file with the customer forms</p>
+    <h1>{{ thread.subject }}</h1>
+    <dl class="b-meta">
+      <div><dt>Account</dt><dd>{{ thread.owner }}</dd></div>
+      <div><dt>Opened</dt><dd>{{ thread.opened }}</dd></div>
+      <div><dt>Reference</dt><dd>{{ thread.reference }}</dd></div>
+      <div><dt>Status</dt><dd>{{ thread.status }}</dd></div>
+    </dl>
+    <nav class="b-nav" aria-label="PackSwift support">
+      <a href="/agent/tickets/{{ ticket_id }}" aria-current="page">Desk copy</a>
+      <a href="/agent/guidelines">Guidelines</a>
+      <a href="/src">Source</a>
+    </nav>
+  </header>
+
+  <aside class="b-note">
+    <span class="b-pin" aria-hidden="true"></span>
+    <p class="b-note-head">Desk note</p>
+    <p>This note stays on the desk side of the thread.</p>
+    <p class="b-flag" id="agent-flag">{{ flag }}</p>
+  </aside>
+
+  <div class="b-forms">
+    {% for message in messages %}
+    {% include "_message.html" %}
+    {% endfor %}
+  </div>
+
+  <form class="b-slip" id="reply">
+    <div class="b-slip-top"><span>Reply to the customer</span><span>Triplicate</span></div>
+    <label for="reply-body">Type on the top sheet. It carries through.</label>
+    <textarea id="reply-body" rows="4" spellcheck="false" placeholder="Write the reply here."></textarea>
+    <div class="b-slip-foot">
+      <span>White to customer &middot; canary to file</span>
+      <button type="submit">Send reply</button>
+    </div>
+  </form>
+
+  <footer class="b-foot">
+    <span>Agent copy &middot; return to cabinet 4</span>
+    <span><a href="/src">source</a></span>
+  </footer>
+</div>
+<script>
+  // The reply form runs in the agent's browser, so it reads the ticket token
+  // from the cookie and sends it with the request.
+  const tokenRow = document.cookie.split("; ").find((row) => row.startsWith("agent_token="));
+  const ticketToken = tokenRow ? tokenRow.split("=")[1] : "";
+  document.getElementById("reply").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const body = document.getElementById("reply-body").value;
+    fetch("/api/tickets/{{ ticket_id }}/append", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-Agent-Token": ticketToken,
+      },
+      body: "body=" + encodeURIComponent(body),
+    }).then(() => window.location.reload());
+  });
+</script>
+{% endblock %}

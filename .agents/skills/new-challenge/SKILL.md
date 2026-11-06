@@ -35,6 +35,20 @@ Ask the author, and scaffold only once all six are answered:
    If unsure between static and instanced, recommend based on parallel-team
    use and whether each team needs an isolated copy. Prefer description-only
    over shipping a dummy container.
+3b. **Victim browser (web bot challenges)** - the platform's admin-bot
+    worker (docs/status.md, rctf.osec.io/integrations/admin-bot) runs a
+    Chrome context per submitted job; a challenge never ships its own bot
+    inside the container. Scaffold shape: a trusted handler `admin-bot.ts`
+    in the challenge dir (imports only the `Challenge` type module, cf. the
+    web bots in challenges/web/), manifest field `adminBot: admin-bot.ts`
+    whose contents `ops/chall-payload.py` attaches as `adminBotConfig:
+    {code}`. The handler source is PUBLIC through the platform API, so it
+    never holds a secret: the victim signs in with the team's flag read
+    from `ctx.job.flags[0].flag` at run time, and `restrictDomains`
+    allow-lists the challenge host with a catch-all deny. In the app, the
+    victim account's password IS the flag (read from the env at boot), and
+    the players' own account passwords are per-boot random and shown on the
+    login page - credentials never live in the dumped `/src`.
 4. **Concept tag(s)** — the first-year CS concept this teaches (e.g. HTTP
    Protocol, Data Encoding, Browser Trust Boundaries). rCTF takes these as
    free-form tags.

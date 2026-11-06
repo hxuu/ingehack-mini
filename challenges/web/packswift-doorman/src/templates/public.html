@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Track a parcel &mdash; PackSwift{% endblock %}
+{% block content %}
+<p class="c-kicker">Depot 04 &middot; Callow Street</p>
+<h1 class="c-h1">Where is my <mark>parcel</mark>?</h1>
+<p class="c-lede">Enter the tracking number printed on your receipt.</p>
+<form class="c-form" method="get" action="{{ url_for('home') }}">
+  <label for="tracking">Tracking number</label>
+  <span class="c-leader" aria-hidden="true"></span>
+  <input id="tracking" name="tracking" value="{{ tracking }}" placeholder="PS 0000 00" autocomplete="off" spellcheck="false">
+  <button class="c-btn" type="submit">Look it up <span aria-hidden="true">&rarr;</span></button>
+</form>
+{% if tracking %}
+<p class="c-note">Tracking number <mark>{{ tracking }}</mark>: last scanned at the Callow Street depot, this morning.</p>
+<p class="c-meta">Depot 04 &middot; 06:12 &middot; route north</p>
+{% endif %}
+<p class="c-hint">PackSwift staff can open the <a href="{{ url_for('portal') }}">staff area</a> with their gateway account.</p>
+{% endblock %}

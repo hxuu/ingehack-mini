@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Course Finder &mdash; Faculty of Sciences{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='fonts/fonts.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='skin.css') }}">
+</head>
+<body>
+<div class="b-room">
+  <div class="b-cabinet">
+    <header class="b-plate">
+      <p class="b-plate-top">University of Ingenium</p>
+      <p class="b-plate-main">Course Index</p>
+      <p class="b-plate-sub">Faculty of Sciences &middot; drawer 4</p>
+    </header>
+    <nav class="b-tabs" aria-label="Course Finder">
+      <a href="{{ url_for('search') }}"{% if request.path == '/search' %} aria-current="page"{% endif %}>Course index</a>
+      <a href="{{ url_for('login') }}"{% if request.path == '/login' %} aria-current="page"{% endif %}>Sign in</a>
+      <a href="{{ url_for('inbox') }}"{% if request.path == '/inbox' %} aria-current="page"{% endif %}>Inbox</a>
+    </nav>
+    <div class="b-drawer">
+      <main>
+        {% block content %}{% endblock %}
+      </main>
+      <footer class="b-foot">
+        <p>Faculty of Sciences &middot; Registry Office</p>
+        <p><a href="/src">source</a></p>
+      </footer>
+    </div>
+  </div>
+</div>
+{% block scripts %}{% endblock %}
+</body>
+</html>

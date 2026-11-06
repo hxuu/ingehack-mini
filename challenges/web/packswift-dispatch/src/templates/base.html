@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}PackSwift Dispatch{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='fonts/fonts.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='skin.css') }}">
+</head>
+<body>
+<div class="b-desk">
+  <div class="b-clipboard">
+    <span class="b-clip" aria-hidden="true"></span>
+    <div class="b-sheet">
+      <div class="b-punch" aria-hidden="true"></div>
+      <header class="b-head">
+        <div>
+          <p class="b-stencil">PackSwift</p>
+          <p class="b-stencil-sub">Northern depot &middot; operations</p>
+        </div>
+        <p class="b-shift">Shift 3<br><span>11 Mar</span></p>
+      </header>
+      <nav class="b-nav" aria-label="PackSwift">
+        <a class="b-tape" href="/"{% if request.path == '/' %} aria-current="page"{% endif %}>Tracking</a>
+        <a class="b-tape" href="/deploy-log"{% if request.path == '/deploy-log' %} aria-current="page"{% endif %}>Deploy log</a>
+        <a class="b-tape" href="/src"{% if request.path == '/src' %} aria-current="page"{% endif %}>Source</a>
+      </nav>
+      <main class="b-body">
+        {% block body %}{% endblock %}
+      </main>
+      <footer class="b-foot">
+        <span>Ops desk &middot; extension 214</span>
+        <span><a href="/src">source</a></span>
+      </footer>
+    </div>
+  </div>
+  <span class="b-mug" aria-hidden="true"></span>
+</div>
+</body>
+</html>

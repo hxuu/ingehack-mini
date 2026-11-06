@@ -27,6 +27,17 @@ data = {
 }
 if "tags" in m: data["tags"] = m["tags"]
 
+# `adminBot: <file>` attaches a platform admin-bot handler. The file (e.g.
+# admin-bot.ts) is the trusted Challenge source for the admin-bots/rctf-ts
+# provider; the API validates it against the live worker and derives the
+# inputs/timeout from it at save time.
+admin_bot = (m.get("adminBot") or "").strip()
+if admin_bot:
+    bot_path = os.path.join(os.path.dirname(os.path.abspath(manifest)), admin_bot)
+    if not os.path.isfile(bot_path):
+        sys.exit(f"{manifest}: admin-bot source missing: {bot_path}")
+    data["adminBotConfig"] = {"code": open(bot_path, encoding="utf-8").read().strip()}
+
 if "flags" in m:                    # full entries form
     data["flags"] = m["flags"]
 elif "flagsDynamicBase" in m:       # per-team flags (instanced challenges)

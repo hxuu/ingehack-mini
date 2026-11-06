@@ -1,0 +1,16 @@
+name: Dispatch
+category: web
+author: hxuu
+hidden: true
+description: |
+  PackSwift's dispatch console is not for customers. The edge in front of it says so
+  plainly, and it is the only thing that says so.
+
+  Reachable at **http://packswift-dispatch.challs.ingeniums.club:9487/** or
+  **https://packswift-dispatch.challs.ingeniums.club:9488/** (scheme follows the
+  port).
+points: {min: 150, max: 500}
+tiebreakEligible: true
+tags: [medium, Web Architecture, HTTP Protocol]
+flag: ingehack{tw0_parsers_read_the_same_p4th}
+instanced: false

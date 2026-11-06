@@ -1,0 +1,20 @@
+name: The Doorman
+category: web
+author: hxuu
+hidden: true
+description: |
+  PackSwift moves parcels across three provinces. Staff get into the portal through
+  a single gateway, and the portal decides what you can see from what the gateway
+  says about you.
+
+  You are a customer with a tracking number and no badge. Get to the dispatcher
+  dashboard.
+
+  Reachable at **http://packswift-doorman.challs.ingeniums.club:9487/** or
+  **https://packswift-doorman.challs.ingeniums.club:9488/** (scheme follows the
+  port).
+points: {min: 150, max: 500}
+tiebreakEligible: true
+tags: [beginner, HTTP Protocol, Browser Trust Boundaries]
+flag: ingehack{a_he4der_is_just_t3xt}
+instanced: false

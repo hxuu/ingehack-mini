@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Statement &mdash; Bursary{% endblock %}
+{% block content %}
+<section class="a-page a-page-left">
+  <p class="a-kicker">Account particulars</p>
+  <h1 class="a-name">Student account</h1>
+  <dl class="a-fields">
+    <div><dt>Account</dt><dd>STU-86-0417</dd></div>
+    <div><dt>Name</dt><dd>{{ username }}</dd></div>
+    <div><dt>Term</dt><dd>Michaelmas 1986</dd></div>
+    <div><dt>Status</dt><dd>In good standing</dd></div>
+  </dl>
+  <div class="a-balance">
+    <span>Balance</span>
+    <strong>&pound;{{ "%.2f"|format(balance) }}</strong>
+  </div>
+  <p class="a-note">Keep this statement for your records. The bursary cannot accept
+  liability for cash handed over without a stamped slip.</p>
+  {% if flag %}
+  <span class="a-stamp">Paid &middot; 04 Nov 86</span>
+  {% else %}
+  <span class="a-stamp a-stamp--open">No refund</span>
+  {% endif %}
+</section>
+
+<section class="a-page a-page-right">
+  <p class="a-kicker">Account ledger</p>
+  <div class="a-ledger-wrap">
+    <table class="a-ledger">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Particulars</th>
+          <th class="num">Charges</th>
+          <th class="num">Credits</th>
+          <th class="num">Balance</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>02 Oct</td><td>Term fee &mdash; Michaelmas</td><td class="num">240.00</td><td class="num"></td><td class="num">240.00</td></tr>
+        <tr><td>06 Oct</td><td>Laboratory deposit</td><td class="num">35.00</td><td class="num"></td><td class="num">275.00</td></tr>
+        <tr><td>14 Oct</td><td>Bursary award</td><td class="num"></td><td class="num">155.00</td><td class="num">120.00</td></tr>
+        {% if flag %}
+        <tr><td>04 Nov</td><td>Refund &mdash; bursary counter</td><td class="num"></td><td class="num">{{ "%.2f"|format(balance - 120.0) }}</td><td class="num">{{ "%.2f"|format(balance) }}</td></tr>
+        {% endif %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="4">Balance carried forward</td>
+          <td class="num">{{ "%.2f"|format(balance) }}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  {% if flag %}
+  <aside class="a-credit">
+    <p class="a-kicker">Credit advice</p>
+    <p>Refund approved at the counter and credited to your account.</p>
+    <p class="a-ref">Reference note</p>
+    <pre class="a-flag">{{ flag }}</pre>
+  </aside>
+  {% else %}
+  <p class="a-cleared">No refunds have been credited to this account.</p>
+  {% endif %}
+</section>
+{% endblock %}
