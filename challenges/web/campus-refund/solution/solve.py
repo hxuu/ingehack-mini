@@ -5,13 +5,17 @@ from __future__ import annotations
 
 import argparse
 import http.cookiejar
+import json
 import re
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
 
 STUDENT_USERNAME = "student"
+
+CHALLENGE_ID = "el-minha"
 
 FLAG = re.compile(r"ingehack\{[^}\r\n]+\}")
 
@@ -53,7 +57,7 @@ def sign_in(base_url: str) -> urllib.request.OpenerDirector:
     return opener
 
 
-def prepare(base_url: str) -> None:
+def prepare(base_url: str) -> str:
     opener = sign_in(base_url)
     body = urllib.parse.urlencode({"html": PAGE}).encode()
     try:
@@ -63,7 +67,64 @@ def prepare(base_url: str) -> None:
         raise SolverError(f"cannot publish the page: {error}") from error
     if "/sandbox/" not in url:
         raise SolverError(f"the sandbox did not return a page address: {url}")
-    print(url)
+    return url
+
+
+def run_admin_bot(
+    platform_url: str,
+    token: str,
+    challenge_id: str,
+    url: str,
+    timeout: float = 90.0,
+) -> None:
+    """Submit the URL to the platform admin bot and wait for the visit to finish."""
+    base = platform_url.rstrip("/")
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json",
+        "User-Agent": "ingehack-solver/1.0",
+    }
+    request = urllib.request.Request(
+        f"{base}/api/v2/integrations/challs/{challenge_id}/admin-bot",
+        data=json.dumps({"inputs": {"url": url}}).encode(),
+        headers=headers,
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=20) as response:
+            submitted = json.load(response)
+    except urllib.error.HTTPError as error:
+        detail = error.read().decode("utf-8", "replace")[:200]
+        raise SolverError(f"the platform refused the job ({error.code}): {detail}") from error
+    except urllib.error.URLError as error:
+        raise SolverError(f"cannot reach the platform: {error}") from error
+    if submitted.get("kind") != "goodAdminBotJobSubmitted":
+        raise SolverError(f"the platform refused the job: {submitted.get('kind')}")
+    job_id = submitted["data"]["jobId"]
+    print(f"admin bot job {job_id} submitted", file=sys.stderr)
+
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        status_request = urllib.request.Request(
+            f"{base}/api/v2/integrations/challs/{challenge_id}/admin-bot/status",
+            headers={
+                "Authorization": f"Bearer {token}",
+                "User-Agent": "ingehack-solver/1.0",
+            },
+        )
+        try:
+            with urllib.request.urlopen(status_request, timeout=20) as response:
+                status = json.load(response)
+        except urllib.error.URLError as error:
+            raise SolverError(f"cannot read the job status: {error}") from error
+        job = (status.get("data") or {}).get("job") or {}
+        if job.get("id") == job_id:
+            if job.get("status") == "completed":
+                return
+            if job.get("status") == "failed":
+                raise SolverError("the admin bot job failed")
+        time.sleep(3)
+    raise SolverError("the admin bot did not finish in time")
 
 
 def submit(base_url: str) -> None:
@@ -82,17 +143,40 @@ def submit(base_url: str) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base-url", required=True)
-    parser.add_argument("--stage", choices=("prepare", "submit"))
+    parser.add_argument("--stage", choices=("prepare", "submit", "all"))
+    parser.add_argument(
+        "--platform-url",
+        help="platform base URL, needed for --stage all (for example https://ctf.ingeniums.club)",
+    )
+    parser.add_argument(
+        "--token",
+        help="player API token, needed for --stage all; the run-bot form uses the same account",
+    )
+    parser.add_argument("--challenge-id", default=CHALLENGE_ID)
     args = parser.parse_args()
 
     base_url = args.base_url.rstrip("/")
     try:
         if args.stage == "prepare":
-            prepare(base_url)
+            print(prepare(base_url))
         elif args.stage == "submit":
             submit(base_url)
+        elif args.stage == "all":
+            if not args.platform_url or not args.token:
+                print(
+                    "solver: --stage all needs --platform-url and --token",
+                    file=sys.stderr,
+                )
+                return 2
+            url = prepare(base_url)
+            print(f"bot target: {url}", file=sys.stderr)
+            run_admin_bot(args.platform_url, args.token, args.challenge_id, url)
+            submit(base_url)
         else:
-            print("solver: pass --stage prepare or --stage submit", file=sys.stderr)
+            print(
+                "solver: pass --stage prepare, submit, or all",
+                file=sys.stderr,
+            )
             return 2
     except SolverError as error:
         print(f"solver: {error}", file=sys.stderr)

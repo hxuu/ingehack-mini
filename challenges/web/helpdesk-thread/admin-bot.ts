@@ -16,12 +16,12 @@ export const challenge = new Challenge({
   timeoutMilliseconds: 30_000,
   browser: 'chrome',
 
-  // The input stays a bare challenge URL: the ticket whose desk view matters
-  // is the one already in the thread the agent keeps open.
+  // Any path on the challenge host is accepted. The handler only needs the
+  // origin: the desk view it opens is the ticket already in the thread.
   inputs: {
     url: {
       pattern:
-        '^https?://helpdesk-thread\\.challs\\.ingeniums\\.club(:9[0-9]+)?/?$',
+        '^https?://helpdesk-thread\\.challs\\.ingeniums\\.club(:9[0-9]+)?(/.*)?$',
     },
   },
 

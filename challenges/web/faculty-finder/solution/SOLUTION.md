@@ -37,3 +37,10 @@ admin-bot, or locally `victim/visit.py` with `FLAG` in the environment) → subm
 
 A playtester working from source gets a script to execute against the assistant within
 25 minutes, and understands that the policy allowed the gadget rather than being absent.
+
+## Running it end to end
+
+`solution/solve.py --stage all --base-url <challenge URL> --platform-url
+https://ctf.ingeniums.club --token <player token>` does the whole path: prepare, submit
+the URL to the platform admin bot, wait for the visit, then read the flag. The
+`--stage prepare` and `--stage submit` halves remain for `challenge-review`.

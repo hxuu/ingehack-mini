@@ -721,3 +721,25 @@ challenge's `admin-bot.ts` handler in a fresh Chrome context.
   `openssl s_client -quiet -connect HOST:9450 -servername HOST`.
 - Rule of thumb: if the challenge's solution depends on how a request is parsed,
   expose `tcp-ssl`. `http` is for challenges that only need pages.
+
+## Web challenge solvability pass before start (2026-11-07, verified)
+
+All six authored web challenges solved against the live platform with their own
+`solution/solve.py`:
+
+- `el-minha`, `course-finder`, `open-ticket`: `--stage all` (prepare, platform
+  admin bot, submit) returned the flag. `open-ticket` needed the admin-bot input
+  pattern relaxed first; all three now accept a bare host or any path on the
+  challenge host.
+- `dispatch`: `/internal%2Fdispatch` returned the flag. An encoded `i` (`%69`)
+  does not survive the HTTP proxy, which decodes it and hands the edge the plain
+  prefix.
+- `the-doorman`: the role header on `/portal/dispatch` returned the flag.
+- `packswift-tracking`: `--platform-url --token` started an instance, and the
+  tcp-ssl request returned the flag.
+
+Known limitation, not fixed in this pass: the three static bot challenges keep
+player-visible state in one shared container (`REFUNDED` in `campus-refund`,
+`MESSAGES` in `faculty-finder`, `THREADS` in `helpdesk-thread`). The first solve
+leaves the flag readable for every team that signs in afterwards. Either accept
+that for a beginner event or move those three to per-team instances.

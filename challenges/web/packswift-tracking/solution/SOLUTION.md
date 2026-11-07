@@ -73,3 +73,9 @@ using the onboarding page at `/proxy-setup`.
 
 - Static flag on an instanced challenge: sharing is possible. Accepted for a beginner
   event; revisit if it becomes a scoreboard problem.
+
+## Running it end to end
+
+`solution/solve.py --platform-url https://ctf.ingeniums.club --token <player token>`
+starts the team's instance if it is stopped, waits for the endpoint, wraps the socket
+in TLS, and prints the flag. `--base-url <instance URL>` skips the instance step.

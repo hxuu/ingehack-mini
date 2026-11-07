@@ -44,3 +44,10 @@ the sanitisation is doing too little work.
   so the front end can read them", presented as convenience, not as a risk.
 - Deliberately non-HttpOnly cookie; that is the lesson, so it must look like a normal
   decision in the source.
+
+## Running it end to end
+
+`solution/solve.py --stage all --base-url <challenge URL> --platform-url
+https://ctf.ingeniums.club --token <player token>` does the whole path: prepare, submit
+the URL to the platform admin bot, wait for the visit, then read the flag. The
+`--stage prepare` and `--stage submit` halves remain for `challenge-review`.
