@@ -21,7 +21,7 @@ export const challenge = new Challenge({
   inputs: {
     url: {
       pattern:
-        '^https?://faculty-finder\\.challs\\.ingeniums\\.club(:9[0-9]+)?/.*$',
+        '^https?://faculty-finder\\.challs\\.ingeniums\\.club(:9[0-9]+)?(/.*)?$',
     },
   },
 

@@ -41,3 +41,10 @@ locally `victim/visit.py` with `FLAG` in the environment) → submit.
 A beginner builds the auto-submitting page from devtools and gets the bursar's refund
 into their statement within 25 minutes, and can say why the bursar's browser was the one
 that sent it.
+
+## Running it end to end
+
+`solution/solve.py --stage all --base-url <challenge URL> --platform-url
+https://ctf.ingeniums.club --token <player token>` does the whole path: prepare, submit
+the URL to the platform admin bot, wait for the visit, then read the flag. The
+`--stage prepare` and `--stage submit` halves remain for `challenge-review`.
