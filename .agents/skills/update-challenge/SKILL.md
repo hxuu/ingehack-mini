@@ -17,7 +17,7 @@ skill first: the branch is the author's GitHub login
 ## What kind of change is this? (always ask this first)
 
 1. **Manifest or handout text only** (description, points, tags,
-   `releaseTime`, flavor, expose layout) — no rebuild needed. For a
+   `releaseTime`, `sortWeight`, flavor, expose layout) — no rebuild needed. For a
    description-only challenge (`container: false`) every change is this kind.
    Fast path:
    run `ops/update-challenge.sh --platform https://ctf.ingeniums.club
@@ -26,6 +26,11 @@ skill first: the branch is the author's GitHub login
    Environment gotcha worth caching: `$CHALLENGE_BOT_TOKEN` exists only in
    GitHub Actions secrets, never locally — manual writes authenticate with a
    maintainer admin token.
+   `hidden` and `releaseTime` are opt-in overrides: a manifest that omits them
+   leaves the platform value alone, so a visibility or release time set in the
+   admin UI survives both this fast path and CI re-registration. Declare them
+   in `chall.yaml` when the repo should win. `sortWeight` follows the same
+   opt-in rule; higher weights sort first inside a category.
 2. **Code or Dockerfile change** (container challenges only) — rebuild
    required. Commit and merge a PR:
    CI jobs build the new image, ship, and re-register it (ADR 0005). Static

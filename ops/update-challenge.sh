@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Update platform metadata for a challenge WITHOUT rebuilding or shipping an
-# image (description, points, tags, release time, flags, expose layout,
-# handouts). Code changes still go through a merged PR: CI rebuilds and ships
-# (ADR 0005); ops/deploy-static.sh handles static code deploys, this script
-# never runs containers.
+# image (description, points, tags, release time, sort weight, flags, expose
+# layout, handouts). Code changes still go through a merged PR: CI rebuilds and
+# ships (ADR 0005); ops/deploy-static.sh handles static code deploys, this
+# script never runs containers.
 #
 # The trap here: PUT is a full-entity upsert, so an instanced payload must
 # carry working service images there is no rebuild to fall back on. Default

@@ -773,3 +773,20 @@ solve left the flag readable for every team that signed in afterwards.
   the challenge pages, but a participant who guesses a hostname can still reach
   the container. This is the accepted static-container tradeoff, not a platform
   visibility bug.
+
+## Welcome challenge pinned to the top (2026-11-07, verified)
+
+- `sanity-check` now uses the platform's dedicated `sanity` category and
+  `sortWeight: 1000`. rCTF orders categories with `sanity` ahead of pwn,
+  reverse, crypto, forensics, web, and misc, and there are no koth/ad
+  challenges, so Sanity is the first group.
+- Live admin and player responses report `category: "sanity"` and
+  `sortWeight: 1000`. The rendered `/challenges` page lists Sanity first, with
+  `sanity-check` as its only entry, before Binary Exploitation.
+- The directory stays `challenges/misc/sanity-check/`; moving it would make the
+  workflow retire the old path and race the re-register. The live category comes
+  from `chall.yaml`, not the directory, matching existing mismatches
+  (`misc/bulletproof-tenant` is category `osint`).
+- `ops/chall-payload.py` now passes `sortWeight` when the manifest declares it,
+  with the same opt-in rule as `hidden`/`releaseTime`: omitted keeps the
+  platform value, declared overrides it.

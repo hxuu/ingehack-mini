@@ -93,6 +93,11 @@ keep current values — docs challenge-update note):
   `{ "kind": "decay" }` or
   `{ "kind": "dynamic", "source": { "transport": "webhook", "secret": "..." } }`.
 - **hidden**: bool (default false). **releaseTime**: nullable Unix-ms int.
+  **sortWeight**: int (higher sorts first). All three are opt-in in our payload
+  builder: the key is omitted unless `chall.yaml` declares it, because rCTF's
+  upsert keeps the current value for an undefined key and only clears it on an
+  explicit null. That lets an admin-UI edit survive CI re-registration; a
+  manifest value still overrides.
 - Response `goodChallengeUpdateV2`: `data` = full
   `AdminChallengeSchemaV2` (`responses/good-challenge-update-v2.ts`), incl
   `id`, files with nullable `size`, `hidden` (null→false,
