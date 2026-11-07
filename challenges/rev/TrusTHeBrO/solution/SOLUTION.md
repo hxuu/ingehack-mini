@@ -9,7 +9,7 @@ No secret infra is involved: everything a player needs is inside the APK.
 
 ## Stage 1 — recon
 
-Install `TrusTHeBrO.apk` (or run it in an emulator). It opens with a dialog:
+Install `GenniniPro.apk` (or run it in an emulator). It opens with a dialog:
 "Enter your Gemini API key". Typing your own real Gemini key works — the app
 fetches a system prompt from the backend (`GET /` with your key sent as
 `x-api-key`) and starts a normal chat with real Gemini
