@@ -1,8 +1,3 @@
-/* PackSwift doorman — notice-board skin.
-   Palette sampled from the reference set: chartreuse board, dot-grid cream
-   sheet, ink, kraft, one oxide stamp. Type: Barlow Semi Condensed for the
-   display voice, Courier Prime for the desk voice, IBM Plex Mono for codes. */
-
 :root {
   --stock: #f6f0dc;
   --stock-3: #fbf7e8;
@@ -62,8 +57,6 @@ mark {
   box-shadow: 0 0 0 5px var(--lime);
 }
 
-/* ---------- board and sheet ---------- */
-
 .c-board {
   min-height: 100vh;
   padding: 22px;
@@ -104,8 +97,6 @@ mark {
   border-bottom-color: transparent;
   border-radius: 8px;
 }
-
-/* ---------- masthead ---------- */
 
 .c-head {
   display: flex;
@@ -157,8 +148,6 @@ mark {
   text-decoration: none;
 }
 
-/* ---------- page body ---------- */
-
 .c-main {
   margin-top: 54px;
 }
@@ -209,8 +198,6 @@ mark {
   font-size: 16px;
   line-height: 1.6;
 }
-
-/* ---------- tracking form ---------- */
 
 .c-form {
   display: flex;
@@ -313,8 +300,6 @@ mark {
   color: var(--ink);
 }
 
-/* ---------- refusal stamp ---------- */
-
 .c-stamp {
   display: inline-block;
   margin: 24px 0 10px;
@@ -336,8 +321,6 @@ mark {
   font-size: 13px;
   letter-spacing: 0.2em;
 }
-
-/* ---------- staff console ---------- */
 
 .c-slip {
   position: relative;
@@ -431,8 +414,6 @@ mark {
   font-family: var(--label);
   font-size: 24px;
 }
-
-/* ---------- dispatch board ---------- */
 
 .c-slips {
   display: grid;
@@ -539,8 +520,6 @@ mark {
   font-size: 11.5px;
 }
 
-/* ---------- status card ---------- */
-
 .c-card {
   max-width: 600px;
   margin-top: 26px;
@@ -564,8 +543,6 @@ mark {
   font-size: 12px;
   white-space: nowrap;
 }
-
-/* ---------- not found ---------- */
 
 .c-loose {
   position: relative;
@@ -598,8 +575,6 @@ mark {
   line-height: 0.8;
 }
 
-/* ---------- source ---------- */
-
 .c-source-name {
   margin: 30px 0 0;
   font-family: var(--label);
@@ -627,8 +602,6 @@ mark {
   user-select: none;
 }
 
-/* ---------- footer ---------- */
-
 .c-foot {
   display: flex;
   align-items: baseline;
@@ -652,8 +625,6 @@ mark {
   white-space: nowrap;
   color: var(--ink);
 }
-
-/* ---------- narrow screens ---------- */
 
 @media (max-width: 760px) {
   .c-board {

@@ -1,9 +1,3 @@
-"""PackSwift courier staff portal.
-
-The portal sits behind the staff sign-on gateway. Staff sign in once at the
-gateway, and the gateway tells this application who is calling.
-"""
-
 from __future__ import annotations
 
 import scaffold
@@ -21,9 +15,6 @@ DISPATCHER = "dispatcher"
 
 
 def current_role():
-    # Staff sign in at the gateway first. The gateway adds the role header to
-    # the request it forwards, so this application reads the header and trusts
-    # whatever value arrives.
     return request.headers.get(ROLE_HEADER, DEFAULT_ROLE)
 
 

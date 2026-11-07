@@ -1,6 +1,3 @@
-# Self-contained: python:3.12-slim + Flask + a non-root app user. The author's
-# local base image (ingehack-web-base) is replaced inline because CI builds
-# from this directory alone.
 FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \

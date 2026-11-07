@@ -1,5 +1,3 @@
-"""El Minha: the Faculty minha office's refund console and public sandbox."""
-
 from __future__ import annotations
 
 import hashlib
@@ -24,11 +22,6 @@ STUDENT_PASSWORD = scaffold.mint()
 
 ACCOUNTS = {
     "student": STUDENT_PASSWORD,
-    # The minha officer is the bot's browser, not a player account. Her password IS
-    # the flag: the admin-bot handler receives the team's flag at run time
-    # (ctx.job.flags), so nobody can sign in as her without already seeing the
-    # /statement of a refunded account. She never appears in the (public)
-    # handler source with a secret.
     "bursar": FLAG,
 }
 
@@ -42,12 +35,8 @@ DISPLAY_NAMES = {
     "bursar": "Mme. Nadia Cherif",
 }
 
-# Refunds are filed under the claim code printed on the player's own statement,
-# not under the shared student account. The container stays static, but one
-# team's refund no longer appears on another team's page.
 REFUNDS: dict[str, float] = {}
 
-# The public sandbox: page id -> raw HTML.
 SANDBOX: dict[str, str] = {}
 
 CLAIM_RE = re.compile(r"[0-9a-f]{8}")
@@ -57,11 +46,6 @@ app.secret_key = scaffold.mint()
 
 
 def current_claim() -> str:
-    """Return this browser's claim code, creating one on first use.
-
-    A claim can also arrive as ?claim=, which lets a two-stage solver reuse
-    the code it printed earlier. Claims are random and never enumerate.
-    """
     requested = request.args.get("claim", "")
     if requested:
         if not CLAIM_RE.fullmatch(requested):
@@ -115,8 +99,6 @@ def statement():
 
 @app.post("/refund")
 def refund():
-    # The minha officer's sign-in is all this needs: if the session belongs
-    # to her, the refund is approved. We do not ask where the request came from.
     if session.get("username") != "bursar":
         abort(403)
     claim = request.form.get("claim", "")

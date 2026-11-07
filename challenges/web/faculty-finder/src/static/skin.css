@@ -1,5 +1,3 @@
-/* Course Finder, Faculty of Sciences — card catalogue skin. */
-
 * { box-sizing: border-box; }
 
 html { -webkit-text-size-adjust: 100%; }
@@ -135,8 +133,6 @@ code {
   border-radius: 0 2px 2px 2px;
   box-shadow: inset 0 8px 14px rgba(60, 40, 18, 0.22);
 }
-
-/* ---------- search ---------- */
 
 .b-searchcard {
   margin-bottom: 22px;
@@ -409,8 +405,6 @@ code {
 .b-foot p { margin: 0; }
 .b-foot a { color: #6b4a24; }
 
-/* ---------- forms, inbox, source ---------- */
-
 .b-sheet {
   position: relative;
   max-width: 620px;
@@ -600,8 +594,6 @@ code {
   color: #a08e6f;
   user-select: none;
 }
-
-/* ---------- 404 ---------- */
 
 .b-notfound {
   min-height: 300px;

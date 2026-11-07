@@ -1,7 +1,3 @@
-/* packswift-tracking — drafting-sheet skin.
-   Vellum, graphite line work, drafting blue, revision red.
-   Fonts are served narrowly from /fonts/<file>.woff2 by the application. */
-
 @font-face {
   font-family: 'Archivo';
   font-style: normal;
@@ -96,8 +92,6 @@ button, input { font: inherit; color: inherit; }
 .stamp-sub { display: block; margin-top: 3px; font-size: 8.5px; letter-spacing: 0.2em; opacity: 0.8; }
 .stamp--blue { color: var(--blue); }
 .stamp--red { color: var(--red); }
-
-/* ---------- sheet on the wall ---------- */
 
 .a-wall {
   min-height: 100vh;

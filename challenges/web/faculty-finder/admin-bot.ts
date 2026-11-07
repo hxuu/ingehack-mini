@@ -1,12 +1,3 @@
-// Admin-bot handler for Course Finder (faculty-finder.challs.ingeniums.club).
-//
-// The platform's admin-bot worker runs this code on a fresh Chrome context
-// every time a participant submits a link. This source is PUBLIC (GET
-// /api/v2/integrations/challs/:id/admin-bot/config), so it never contains a
-// secret: the library assistant signs in with her password exactly once per
-// job, and that password is the team's flag, which the platform attaches to
-// the job (ctx.job.flags). A participant already holding the flag is at the
-// end of the challenge anyway.
 import { sleep } from 'bun'
 import { Challenge, type ChallengeContext } from '../src/types'
 
@@ -16,8 +7,6 @@ export const challenge = new Challenge({
   timeoutMilliseconds: 30_000,
   browser: 'chrome',
 
-  // The payload hugs the ?q= parameter of the search view; that is the only
-  // path worth her time. Input values are capped at 1024 chars by rCTF.
   inputs: {
     url: {
       pattern:
@@ -25,9 +14,6 @@ export const challenge = new Challenge({
     },
   },
 
-  // Allowlist the challenge host, deny everything else. PAC rules match on
-  // strings and never resolve DNS; the catch-all deny stops 127.0.0.1.nip.io
-  // style aliases reaching anything inside the VMs.
   restrictDomains: {
     host: {
       allowRegex: [{ pattern: '^faculty-finder\\.challs\\.ingeniums\\.club$' }],
@@ -78,8 +64,6 @@ export const challenge = new Challenge({
       ctx.output.fatal('challenge', `failed: ${err}`)
       return
     }
-    // The page keeps running while she reads: enough for the fetches to
-    // land the note in the student's inbox.
     await sleep(8_000)
   },
 })

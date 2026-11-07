@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""PackSwift tracking edge: owns port 8080 and forwards to the tracking application."""
 
 from __future__ import annotations
 
@@ -15,7 +14,6 @@ MAX_HEADER = 64 * 1024
 
 
 def edge_refusal(status: int, path: str = "/track") -> bytes:
-    """A refusal body from the same drawing set the application serves."""
     if status == 403:
         body = skin.edge_page(
             title="Not available · PackSwift Tracking",
@@ -70,8 +68,6 @@ def page(status: int, reason: str, body: str) -> bytes:
 
 
 class Reader:
-    """A small buffered reader so chunk framing and header reads share one buffer."""
-
     def __init__(self, sock: socket.socket) -> None:
         self.sock = sock
         self.buffer = b""
@@ -102,7 +98,6 @@ class Reader:
 
 
 def read_chunked(reader: Reader) -> bytes:
-    """Read a chunked body to its end and return the raw bytes, framing included."""
     raw = b""
     while True:
         line = reader.read_line()
@@ -134,7 +129,6 @@ def parse_head(head: bytes) -> tuple[bytes, list[bytes], list[tuple[bytes, bytes
 
 
 def read_request(sock: socket.socket):
-    """Read one request. Return (request, None) or (None, refusal) for a bad one."""
     reader = Reader(sock)
     head = reader.read_until(b"\r\n\r\n")[:-4]
     request_line, header_lines, parsed = parse_head(head)
