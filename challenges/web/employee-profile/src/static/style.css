@@ -1,0 +1,272 @@
+:root {
+  --ink: #1f2a37;
+  --muted: #667085;
+  --page: #eef2f7;
+  --card: #ffffff;
+  --navy: #1d3557;
+  --navy-dark: #152942;
+  --accent: #2a9d8f;
+  --accent-dark: #218377;
+  --line: #d7dee8;
+  --error-bg: #fdecec;
+  --error-ink: #9b1c1c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--page);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.site-header {
+  background: var(--navy);
+  color: #ffffff;
+  padding: 1.1rem 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  letter-spacing: 0.02em;
+}
+
+.brand p {
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+  color: #c7d3e3;
+}
+
+.userbox {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: #dbe4f0;
+}
+
+.userbox a {
+  color: #ffffff;
+  text-decoration: none;
+  border: 1px solid #5a7396;
+  padding: 0.35rem 0.75rem;
+  border-radius: 5px;
+}
+
+.userbox a:hover {
+  background: var(--navy-dark);
+}
+
+main {
+  flex: 1;
+  width: min(720px, 100%);
+  margin: 0 auto;
+  padding: 2rem 1rem 2.5rem;
+}
+
+main.narrow {
+  width: min(440px, 100%);
+  padding-top: 3rem;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 1.6rem;
+  box-shadow: 0 8px 24px rgba(29, 53, 87, 0.07);
+}
+
+.card h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1.45rem;
+}
+
+.muted {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.error {
+  margin: 0 0 1rem;
+  padding: 0.7rem 0.9rem;
+  background: var(--error-bg);
+  color: var(--error-ink);
+  border: 1px solid #f3c7c7;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1.1rem;
+}
+
+.login-form label {
+  margin: 0.6rem 0 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.login-form input {
+  padding: 0.65rem 0.75rem;
+  font-size: 1rem;
+  font-family: inherit;
+  color: var(--ink);
+  background: #fbfcfe;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.login-form input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.login-form button {
+  margin-top: 1.2rem;
+  padding: 0.7rem 1rem;
+  font-size: 1rem;
+  font-family: inherit;
+  font-weight: 600;
+  color: #ffffff;
+  background: var(--accent);
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.login-form button:hover {
+  background: var(--accent-dark);
+}
+
+.demo-box {
+  margin-top: 1.4rem;
+  padding: 0.9rem 1rem;
+  background: #f1f8f7;
+  border: 1px dashed #a9d6d0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.demo-box p {
+  margin: 0.35rem 0 0;
+}
+
+.demo-box code {
+  background: #ffffff;
+  border: 1px solid #cfe6e2;
+  border-radius: 4px;
+  padding: 0.05rem 0.3rem;
+  font-size: 0.9em;
+}
+
+.profile-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+.profile-head h2 {
+  margin: 0 0 0.25rem;
+}
+
+.badge {
+  background: var(--navy);
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.details {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 0.65rem 1rem;
+  margin: 0;
+}
+
+.details dt {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.details dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.details .notes {
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0.6rem 0.7rem;
+  white-space: pre-wrap;
+}
+
+.hint {
+  margin: 1rem 0 0;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.hint code {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 0.05rem 0.3rem;
+}
+
+footer {
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--muted);
+  border-top: 1px solid var(--line);
+  background: #f7f9fc;
+}
+
+footer p {
+  margin: 0;
+}
+
+@media (max-width: 520px) {
+  .details {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
+  }
+
+  .details dd {
+    margin-bottom: 0.6rem;
+  }
+
+  .userbox {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
