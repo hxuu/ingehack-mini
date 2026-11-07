@@ -738,8 +738,38 @@ All six authored web challenges solved against the live platform with their own
 - `packswift-tracking`: `--platform-url --token` started an instance, and the
   tcp-ssl request returned the flag.
 
-Known limitation, not fixed in this pass: the three static bot challenges keep
+Fixed in the claim-code pass below: the three static bot challenges used to keep
 player-visible state in one shared container (`REFUNDED` in `campus-refund`,
-`MESSAGES` in `faculty-finder`, `THREADS` in `helpdesk-thread`). The first solve
-leaves the flag readable for every team that signs in afterwards. Either accept
-that for a beginner event or move those three to per-team instances.
+`MESSAGES` in `faculty-finder`, `THREADS` in `helpdesk-thread`), so the first
+solve left the flag readable for every team that signed in afterwards.
+
+## Per-player claim codes + pre-start visibility (2026-11-07, verified)
+
+- The three static admin-bot challenges now print a random 8-hex claim code on
+  the player's own page. The payload carries that claim to the bot, and the app
+  files the bot's action under it: `REFUNDS[claim]` in `campus-refund`,
+  `INBOXES[claim]` in `faculty-finder`, and a `claim` field on each
+  `helpdesk-thread` message. The container stays static, but a fresh session
+  gets a new claim and sees no flag from another team's solve.
+- Solvers read the claim from the page, embed it in the payload, and keep
+  `--stage all` on one session. Two-stage runs pass the code printed by
+  `--stage prepare` to `--stage submit --claim <code>`.
+- Remote check after CI run `42369983391` (all 30 ship jobs succeeded):
+  `el-minha`, `course-finder`, and `open-ticket` each returned their flag from
+  `--stage all`. A fresh student session on each showed a new claim and no flag;
+  replaying the solved claim with `?claim=<code>` showed the flag. That proves
+  the reveal is scoped to the claim, not globally wiped.
+- All 33 manifests under `challenges/` now set `hidden: false`, so the admin
+  list shows the full repo roster and points. The live admin list is 33 visible
+  and 3 hidden; the hidden three are legacy entries by another author
+  (`create your own infinity`, `Kakarot !`, `lupin : diomande`) with no manifest
+  in this repo, left untouched.
+- Pre-start gate verified with a throwaway participant account (deleted after
+  the check) and anonymously: `GET /api/v2/challs` and
+  `GET /api/v2/leaderboard/now` both return `badNotStarted` before the start
+  time. Event window is `2026-11-07 17:30:00 UTC` to `2026-11-14 17:30:00 UTC`.
+- Residual risk, unchanged: the static containers are reachable by their
+  challenge hostnames even before start. The platform gate hides the list and
+  the challenge pages, but a participant who guesses a hostname can still reach
+  the container. This is the accepted static-container tradeoff, not a platform
+  visibility bug.
