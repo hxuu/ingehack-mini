@@ -1,0 +1,172 @@
+:root {
+  --bg: #0e1726;
+  --panel: #16233a;
+  --panel-2: #1d2d49;
+  --line: #2c4166;
+  --ink: #e8eef9;
+  --muted: #9fb1cc;
+  --accent: #3fb6a8;
+  --accent-dark: #2f8f84;
+  --code-bg: #0a121f;
+  --code-ink: #c7f5ea;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #17253d 0%, var(--bg) 60%);
+  color: var(--ink);
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.site-header {
+  padding: 2rem 1rem 1.5rem;
+  text-align: center;
+  border-bottom: 1px solid var(--line);
+  background: rgba(10, 18, 31, 0.55);
+}
+
+.site-header h1 {
+  margin: 0;
+  font-size: 2rem;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+
+.site-header p {
+  margin: 0.45rem 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+main {
+  flex: 1;
+  width: min(820px, 100%);
+  margin: 0 auto;
+  padding: 2rem 1rem 2.5rem;
+  display: grid;
+  gap: 1.25rem;
+  align-content: start;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 1.35rem 1.4rem 1.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.card h2 {
+  margin: 0 0 0.4rem;
+  font-size: 1.05rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--accent);
+}
+
+.lede {
+  margin: 0 0 1.1rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.lede code {
+  color: var(--code-ink);
+  background: var(--code-bg);
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.ping-form label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.row {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.row input {
+  flex: 1;
+  padding: 0.75rem 0.85rem;
+  font-size: 1rem;
+  font-family: "Courier New", Courier, monospace;
+  color: var(--ink);
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.row input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.row button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #06120f;
+  background: var(--accent);
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.row button:hover {
+  background: var(--accent-dark);
+}
+
+.output-card .command {
+  margin: 0 0 0.7rem;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.85rem;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.output-card .command span {
+  color: var(--accent);
+}
+
+pre.output {
+  margin: 0;
+  padding: 1rem;
+  max-height: 28rem;
+  overflow: auto;
+  background: var(--code-bg);
+  color: var(--code-ink);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+footer {
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--muted);
+  border-top: 1px solid var(--line);
+}
+
+footer p {
+  margin: 0;
+}
