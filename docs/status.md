@@ -700,3 +700,24 @@ challenge's `admin-bot.ts` handler in a fresh Chrome context.
 - Side effect: historical sections above still mention
   `hello-instancer`/`hello-shared` as the E2E fixtures; that is the record of
   what happened, not the current state.
+
+## Raw-request challenges need `tcp-ssl`, not `http` (2026-11-07, verified)
+
+- An `http` instancer expose puts Traefik's HTTP router in front of the container.
+  That router parses the request and re-frames it: duplicate `Content-Length`
+  headers collapse and a chunked body is re-encoded before the container sees it.
+  A challenge built on a parser disagreement (`packswift-tracking`) is unsolvable
+  through that path. Confirmed on the live instance: the crafted CL+TE request
+  returned the tracking page over `http` and no flag.
+- Fix: `expose.kind: tcp-ssl` (container port 8080, public 9450). Traefik
+  terminates TLS and proxies the byte stream, so the container's own edge and
+  application read exactly what the client sent.
+- Verified on live instance `packswift-tracking-399fb58ae697`: the crafted request
+  returns `ingehack{tw0_parsers_disagreed_ab0ut_the_b0undary}` over `tcp-ssl`,
+  while `/internal/role` still gets the edge's 403 and duplicate lengths still get
+  the edge's 400.
+- Players open `https://…:9450/` (wildcard cert). A raw socket has to wrap TLS and
+  send the host name as SNI; the challenge's `/proxy-setup` page documents
+  `openssl s_client -quiet -connect HOST:9450 -servername HOST`.
+- Rule of thumb: if the challenge's solution depends on how a request is parsed,
+  expose `tcp-ssl`. `http` is for challenges that only need pages.
