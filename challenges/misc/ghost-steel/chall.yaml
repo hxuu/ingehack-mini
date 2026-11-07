@@ -42,7 +42,7 @@ description: |
   Example with made-up answers "Alpha-1" and "Beta Two": `ingehack{Alpha-1_Beta_Two}`
 
 points:
-  min: 50
+  min: 100
   max: 500
 
 tags:

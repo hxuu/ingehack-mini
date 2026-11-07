@@ -18,7 +18,7 @@ description: |
   > https://helpdesk-thread.challs.ingeniums.club:9488/
 
   Plain HTTP works on port 9487 if your tool prefers it.
-points: {min: 150, max: 500}
+points: {min: 100, max: 500}
 tiebreakEligible: true
 tags: [hard, Browser Trust Boundaries, Client-Side Rendering]
 flag: ingehack{st0red_xss_t00k_y0ur_cookie}

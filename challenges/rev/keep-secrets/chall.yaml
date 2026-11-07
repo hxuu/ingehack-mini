@@ -17,7 +17,7 @@ description: |
 
   Flag format: `ingehack{...}`
 
-points: {min: 300, max: 500}
+points: {min: 100, max: 500}
 tiebreakEligible: true
 tags: [medium, Android, APK, Kotlin, AES-GCM, reverse engineering]
 

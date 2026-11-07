@@ -20,7 +20,7 @@ description: |
   *Dont waste tokens on this one :)*
 
 points:
-  min: 50
+  min: 100
   max: 500
 
 tags:

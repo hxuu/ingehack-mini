@@ -31,7 +31,7 @@ description: |
 
 difficulty: medium
 points:
-  min: 200
+  min: 100
   max: 500
 
 tags:

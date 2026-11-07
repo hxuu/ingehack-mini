@@ -20,7 +20,7 @@ description: |
 
   Flag format: `1ngh4ck{...}`
 
-points: {min: 300, max: 500}
+points: {min: 100, max: 500}
 tiebreakEligible: true
 tags: [medium, Linux, ELF, control flow, byte manipulation, automation]
 

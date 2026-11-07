@@ -790,3 +790,25 @@ solve left the flag readable for every team that signed in afterwards.
 - `ops/chall-payload.py` now passes `sortWeight` when the manifest declares it,
   with the same opt-in rule as `hidden`/`releaseTime`: omitted keeps the
   platform value, declared overrides it.
+
+## Two-wave release and 100-500 decay points (2026-11-07, verified)
+
+- Every challenge scores `points: {min: 100, max: 500}`. `sanity-check`
+  stays `{min: 0, max: 0}` as the welcome challenge.
+- Wave 1 releases with the event start, `2026-11-07 17:30 UTC`
+  (`1794072600000`): `releaseTime: null`. Wave 2 releases
+  `2026-11-10 13:00 UTC` (`14:00 UTC+1`, `1794315600000`). The split is
+  18 challenges per wave.
+- Fixed by author intent: Ch1Hub (`sherlock`, `c2-1`), `escape`, and
+  `Is this actually pwn?` are wave 2. `bbls` and `1ingeBet` are wave 1.
+  hxuu's easy smuggling challenge (`Dispatch`) is wave 1; the hard one
+  (`Where Requests End`) is wave 2.
+- Points live in `chall.yaml` (32 manifests) so CI re-applies them. The three
+  platform-only challenges (`lupin : diomande`, `Kakarot !`,
+  `create your own infinity`) were updated through the admin API only.
+- Release times were set through the admin API, not in manifests, so the
+  opt-in payload leaves them alone on re-registration. Live check: 36 total,
+  35/35 at `100-500`, 18 wave 1, 18 wave 2, `sanity-check` `0-0`.
+- Participants get `badNotStarted` until `17:30 UTC`; after that the public
+  query filters `hidden = false AND releaseTime <= now`. The `authors`
+  account (`challsRead`) sees every challenge by design.

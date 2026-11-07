@@ -22,7 +22,7 @@ description: |
   Attachments: `auth.log`, `bash_history`, `encode.py`, `flag.txt.enc`
 
 points:
-  min: 50
+  min: 100
   max: 500
 
 tags:

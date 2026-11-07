@@ -6,7 +6,7 @@ hidden: false
 description: |
   good luck ;)
 
-points: {min: 150, max: 300}
+points: {min: 100, max: 500}
 tiebreakEligible: true
 tags: [beginner, Buffer Overflow, Stack Memory, Memory Safety]
 

@@ -19,7 +19,7 @@ description: |
   TLS on in your request tool. If you write the bytes yourself, wrap the socket
   in TLS and send the host name as SNI. The onboarding page at `/proxy-setup`
   has the exact commands.
-points: {min: 150, max: 500}
+points: {min: 100, max: 500}
 tiebreakEligible: true
 tags: [hard, HTTP Protocol, Web Architecture]
 flag: ingehack{tw0_parsers_disagreed_ab0ut_the_b0undary}

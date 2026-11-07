@@ -11,7 +11,7 @@ description: |
   > https://packswift-dispatch.challs.ingeniums.club:9488/
 
   Plain HTTP works on port 9487 if your tool prefers it.
-points: {min: 150, max: 500}
+points: {min: 100, max: 500}
 tiebreakEligible: true
 tags: [medium, Web Architecture, HTTP Protocol]
 flag: ingehack{tw0_parsers_read_the_same_p4th}

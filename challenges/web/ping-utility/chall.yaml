@@ -11,7 +11,7 @@ description: |
 
   Reachable at **http://ping-utility.challs.ingeniums.club:9487/**
   (scheme follows the port: 9487 is plain HTTP, 9488 is TLS).
-points: {min: 150, max: 350}
+points: {min: 100, max: 500}
 tiebreakEligible: true
 tags: [beginner, Command Injection, Operating Systems, Input Validation]
 flag: ingehack{s3m1c0l0ns_ch41n_c0mm4nds}

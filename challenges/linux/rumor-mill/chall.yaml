@@ -32,7 +32,7 @@ description: |
 difficulty: easy
 points:
   min: 100
-  max: 300
+  max: 500
 
 tags:
   - beginner
