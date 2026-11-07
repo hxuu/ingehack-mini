@@ -1,7 +1,7 @@
 name: rumor-mill
 author: boul3h14
 category: linux
-hidden: true
+hidden: false
 tiebreakEligible: false
 
 description: |

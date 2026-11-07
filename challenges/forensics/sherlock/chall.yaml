@@ -1,7 +1,7 @@
 name: sherlock
 author: Ch1Hub
 category: forensics
-hidden: true
+hidden: false
 tiebreakEligible: true
 
 description: |

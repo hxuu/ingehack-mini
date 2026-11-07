@@ -1,7 +1,7 @@
 name: "Is this actually pwn?"
 author: derrm
 category: pwn
-hidden: true
+hidden: false
 description: |
   I wonder if this is actually a pwn challenge 
 

@@ -1,7 +1,7 @@
 name: bbls
 author: koyphshi
 category: crypto
-hidden: true
+hidden: false
 tiebreakEligible: true
 description: |
   Pairings can't go on top of each other, which makes circuits based on pairings

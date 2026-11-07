@@ -1,7 +1,7 @@
 name: keep-secrets
 author: RedhaIWNL
 category: rev
-hidden: true
+hidden: false
 
 description: |
   Lelouch keeps a private ledger for the Black Knights. Five entries, five

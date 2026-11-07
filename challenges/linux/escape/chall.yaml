@@ -1,7 +1,7 @@
 name: escape
 author: z4k1
 category: linux
-hidden: true
+hidden: false
 tiebreakEligible: true
 
 description: |

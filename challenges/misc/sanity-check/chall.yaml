@@ -1,7 +1,7 @@
 name: sanity-check
 author: hxuu
 category: misc
-hidden: true
+hidden: false
 description: |
   **Welcome to Ingehack Mini.**
 

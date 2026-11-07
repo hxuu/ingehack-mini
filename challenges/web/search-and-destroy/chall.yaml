@@ -1,7 +1,7 @@
 name: search-and-destroy
 category: web
 author: h1tl4r
-hidden: true
+hidden: false
 description: |
   BookNook sells used books, and the staff keep a few unreleased titles off
   the public shelves. Get a look at what they're hiding.
