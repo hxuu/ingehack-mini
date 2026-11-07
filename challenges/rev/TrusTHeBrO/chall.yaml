@@ -38,12 +38,12 @@ description: |
   Flag format: `ingehack{...}`
 
 points:
-  min: 400
-  max: 600
+  min: 250
+  max: 300
 
 tiebreakEligible: true
 tags:
-  - hard
+  - medium
   - Android
   - reverse-engineering
   - prompt-injection
