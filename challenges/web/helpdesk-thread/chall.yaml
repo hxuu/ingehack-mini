@@ -11,7 +11,8 @@ description: |
   in her browser that lets her act on the ticket.
 
   Post your message, then the run-bot form on this challenge page sends her
-  to the desk view of the thread.
+  to the desk view of the thread. Your ticket carries a claim code, and the
+  desk files its reply under that code, so only your copy shows it.
 
   > [!CONNECTION]
   > https://helpdesk-thread.challs.ingeniums.club:9488/

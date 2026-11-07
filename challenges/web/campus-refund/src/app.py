@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import hashlib
+import re
+import secrets
 
 from flask import (
     Flask,
@@ -40,14 +42,37 @@ DISPLAY_NAMES = {
     "bursar": "Mme. Nadia Cherif",
 }
 
-# Students whose account has received a refund from the minha office.
-REFUNDED: set[str] = set()
+# Refunds are filed under the claim code printed on the player's own statement,
+# not under the shared student account. The container stays static, but one
+# team's refund no longer appears on another team's page.
+REFUNDS: dict[str, float] = {}
 
 # The public sandbox: page id -> raw HTML.
 SANDBOX: dict[str, str] = {}
 
+CLAIM_RE = re.compile(r"[0-9a-f]{8}")
+
 app = Flask(__name__)
 app.secret_key = scaffold.mint()
+
+
+def current_claim() -> str:
+    """Return this browser's claim code, creating one on first use.
+
+    A claim can also arrive as ?claim=, which lets a two-stage solver reuse
+    the code it printed earlier. Claims are random and never enumerate.
+    """
+    requested = request.args.get("claim", "")
+    if requested:
+        if not CLAIM_RE.fullmatch(requested):
+            abort(400)
+        session["claim"] = requested
+        return requested
+    claim = session.get("claim")
+    if not claim:
+        claim = secrets.token_hex(4)
+        session["claim"] = claim
+    return claim
 
 
 @app.get("/")
@@ -75,13 +100,16 @@ def statement():
     username = session.get("username")
     if username is None:
         return redirect(url_for("login"))
-    balance = BALANCES.get(username, 0.0)
+    claim = current_claim()
+    credit = REFUNDS.get(claim, 0.0)
+    balance = BALANCES.get(username, 0.0) + credit
     return render_template(
         "statement.html",
         username=username,
         display_name=DISPLAY_NAMES.get(username, username),
         balance=balance,
-        flag=FLAG if username in REFUNDED else None,
+        claim=claim,
+        flag=FLAG if credit else None,
     )
 
 
@@ -91,11 +119,13 @@ def refund():
     # to her, the refund is approved. We do not ask where the request came from.
     if session.get("username") != "bursar":
         abort(403)
+    claim = request.form.get("claim", "")
+    if not CLAIM_RE.fullmatch(claim):
+        abort(400)
     amount = float(request.form.get("amount", "0"))
     student_id = request.form.get("studentId", "")
     if student_id in BALANCES:
-        BALANCES[student_id] += amount
-        REFUNDED.add(student_id)
+        REFUNDS[claim] = REFUNDS.get(claim, 0.0) + amount
     return redirect(url_for("statement"))
 
 

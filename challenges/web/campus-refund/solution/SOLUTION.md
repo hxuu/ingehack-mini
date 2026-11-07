@@ -6,11 +6,11 @@ Static container. The bursar runs on the platform's admin-bot worker
 ## Intended path
 
 1. Sign in as `student` (the pass is printed on the login page) and read
-   `/statement`: a balance, and no refund.
+   `/statement`: a balance, a claim code, and no refund.
 2. The footer links a public sandbox. Publish a page there; it comes back at a stable
    address on the same site.
-3. Put a form in the page that posts `amount` and `studentId=student` to `/refund`, and
-   add a line that submits the form as soon as the page loads.
+3. Put a form in the page that posts `amount`, `studentId=student`, and your claim code
+   to `/refund`, and add a line that submits the form as soon as the page loads.
 4. Submit that sandbox address through the run-bot form on the challenge page. The
    worker signs the bursar in with her password — which is the team's flag, attached
    to the job at run time and never present in the (public) handler source — and then
@@ -20,14 +20,18 @@ Static container. The bursar runs on the platform's admin-bot worker
 The help page explains that transfers are protected because "the session cookie is
 signed". That is true, and it says nothing about who caused the request.
 
+The refund is filed under the claim code printed on the player's statement, not under
+the shared student account. The container stays static, but one team's refund no longer
+appears on another team's statement.
+
 ## Proof the flag is reachable
 
-The intended path lands a refund in `student` and `/statement` renders the flag
-afterwards. A direct `POST /refund` from the student's own session is refused with 403
-and the statement still shows no refund. Sign-ins as `bursar` need her password, which
-is the flag: nobody signs in as her without already having solved it, and the session
-key, student pass, and every other credential are minted randomly at container start
-and never appear in `/src`.
+The intended path lands a refund under the player's claim code and `/statement` renders
+the flag afterwards. A direct `POST /refund` from the student's own session is refused
+with 403 and the statement still shows no refund. Sign-ins as `bursar` need her
+password, which is the flag: nobody signs in as her without already having solved it,
+and the session key, student pass, and every other credential are minted randomly at
+container start and never appear in `/src`.
 
 ## Verified (2026-11-06, local containers)
 
@@ -47,4 +51,5 @@ that sent it.
 `solution/solve.py --stage all --base-url <challenge URL> --platform-url
 https://ctf.ingeniums.club --token <player token>` does the whole path: prepare, submit
 the URL to the platform admin bot, wait for the visit, then read the flag. The
-`--stage prepare` and `--stage submit` halves remain for `challenge-review`.
+`--stage prepare` and `--stage submit` halves remain for `challenge-review`; pass the
+claim code printed by prepare to submit with `--claim <code>`.

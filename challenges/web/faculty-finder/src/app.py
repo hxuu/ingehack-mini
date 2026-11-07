@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import json
+import re
+import secrets
 
 from flask import (
     Flask,
     Response,
+    abort,
     jsonify,
     redirect,
     render_template,
@@ -30,10 +33,12 @@ ACCOUNTS = {
     "assistant": NOTE,
 }
 
-MESSAGES: dict[str, list[dict[str, str]]] = {
-    "student": [],
-    "assistant": [],
-}
+# Messages are filed under the claim code on the player's own inbox, not under
+# the shared student account. The container stays static, but one team's note
+# no longer appears in another team's inbox.
+INBOXES: dict[str, list[dict[str, str]]] = {}
+
+CLAIM_RE = re.compile(r"[0-9a-f]{8}")
 
 SUGGESTIONS = ["BIO 101", "CHIM 102", "MATH 101", "PHY 105", "INFO 110"]
 
@@ -44,6 +49,25 @@ DISPLAY_NAMES = {
 
 app = Flask(__name__)
 app.secret_key = scaffold.mint()
+
+
+def current_claim() -> str:
+    """Return this browser's claim code, creating one on first use.
+
+    A claim can also arrive as ?claim=, which lets a two-stage solver reuse
+    the code it printed earlier. Claims are random and never enumerate.
+    """
+    requested = request.args.get("claim", "")
+    if requested:
+        if not CLAIM_RE.fullmatch(requested):
+            abort(400)
+        session["claim"] = requested
+        return requested
+    claim = session.get("claim")
+    if not claim:
+        claim = secrets.token_hex(4)
+        session["claim"] = claim
+    return claim
 
 
 @app.after_request
@@ -84,17 +108,19 @@ def inbox():
     username = session.get("username")
     if username is None:
         return redirect(url_for("login"))
+    claim = current_claim()
     messages = [
         {
             "from": DISPLAY_NAMES.get(message["from"], message["from"]),
             "body": message["body"],
         }
-        for message in MESSAGES[username]
+        for message in INBOXES.get(claim, [])
     ]
     return render_template(
         "inbox.html",
         username=username,
         display_name=DISPLAY_NAMES.get(username, username),
+        claim=claim,
         messages=messages,
     )
 
@@ -106,9 +132,9 @@ def api_inbox():
         return jsonify({"error": "sign in first"}), 401
     recipient = request.form.get("to", "").strip()
     body = request.form.get("body", "")
-    if recipient not in MESSAGES:
+    if not CLAIM_RE.fullmatch(recipient):
         return jsonify({"error": "no such account"}), 404
-    MESSAGES[recipient].append({"from": username, "body": body})
+    INBOXES.setdefault(recipient, []).append({"from": username, "body": body})
     return jsonify({"ok": True})
 
 

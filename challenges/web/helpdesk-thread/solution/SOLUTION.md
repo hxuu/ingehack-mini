@@ -9,13 +9,18 @@ Static container. The support agent runs on the platform's admin-bot worker
 2. The source shows the agent's view contains the flag, and that the agent's page sets a
    CSRF token cookie readable by script (the agent guidelines page frames the same thing
    as a convenience feature).
-3. Store a payload. The support tool sanitises nothing on the agent's side.
+3. Store a payload. The support tool sanitises nothing on the agent's side. The payload
+   carries the claim code printed on the player's ticket.
 4. Post the message, then press the run-bot form on the challenge page: the worker
    signs the agent in with her password — which is the team's flag, attached to the job
    at run time and never present in the (public) handler source — and opens the desk
    view of the thread. The payload reads the token out of `document.cookie` and posts
-   the flag into the player's own thread.
+   the flag into the player's own thread under that claim code.
 5. Reload the thread as the player.
+
+The desk files appended replies under the claim code, not under the shared student
+account. The container stays static, but one team's flag no longer appears on another
+team's ticket.
 
 ## Proof the flag is reachable
 
@@ -50,4 +55,5 @@ the sanitisation is doing too little work.
 `solution/solve.py --stage all --base-url <challenge URL> --platform-url
 https://ctf.ingeniums.club --token <player token>` does the whole path: prepare, submit
 the URL to the platform admin bot, wait for the visit, then read the flag. The
-`--stage prepare` and `--stage submit` halves remain for `challenge-review`.
+`--stage prepare` and `--stage submit` halves remain for `challenge-review`; pass the
+claim code printed by prepare to submit with `--claim <code>`.

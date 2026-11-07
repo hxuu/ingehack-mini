@@ -9,11 +9,14 @@
     <div><dt>Name</dt><dd>{{ display_name }}</dd></div>
     <div><dt>Year</dt><dd>2025/2026 &middot; Semester 2</dd></div>
     <div><dt>Status</dt><dd>Registered</dd></div>
+    <div><dt>Claim code</dt><dd><code data-claim="{{ claim }}">{{ claim }}</code></dd></div>
   </dl>
   <div class="a-balance">
     <span>Balance</span>
     <strong>{{ "{:,.2f}".format(balance) }} DA</strong>
   </div>
+  <p class="a-note">The counter files a refund under your claim code. Put that code
+  in the page you send the minha officer.</p>
   <p class="a-note">Keep this statement for your records. The minha office cannot accept
   liability for cash handed over without a stamped slip.</p>
   {% if flag %}

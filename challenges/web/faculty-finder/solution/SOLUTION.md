@@ -15,8 +15,13 @@ Static container. The library assistant runs on the platform's admin-bot worker
    page. The worker signs the assistant in with her password — which is the team's
    flag, attached to the job at run time and never present in the (public) handler
    source — and then opens the link. The payload runs in her session and posts her
-   private note into the player's own inbox, so no external listener is needed.
+   private note to the claim code on the player's inbox, so no external listener is
+   needed.
 6. Reload the student inbox and read the note.
+
+Messages are filed under the claim code printed on the player's inbox, not under the
+shared student account. The container stays static, but one team's note no longer
+appears in another team's inbox.
 
 ## Proof the flag is reachable
 
@@ -43,4 +48,5 @@ A playtester working from source gets a script to execute against the assistant 
 `solution/solve.py --stage all --base-url <challenge URL> --platform-url
 https://ctf.ingeniums.club --token <player token>` does the whole path: prepare, submit
 the URL to the platform admin bot, wait for the visit, then read the flag. The
-`--stage prepare` and `--stage submit` halves remain for `challenge-review`.
+`--stage prepare` and `--stage submit` halves remain for `challenge-review`; pass the
+claim code printed by prepare to submit with `--claim <code>`.

