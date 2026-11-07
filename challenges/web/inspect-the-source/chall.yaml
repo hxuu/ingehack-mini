@@ -11,7 +11,7 @@ description: |
 
   Reachable at **http://inspect-the-source.challs.ingeniums.club:9487/**
   (scheme follows the port: 9487 is plain HTTP, 9488 is TLS).
-points: {min: 50, max: 150}
+points: {min: 100, max: 500}
 tiebreakEligible: false
 tags: [beginner, Browser Trust Boundaries, HTTP Protocol, Data Encoding]
 flag: ingehack{view_source_1s_y0ur_fr13nd}

@@ -32,7 +32,7 @@ difficulty: hard
 # The ingest schema (ops/chall-payload.py) reads points.min/max. Both are 500
 # so the challenge is exactly the spec's 500 points.
 points:
-  min: 500
+  min: 100
   max: 500
 
 tags:

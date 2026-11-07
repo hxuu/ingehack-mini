@@ -22,7 +22,7 @@ description: |
   > https://campus-refund.challs.ingeniums.club:9488/
 
   Plain HTTP works on port 9487 if your tool prefers it.
-points: {min: 150, max: 500}
+points: {min: 100, max: 500}
 tiebreakEligible: true
 tags: [medium, Browser Trust Boundaries, HTTP Protocol]
 flag: ingehack{cr0ss_site_forgery_used_y0ur_c00kie}

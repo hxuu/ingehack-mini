@@ -11,7 +11,7 @@ description: |
   > http://is-this-actually-pwn-<team-id>.challs.ingeniums.club:<tcp-mapped-port>
 
   Plain HTTP, no TLS.
-points: {min: 500, max: 1000}
+points: {min: 100, max: 500}
 tiebreakEligible: true
 tags: [beginner, Buffer Overflow, Path Traversal, HTTP Protocol]
 flagsDynamicBase: ingehack{gets_you_every_time}

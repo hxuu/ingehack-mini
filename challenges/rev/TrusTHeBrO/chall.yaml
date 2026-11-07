@@ -38,8 +38,8 @@ description: |
   Flag format: `ingehack{...}`
 
 points:
-  min: 400
-  max: 600
+  min: 100
+  max: 500
 
 tiebreakEligible: true
 tags:

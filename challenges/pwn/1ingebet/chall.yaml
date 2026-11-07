@@ -13,7 +13,7 @@ description: |
 
   They call the table "provably fair" and proudly link their certified source
   in the footer. Win 10 rounds in a row to collect the prize.
-points: {min: 300, max: 600}
+points: {min: 100, max: 500}
 tiebreakEligible: true
 tags: [beginner, Pseudorandom Number Generators, Browser Trust Boundaries]
 flag: ingehack{d0nt_g4mb1e_kidz}

@@ -28,7 +28,7 @@ description: |
 difficulty: medium
 # Medium band (matches the author's intent: multi-container recon chain).
 points:
-  min: 200
+  min: 100
   max: 500
 
 tags:

@@ -11,7 +11,7 @@ description: |
 
   Reachable at **http://search-and-destroy.challs.ingeniums.club:9487/**
   (scheme follows the port: 9487 is plain HTTP, 9488 is TLS).
-points: {min: 100, max: 200}
+points: {min: 100, max: 500}
 tiebreakEligible: true
 tags: [beginner, SQL Injection, Databases, Input Validation]
 flag: ingehack{qu0tes_br34k_qu3r13s}

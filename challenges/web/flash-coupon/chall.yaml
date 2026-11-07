@@ -11,7 +11,7 @@ description: |
 
   Reachable at **http://flash-coupon.challs.ingeniums.club:9487/**
   (scheme follows the port: 9487 is plain HTTP, 9488 is TLS).
-points: {min: 250, max: 600}
+points: {min: 100, max: 500}
 tiebreakEligible: true
 tags: [beginner, Race Conditions, Concurrency, Databases]
 flag: ingehack{ch3ck_th3n_us3_th3n_l0s3}

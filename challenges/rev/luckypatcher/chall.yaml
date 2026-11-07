@@ -24,7 +24,7 @@ description: |
 
   Flag format: `ingehack{...}`
 
-points: {min: 150, max: 300}
+points: {min: 100, max: 500}
 tiebreakEligible: true
 tags: [beginner, Linux, ELF, binary patching, control flow, disassembly]
 

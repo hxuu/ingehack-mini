@@ -14,7 +14,7 @@ description: |
 
   Flag format: `ingehack{...}`
 
-points: {min: 350, max: 500}
+points: {min: 100, max: 500}
 tiebreakEligible: true
 tags: [hard, Python, ELF, control flow, byte manipulation, modular arithmetic]
 
