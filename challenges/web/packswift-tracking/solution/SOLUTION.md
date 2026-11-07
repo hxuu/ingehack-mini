@@ -41,11 +41,22 @@ eleven filler bytes. The application reads 15 bytes (the chunk line and the fill
 then parses the next bytes as a new request. The edge never saw that request, so its
 `/internal/` rule and its role-header strip do not apply.
 
+## Why the instance is exposed as tcp-ssl
+
+An `http` expose puts Traefik's HTTP router in front of the edge. That router parses
+the request itself: it drops one of two length headers and re-frames a chunked body
+before forwarding, so the edge and the application never see a disagreement. A
+`tcp-ssl` expose terminates TLS and forwards the stream byte for byte, which keeps
+the crafted request intact. This was verified on the live instance: the same bytes
+that return the tracking page over `http` return no flag, and over `tcp-ssl` they
+reach the role endpoint.
+
 ## Proof the flag is reachable
 
 `solution/solve.py` writes the raw request once, reads until the edge closes, prints
 exactly the flag, and exits 0. It uses sockets, not an HTTP client, because a client
-would normalise the request.
+would normalise the request. The endpoint is TLS, so the socket is wrapped with
+`ssl` and the host name is passed as SNI before the bytes go out.
 
 Well-formed requests to `/internal/role` are answered 403 by the edge. A duplicate
 length header is answered 400 by the edge. A smuggled role request without the role

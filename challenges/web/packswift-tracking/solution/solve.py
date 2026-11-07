@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
-"""Tracking solver: send one request that the edge and the application read differently."""
+"""Tracking solver: send one request that the edge and the application read differently.
+
+The instance endpoint is TLS (tcp-ssl expose), so the raw socket is wrapped before
+the bytes go out. Traefik terminates TLS and forwards the stream untouched, which is
+exactly what lets the two parsers disagree.
+"""
 
 from __future__ import annotations
 
 import argparse
 import re
 import socket
+import ssl
 import sys
 from urllib.parse import urlparse
 
@@ -47,14 +53,22 @@ def main() -> int:
         print("solver: the base URL has no host", file=sys.stderr)
         return 1
     port = parsed.port or (443 if parsed.scheme == "https" else 80)
+    use_tls = parsed.scheme == "https" or port == 9450
 
     data = b""
     try:
-        with socket.create_connection((parsed.hostname, port), timeout=10) as sock:
+        with socket.create_connection((parsed.hostname, port), timeout=10) as raw:
+            sock = raw
+            if use_tls:
+                context = ssl.create_default_context()
+                sock = context.wrap_socket(raw, server_hostname=parsed.hostname)
+            sock.settimeout(10)
             sock.sendall(build_request())
-            sock.shutdown(socket.SHUT_WR)
             while True:
-                chunk = sock.recv(65536)
+                try:
+                    chunk = sock.recv(65536)
+                except socket.timeout:
+                    break
                 if not chunk:
                     break
                 data += chunk

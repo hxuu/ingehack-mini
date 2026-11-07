@@ -12,10 +12,13 @@ description: |
   set one up.
 
   > [!CONNECTION]
-  > http://packswift-tracking-TEAM-ID.challs.ingeniums.club:9487/
+  > https://packswift-tracking-TEAM-ID.challs.ingeniums.club:9450/
 
   Replace `TEAM-ID` with the id shown on your challenge page. The instance is
-  per team and speaks plain HTTP.
+  per team. The endpoint is TLS: open it with `https://` in a browser, and keep
+  TLS on in your request tool. If you write the bytes yourself, wrap the socket
+  in TLS and send the host name as SNI. The onboarding page at `/proxy-setup`
+  has the exact commands.
 points: {min: 150, max: 500}
 tiebreakEligible: true
 tags: [hard, HTTP Protocol, Web Architecture]
@@ -29,12 +32,16 @@ instancer:
   timeoutMilliseconds: 1800000
   extendable: true
   expose:
-    - kind: http
+    # tcp-ssl, not http: the edge and the application must read the same
+    # request differently, and an HTTP proxy in front of the instance would
+    # normalise the length and chunking headers before they ever reach it.
+    # A TCP router terminates TLS and forwards the bytes untouched.
+    - kind: tcp-ssl
       hostPrefix: packswift-tracking
       containerName: main
       containerPort: 8080
       shouldDisplay: true
-      title: "PackSwift Tracking (HTTP)"
+      title: "PackSwift Tracking (TLS)"
   services:
     main:
       environment:

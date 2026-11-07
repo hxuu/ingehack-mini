@@ -375,6 +375,31 @@ strong { font-weight: 700; }
   line-height: 1.5;
 }
 
+.a-raw {
+  margin-top: 26px;
+  padding-top: 14px;
+  border-top: 2px solid var(--graphite);
+}
+
+.a-raw > h2 {
+  margin-bottom: 12px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.17em;
+}
+
+.a-code {
+  margin: 10px 0 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--grid);
+  background: rgba(255, 255, 255, 0.4);
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
 .a-it-note {
   margin-top: 24px;
   padding: 13px 15px;
@@ -568,6 +593,19 @@ strong { font-weight: 700; }
         appears beside the request.</p>
       </article>
     </div>
+  </section>
+
+  <section class="a-raw">
+    <h2>WHEN YOU NEED A RAW SOCKET</h2>
+    <p class="a-copy">The tracking tier answers on a TLS port. A request tool that
+    speaks HTTP handles the TLS for you once you give it the <code>https://</code>
+    address. If you would rather write the bytes yourself, wrap the socket in TLS
+    and send the host name as SNI. With OpenSSL:</p>
+    <pre class="a-code">openssl s_client -quiet -connect HOST:9450 -servername HOST</pre>
+    <p class="a-copy">Then type the request exactly as you want it sent. In Python,
+    <code>ssl.create_default_context()</code> and
+    <code>wrap_socket(sock, server_hostname=HOST)</code> do the same job. Without
+    TLS the port closes before it reads a request.</p>
   </section>
 
   <div class="a-it-note">
