@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Sign in &mdash; PackSwift support{% endblock %}
+{% block title %}Sign in &middot; PackSwift support{% endblock %}
 {% block tab %}NEW ENQUIRY{% endblock %}
 {% block leaf %}
 <div class="b-leaf b-leaf--card">
   <p class="b-kicker">New enquiry</p>
   <h1>Open a support ticket</h1>
-  <p class="b-lede">Customers sign in with the details from their confirmation email.</p>
+  <p class="b-lede">Sign in with the details from your confirmation email.</p>
   {% if error %}<p class="b-error">{{ error }}</p>{% endif %}
   <p class="b-small">Your confirmation email carries: user <code>student</code> &middot;
   passphrase <code data-pin-for="student">{{ student_password }}</code>.

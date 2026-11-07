@@ -1,19 +1,22 @@
 name: Open Ticket
 category: web
 author: hxuu
-hidden: true
+hidden: false
 description: |
-  You opened a support ticket about a parcel that never arrived. A support agent
-  replied, and her reply is visible only to her.
+  You opened a support ticket with PackSwift about a parcel that never
+  arrived. A support agent replied, and she keeps that reply on the desk side
+  only.
 
-  She reads every new message in the thread. She also keeps something in her
-  browser that lets her act on the ticket.
+  She reads every new message in the thread. She also keeps a ticket token
+  in her browser that lets her act on the ticket.
 
-  Post your message, then the run-bot form on this challenge page sends her to
-  the desk view of the thread.
+  Post your message, then the run-bot form on this challenge page sends her
+  to the desk view of the thread.
 
-  Reachable at **http://helpdesk-thread.challs.ingeniums.club:9487/** or
-  **https://helpdesk-thread.challs.ingeniums.club:9488/** (scheme follows the port).
+  > [!CONNECTION]
+  > https://helpdesk-thread.challs.ingeniums.club:9488/
+
+  Plain HTTP works on port 9487 if your tool prefers it.
 points: {min: 150, max: 500}
 tiebreakEligible: true
 tags: [hard, Browser Trust Boundaries, Client-Side Rendering]

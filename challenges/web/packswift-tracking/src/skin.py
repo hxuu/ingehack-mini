@@ -65,7 +65,7 @@ def titleblock(sheet_no: str) -> str:
         ("PROJECT", "PackSwift tracking tier"),
         ("DRAWING", DRAWING),
         ("REV", "C"),
-        ("DATE", "14 MAR"),
+        ("DATE", "14 NOV"),
         ("DRAWN", "R.M."),
         ("CHECKED", "J.H."),
         ("SCALE", "N.T.S."),
@@ -119,8 +119,8 @@ def page(
         '<header class="a-head">'
         '<p class="a-brand">PACKSWIFT <span>TRACKING</span></p>'
         '<p class="a-doc">DRAWING SET PS-TRK-06<br>'
-        "<span>TRACKING TIER &middot; NORTHERN HUB</span></p>"
-        '<p class="a-rev">REV <b>C</b><br><span>14 MAR</span></p>'
+        "<span>TRACKING TIER &middot; BAB EZZOUAR HUB</span></p>"
+        '<p class="a-rev">REV <b>C</b><br><span>14 NOV</span></p>'
         "</header>"
         '<div class="a-layout">'
         f'<main class="a-main">{header}{body}</main>'
@@ -137,7 +137,7 @@ def page(
 def figure() -> str:
     return """
      <div class="a-figure">
-       <p class="a-figlabel">FIG. 1 &mdash; THE TRACKING TIER</p>
+       <p class="a-figlabel">FIG. 1 &middot; THE TRACKING TIER</p>
        <svg class="a-fig" viewBox="0 0 680 268" role="img"
             aria-label="Drawing: one customer request passes through the edge on port 8080 to the tracking application on port 9090.">
          <g class="a-fig-grid" aria-hidden="true">
@@ -170,7 +170,7 @@ def figure() -> str:
          </g>
          <path class="a-fig-dim" d="M34 202V222H646V202"/>
          <text class="a-fig-dimtext" x="340" y="240" text-anchor="middle">ONE CONNECTION &middot; ONE BYTE STREAM</text>
-         <text class="a-fig-note" x="34" y="252">FIG. 1 &mdash; NORTHBOUND TRACKING REQUEST, N.T.S.</text>
+         <text class="a-fig-note" x="34" y="252">FIG. 1 &middot; NORTHBOUND TRACKING REQUEST, N.T.S.</text>
          <defs>
            <marker id="a-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
              <path d="M0 0L10 5L0 10z" fill="#33322e"/>
@@ -189,7 +189,7 @@ def track_form(code: str) -> str:
         'autocomplete="off" spellcheck="false">'
         '<button type="submit">Track</button>'
         "</div>"
-        '<p class="a-form-note">PARCEL RECEIPT &middot; NORTHERN HUB &middot; 14 MAR</p>'
+        '<p class="a-form-note">PARCEL RECEIPT &middot; BAB EZZOUAR HUB &middot; 14 NOV</p>'
         "</form>"
     )
 

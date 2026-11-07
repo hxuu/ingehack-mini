@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Source &mdash; Bursary{% endblock %}
+{% block title %}Source &middot; El Minha{% endblock %}
 {% block main_class %}a-book a-book--single{% endblock %}
 {% block content %}
 <div class="a-slipwrap">
@@ -7,7 +7,7 @@
     <span class="a-slip-corner" aria-hidden="true"></span>
     <p class="a-kicker">Reference copy &middot; do not remove</p>
     <h1>Source</h1>
-    <p class="a-lede">The application&rsquo;s own source, exactly as it runs.</p>
+    <p class="a-lede">The application's own source, exactly as it runs.</p>
     {% for file in files %}
     <p class="a-kicker a-kicker--file">{{ file.name }}</p>
     <pre class="a-pre">{% for number, line in file.lines %}<span class="a-ln">{{ "%3d"|format(number) }} | </span>{{ line }}

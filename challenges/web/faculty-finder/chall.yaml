@@ -1,19 +1,21 @@
 name: Course Finder
 category: web
 author: hxuu
-hidden: true
+hidden: false
 description: |
-  The Faculty of Sciences moved its course search onto the web last term. Type a
-  course code and the results come back on the same page.
+  The Faculty of Sciences moved its module search online for 2025/2026. Type
+  a module code and the results come back on the same page.
 
-  A library assistant keeps an eye on what students search for. Hand her a link
-  and she will open it. When it is ready, send it with the run-bot form on this
-  challenge page.
+  A library assistant at the faculty keeps an eye on what students search
+  for. Hand her a link and she opens it. When your page is ready, send it
+  with the run-bot form on this challenge page.
 
   Find out what she wrote in her private note.
 
-  Reachable at **http://faculty-finder.challs.ingeniums.club:9487/** or
-  **https://faculty-finder.challs.ingeniums.club:9488/** (scheme follows the port).
+  > [!CONNECTION]
+  > https://faculty-finder.challs.ingeniums.club:9488/
+
+  Plain HTTP works on port 9487 if your tool prefers it.
 points: {min: 150, max: 500}
 tiebreakEligible: true
 tags: [medium, Browser Trust Boundaries, Client-Side Rendering]

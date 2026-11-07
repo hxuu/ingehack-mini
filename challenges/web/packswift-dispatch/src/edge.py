@@ -16,7 +16,7 @@ FORBIDDEN_BODY = b"""<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Not available &mdash; PackSwift</title>
+<title>Not available &middot; PackSwift</title>
 <link rel="stylesheet" href="/static/fonts/fonts.css">
 <link rel="stylesheet" href="/static/skin.css">
 </head>

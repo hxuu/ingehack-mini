@@ -1,13 +1,13 @@
 {% extends "base.html" %}
-{% block title %}Sign in &mdash; Bursary{% endblock %}
+{% block title %}Sign in &middot; El Minha{% endblock %}
 {% block main_class %}a-book a-book--single{% endblock %}
 {% block content %}
 <div class="a-slipwrap">
   <section class="a-slip a-slip--narrow">
     <span class="a-slip-corner" aria-hidden="true"></span>
-    <p class="a-kicker">Bursary counter &middot; form 12</p>
+    <p class="a-kicker">Minha office &middot; form 12</p>
     <h1>Sign in</h1>
-    <p class="a-lede">Student accounts are issued by the faculty office. Bursary staff use the same form.</p>
+    <p class="a-lede">The faculty office issues student accounts. Minha staff use the same form.</p>
     <form class="a-form" action="/login" method="post">
       {% if error %}<p class="a-error">{{ error }}</p>{% endif %}
       <div class="a-row">
@@ -19,13 +19,13 @@
         <input id="password" name="password" type="password" autocomplete="current-password">
       </div>
       <div class="a-actions">
-        <button class="a-btn" type="submit">Present at the counter</button>
+        <button class="a-btn" type="submit">Sign in at the counter</button>
       </div>
     </form>
-    <p class="a-small">Your counter pass, printed this morning:
+    <p class="a-small">Your minha pass, printed this morning:
     user <code>student</code> &middot;
     passphrase <code data-pin-for="student">{{ student_password }}</code>.
-    Bursary staff use a different form &mdash; ask the counter.</p>
+    Minha staff use a different form. Ask at the counter.</p>
   </section>
 </div>
 {% endblock %}

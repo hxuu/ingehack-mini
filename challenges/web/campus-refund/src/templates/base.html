@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}Bursary{% endblock %}</title>
+  <title>{% block title %}El Minha{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='fonts/fonts.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='skin.css') }}">
 </head>
@@ -11,14 +11,14 @@
 <div class="a-desk">
   <div class="a-counter">
     <header class="a-masthead">
-      <div class="a-seal" aria-hidden="true">F<span>o</span>S</div>
+      <div class="a-seal" aria-hidden="true">M<span>i</span></div>
       <div class="a-mast-text">
         <p class="a-inst">University of Ingenium</p>
-        <p class="a-office">Faculty of Sciences &middot; Bursary</p>
+        <p class="a-office">Faculty of Sciences &middot; Minha office</p>
       </div>
-      <p class="a-folio">Ledger 12 &middot; folio 84</p>
+      <p class="a-folio">Registre 12 &middot; folio 84</p>
     </header>
-    <nav class="a-nav" aria-label="Bursary">
+    <nav class="a-nav" aria-label="Minha office">
       <a class="a-tab" href="{{ url_for('statement') }}"{% if request.path == '/statement' %} aria-current="page"{% endif %}>Statement</a>
       <a class="a-tab" href="{{ url_for('help_page') }}"{% if request.path == '/help' %} aria-current="page"{% endif %}>Refund help</a>
       <a class="a-tab" href="{{ url_for('sandbox') }}"{% if request.path == '/sandbox' %} aria-current="page"{% endif %}>Sandbox</a>
@@ -28,7 +28,7 @@
       {% block content %}{% endblock %}
     </main>
     <footer class="a-foot">
-      <span>Bursary counter &middot; second floor &middot; ten to four</span>
+      <span>Minha office &middot; ground floor &middot; 08:00 to 16:00</span>
       <span><a href="/src">source</a></span>
     </footer>
   </div>

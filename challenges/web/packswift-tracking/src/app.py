@@ -38,32 +38,31 @@ if not FLAG:
 DEPLOY_LOG_ENTRIES = (
     {
         "rev": "C",
-        "date": "14 March",
+        "date": "14 November",
         "time": "10:05",
         "actor": "Edge",
         "text": (
-            "A request that carries two length headers is now answered at the edge "
-            "and never reaches the application. The edge reads a chunked body to its "
-            "end before it passes anything on. The application was not touched."
+            "The edge now answers a request that carries two length headers and "
+            "never passes it to the application. The edge reads a chunked body to its "
+            "end before it passes anything on. Nobody touched the application."
         ),
         "tail": "It still prefers a length header and does not read chunking.",
     },
     {
         "rev": "B",
-        "date": "14 March",
+        "date": "14 November",
         "time": "09:40",
         "actor": "Edge",
         "text": (
-            "Any address starting with <code>/internal/</code> is answered at the edge "
-            "with a 403. The edge also removes the <code>X-PackSwift-Role</code> "
-            "header from everything it passes on, so a role cannot arrive from "
-            "outside."
+            "The edge answers any address starting with <code>/internal/</code> with "
+            "a 403. It also removes the <code>X-PackSwift-Role</code> header from "
+            "everything it passes on, so a role cannot arrive from outside."
         ),
         "tail": "",
     },
     {
         "rev": "A",
-        "date": "13 March",
+        "date": "13 November",
         "time": "16:20",
         "actor": "Support",
         "text": (
@@ -78,13 +77,12 @@ DEPLOY_LOG_ENTRIES = (
 HOME_NOTES = (
     skin.note(
         "MARGIN NOTE 1",
-        "The edge owns the front door. Everything customer-facing is answered "
-        "there first.",
+        "The edge owns the front door. Every customer request stops there first.",
     )
     + skin.note(
         "MARGIN NOTE 2",
-        "The application is the second reader. It was not part of last quarter's "
-        "work.",
+        "The application is the second reader. Last quarter's work did not touch "
+        "it.",
         "blue",
     )
 )
@@ -111,7 +109,7 @@ def home_page(code: str = "PS-1042", submitted: bool = False) -> str:
         + skin.figure()
     )
     return skin.page(
-        title="Tracking — PackSwift",
+        title="Tracking · PackSwift",
         sheet_no="01",
         section="SHEET 01 &middot; CUSTOMER SIDE",
         heading="Tracking index",
@@ -146,7 +144,7 @@ def deploy_log_page() -> str:
         "&middot; PACKSWIFT INTERNAL</p>"
     )
     return skin.page(
-        title="Deploy log — PackSwift Tracking",
+        title="Deploy log · PackSwift Tracking",
         sheet_no="02",
         section="SHEET 02 &middot; CHANGE CONTROL",
         heading="Deploy log",
@@ -164,7 +162,7 @@ def role_page() -> str:
         "that does not carry that role is refused.</p>"
     )
     return skin.page(
-        title="Dispatcher role — PackSwift",
+        title="Dispatcher role · PackSwift",
         sheet_no="03",
         section="SHEET 03 &middot; RESTRICTED",
         heading="Dispatcher role",
@@ -181,7 +179,7 @@ def role_page() -> str:
 
 def not_found_page(path: str) -> str:
     return skin.page(
-        title="Not found — PackSwift Tracking",
+        title="Not found · PackSwift Tracking",
         sheet_no="07",
         body=skin.exception(
             kicker="SHEET NOT ISSUED &middot; APPLICATION 404",
@@ -283,7 +281,7 @@ class Handler(BaseHTTPRequestHandler):
             self._send(
                 403,
                 skin.page(
-                    title="Not available — PackSwift",
+                    title="Not available · PackSwift",
                     sheet_no="03",
                     body=skin.exception(
                         kicker="EXCEPTION &middot; ANSWERED BY THE APPLICATION",

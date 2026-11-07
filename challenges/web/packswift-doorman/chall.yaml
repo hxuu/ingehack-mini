@@ -1,18 +1,19 @@
 name: The Doorman
 category: web
 author: hxuu
-hidden: true
+hidden: false
 description: |
-  PackSwift moves parcels across three provinces. Staff get into the portal through
-  a single gateway, and the portal decides what you can see from what the gateway
-  says about you.
+  PackSwift moves parcels between Alger, Oran and Constantine. Staff enter
+  the portal through a single gateway, and the portal decides what you can
+  see from what the gateway says about you.
 
-  You are a customer with a tracking number and no badge. Get to the dispatcher
-  dashboard.
+  You are a customer with a tracking number and no badge. Get to the
+  dispatcher dashboard.
 
-  Reachable at **http://packswift-doorman.challs.ingeniums.club:9487/** or
-  **https://packswift-doorman.challs.ingeniums.club:9488/** (scheme follows the
-  port).
+  > [!CONNECTION]
+  > https://packswift-doorman.challs.ingeniums.club:9488/
+
+  Plain HTTP works on port 9487 if your tool prefers it.
 points: {min: 150, max: 500}
 tiebreakEligible: true
 tags: [beginner, HTTP Protocol, Browser Trust Boundaries]

@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-{% block title %}Sign in &mdash; Course Finder{% endblock %}
+{% block title %}Sign in &middot; Course Finder{% endblock %}
 {% block content %}
 <section class="b-sheet">
   <p class="b-cardlabel">Registrar &middot; sign in</p>
   <h1>Sign in</h1>
-  <p class="b-lede">Use the account issued to you by the faculty office.</p>
+  <p class="b-lede">Use the account the faculty office issued to you.</p>
   <form class="b-stack" action="/login" method="post">
     {% if error %}<p class="b-error">{{ error }}</p>{% endif %}
     <label for="username">Username</label>
@@ -16,6 +16,6 @@
   <p class="b-small">Your faculty pass, printed this morning:
   user <code>student</code> &middot;
   passphrase <code data-pin-for="student">{{ student_password }}</code>.
-  Library staff use a different form &mdash; ask the office.</p>
+  Library staff use a different form. Ask at the office.</p>
 </section>
 {% endblock %}

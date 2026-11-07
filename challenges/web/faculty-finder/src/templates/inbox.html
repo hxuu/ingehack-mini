@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-{% block title %}Inbox &mdash; Course Finder{% endblock %}
+{% block title %}Inbox &middot; Course Finder{% endblock %}
 {% block content %}
 <section class="b-sheet">
   <div class="b-sheet-head">
-    <p class="b-cardlabel">Notice tray</p>
-    <span class="b-who">Signed in as {{ username }}.</span>
+    <p class="b-cardlabel">Messages</p>
+    <span class="b-who">Signed in as {{ display_name }}.</span>
   </div>
   <h1>Inbox</h1>
   {% if messages %}
@@ -17,7 +17,7 @@
     {% endfor %}
   </ul>
   {% else %}
-  <p class="b-empty">Nothing here yet.</p>
+  <p class="b-empty">No messages yet.</p>
   {% endif %}
 </section>
 {% endblock %}
