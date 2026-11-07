@@ -1,0 +1,83 @@
+name: escape
+author: z4k1
+category: linux
+hidden: true
+tiebreakEligible: true
+
+description: |
+  **Briefing**
+  A dead-end shell on a machine whose only interesting feature is the
+  neighborhood. Your first hour will be spent chasing a capability that
+  leads nowhere.
+
+  The flag is not here. The path to it is.
+
+  **Objective**
+  Recover the flag.
+
+  **Connection**
+  Press **Start**. When the instance is up, connect to the displayed SSH
+  endpoint — it rides the TLS terminator, so wrap the client:
+
+  ```sh
+  ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' \
+      player@<instance-host> -p <port>
+  ```
+  Password: `player123`. A plain terminal over `nc` is enough to start, but
+  you will need more than one session before the end.
+
+difficulty: medium
+# Medium band (matches the author's intent: multi-container recon chain).
+points:
+  min: 200
+  max: 500
+
+tags:
+  - medium
+  - linux
+  - docker
+  - postgresql
+  - lateral movement
+  - rce
+
+flag: ingehack{b3st_c0nt41n3r_3sc4p3_pr0ud_0f_u}
+instanced: true
+instancer:
+  # Stable id — keep across renames/updates.
+  challengeIntegrationId: escape
+  timeoutMilliseconds: 1800000
+  extendable: true
+  expose:
+    - kind: tcp-ssl
+      hostPrefix: escape
+      containerName: entry
+      containerPort: 22
+      shouldDisplay: true
+      title: "SSH (via TLS)"
+  # One image, two services (CI builds a single image per challenge dir).
+  # `entry` = SSH bastion with the decoy NET_ADMIN capability.
+  # `db`    = PostgreSQL holding the overprivileged dev account.
+  services:
+    entry:
+      hostname: entry-host
+      environment:
+        ROLE: entry
+      cap_add: [NET_ADMIN]
+      cap_drop: []
+      mem_limit: 256m
+      read_only: false
+      pids_limit: 128
+      networks: [ctf-internal]
+    db:
+      hostname: db-host
+      environment:
+        ROLE: db
+        RCTF_FLAG: ${RCTF_FLAG}
+      mem_limit: 256m
+      read_only: false
+      pids_limit: 128
+      networks: [ctf-internal]
+  networks:
+    ctf-internal:
+      driver: bridge
+      internal: true
