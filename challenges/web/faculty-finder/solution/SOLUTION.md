@@ -50,3 +50,15 @@ https://ctf.ingeniums.club --token <player token>` does the whole path: prepare,
 the URL to the platform admin bot, wait for the visit, then read the flag. The
 `--stage prepare` and `--stage submit` halves remain for `challenge-review`; pass the
 claim code printed by prepare to submit with `--claim <code>`.
+
+### One command
+
+From the repository root, the unified runner needs only the platform id and a
+player token:
+
+`RCTF_TOKEN=<team token> python3 challenges/web/solve.py course-finder`
+
+It resolves this directory, uses `https://faculty-finder.challs.ingeniums.club:9488/`,
+runs prepare, submits to the platform admin bot, waits for the visit, and prints the
+flag. The full challenge URL works in place of the id:
+`https://ctf.ingeniums.club/challenges?challenge=course-finder`.

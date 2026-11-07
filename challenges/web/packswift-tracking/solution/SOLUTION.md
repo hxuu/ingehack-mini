@@ -79,3 +79,14 @@ using the onboarding page at `/proxy-setup`.
 `solution/solve.py --platform-url https://ctf.ingeniums.club --token <player token>`
 starts the team's instance if it is stopped, waits for the endpoint, wraps the socket
 in TLS, and prints the flag. `--base-url <instance URL>` skips the instance step.
+
+### One command
+
+From the repository root, the unified runner needs only the platform id and a
+player token:
+
+`RCTF_TOKEN=<team token> python3 challenges/web/solve.py packswift-tracking`
+
+It starts the team's instance, solves it, and prints the flag. Add
+`--stop-instance` to stop the instance afterwards. The full challenge URL works in
+place of the id: `https://ctf.ingeniums.club/challenges?challenge=packswift-tracking`.
