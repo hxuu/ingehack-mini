@@ -1,0 +1,65 @@
+name: TrusTHeBrO
+author: SF_1E37
+category: rev
+hidden: true
+
+description: |
+  ```
+  ┌─────────────────────────────────────────────────────────────┐
+  │  From:    gennini-support@gooogle-ai.com                    │
+  │  To:      you                                              │
+  │  Subject: You Are Chosen To Test Gennini Pro (FREE!)       │
+  └─────────────────────────────────────────────────────────────┘
+  ```
+
+  Dearest Bro,
+
+  We are Gooogle™ (yes, three g's — the extra one is for generosity), the
+  leader in artificial inteligence since 2019. We have selected YOU to test
+  our brand new product: **GENNINI PRO** — the world's most advanced AI
+  assistant, and definitely not what comes after intelligence.
+
+  Why GENNINI PRO is simply better than the old Gemini:
+
+  - ✅ Powered by Gennini Neural Core™ (proprietary, too advanced to explain)
+  - ✅ Always confident. Never uncertain.
+  - ✅ Accuracy measured by our own proprietary accuracy system — 100%
+
+  We attached the app below. All you need is one Gemini API key.
+  Any key works. Probably.
+
+  Trust the bro. Not the model.
+
+  — The Gennini Team
+  *This is not a scam. Please do not report us again.*
+
+  ---
+
+  Attachment: `TrusTHeBrO.apk` — install it, or open it with `jadx` /
+  `apktool`. The app talks to our Neural Core at
+  `https://function-bun-production-d79f.up.railway.app/` and to Google's
+  Gemini API with whatever key you feed it.
+
+  Flag format: `ingehack{...}`
+
+points:
+  min: 400
+  max: 600
+
+tiebreakEligible: true
+tags:
+  - hard
+  - Android
+  - reverse-engineering
+  - prompt-injection
+  - API
+  - trust-boundaries
+
+flag: ingehack{Trust_me_bro_6s5c4df}
+
+files:
+  - name: TrusTHeBrO.apk
+    path: files/TrusTHeBrO.apk
+
+instanced: false
+container: false
