@@ -1,14 +1,16 @@
 name: Dispatch
 category: web
 author: hxuu
-hidden: true
+hidden: false
 description: |
-  PackSwift's dispatch console is not for customers. The edge in front of it says so
-  plainly, and it is the only thing that says so.
+  PackSwift moves parcels between Alger, Oran and Constantine. The dispatch
+  console at the Bab Ezzouar depot is for staff only. The edge in front of it
+  says so plainly, and it is the only thing that says so.
 
-  Reachable at **http://packswift-dispatch.challs.ingeniums.club:9487/** or
-  **https://packswift-dispatch.challs.ingeniums.club:9488/** (scheme follows the
-  port).
+  > [!CONNECTION]
+  > https://packswift-dispatch.challs.ingeniums.club:9488/
+
+  Plain HTTP works on port 9487 if your tool prefers it.
 points: {min: 150, max: 500}
 tiebreakEligible: true
 tags: [medium, Web Architecture, HTTP Protocol]

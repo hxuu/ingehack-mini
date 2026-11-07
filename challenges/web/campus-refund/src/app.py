@@ -1,4 +1,4 @@
-"""Bursary Refund: the Faculty bursary's refund console and public sandbox."""
+"""El Minha: the Faculty minha office's refund console and public sandbox."""
 
 from __future__ import annotations
 
@@ -22,20 +22,25 @@ STUDENT_PASSWORD = scaffold.mint()
 
 ACCOUNTS = {
     "student": STUDENT_PASSWORD,
-    # The bursar is the bot's browser, not a player account. Her password IS
+    # The minha officer is the bot's browser, not a player account. Her password IS
     # the flag: the admin-bot handler receives the team's flag at run time
     # (ctx.job.flags), so nobody can sign in as her without already seeing the
-    # /statement of a refunded account — and she never appears in the (public)
+    # /statement of a refunded account. She never appears in the (public)
     # handler source with a secret.
     "bursar": FLAG,
 }
 
 BALANCES: dict[str, float] = {
-    "student": 120.0,
+    "student": 1450.0,
     "bursar": 0.0,
 }
 
-# Students whose account has received a refund from the bursary.
+DISPLAY_NAMES = {
+    "student": "Yacine Benali",
+    "bursar": "Mme. Nadia Cherif",
+}
+
+# Students whose account has received a refund from the minha office.
 REFUNDED: set[str] = set()
 
 # The public sandbox: page id -> raw HTML.
@@ -74,6 +79,7 @@ def statement():
     return render_template(
         "statement.html",
         username=username,
+        display_name=DISPLAY_NAMES.get(username, username),
         balance=balance,
         flag=FLAG if username in REFUNDED else None,
     )
@@ -81,8 +87,8 @@ def statement():
 
 @app.post("/refund")
 def refund():
-    # The bursar's sign-in is all this needs: if the session belongs to the
-    # bursar, the refund is approved. We do not ask where the request came from.
+    # The minha officer's sign-in is all this needs: if the session belongs
+    # to her, the refund is approved. We do not ask where the request came from.
     if session.get("username") != "bursar":
         abort(403)
     amount = float(request.form.get("amount", "0"))

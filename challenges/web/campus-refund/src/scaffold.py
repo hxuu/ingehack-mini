@@ -39,8 +39,8 @@ def read_flag() -> str:
 def mint() -> str:
     """A random per-boot secret.
 
-    Anything the challenge must keep secret — session keys, demo passwords,
-    agent tokens — is minted here at start-up and shown only where it is
+    Anything the challenge must keep secret (session keys, demo passwords,
+    agent tokens) is minted here at start-up and shown only where it is
     meant to travel (the login page, the desk cookie). Reading the source
     reveals the plumbing, never a usable credential.
     """

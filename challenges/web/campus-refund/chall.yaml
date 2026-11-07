@@ -1,18 +1,24 @@
-name: Bursary
+name: El Minha
 category: web
 author: hxuu
-hidden: true
+hidden: false
 description: |
-  The bursary moved refunds online over the summer. You are a student with an
-  account balance that is smaller than you would like.
+  You study at the University of Ingenium in Bab Ezzouar. Your minha
+  (المنحة) is 2,000 DA a month, and this month it has not arrived. The
+  finance office moved refunds online over the summer, so the counter now
+  sends you to a web page.
 
-  The bursar approves refunds, and she will open any link you send her.
+  The minha officer approves refunds, and she opens any link a student sends
+  her.
 
-  Convince her browser to approve one for you. When your page is ready, send
-  her the link with the run-bot form on this challenge page.
+  Get her browser to approve a refund for you, then reload your statement.
+  When your page is ready, send her the link with the run-bot form on this
+  challenge page.
 
-  Reachable at **http://campus-refund.challs.ingeniums.club:9487/** or
-  **https://campus-refund.challs.ingeniums.club:9488/** (scheme follows the port).
+  > [!CONNECTION]
+  > https://campus-refund.challs.ingeniums.club:9488/
+
+  Plain HTTP works on port 9487 if your tool prefers it.
 points: {min: 150, max: 500}
 tiebreakEligible: true
 tags: [medium, Browser Trust Boundaries, HTTP Protocol]

@@ -1,4 +1,4 @@
-"""Course Finder: the Faculty of Sciences course search and its inbox."""
+"""Course Finder: the Faculty of Sciences module search and its inbox."""
 
 from __future__ import annotations
 
@@ -25,7 +25,7 @@ ACCOUNTS = {
     # The library assistant is the bot's browser, not a player account. Her
     # password IS the flag: the admin-bot handler receives the team's flag at
     # run time (ctx.job.flags), so nobody can sign in as her without already
-    # being at the end of the challenge — and she never appears in the
+    # being at the end of the challenge. She never appears in the
     # (public) handler source with a secret.
     "assistant": NOTE,
 }
@@ -35,7 +35,12 @@ MESSAGES: dict[str, list[dict[str, str]]] = {
     "assistant": [],
 }
 
-SUGGESTIONS = ["BIO 101", "BIO 204", "CHEM 118", "MATH 120", "PHYS 105"]
+SUGGESTIONS = ["BIO 101", "CHIM 102", "MATH 101", "PHY 105", "INFO 110"]
+
+DISPLAY_NAMES = {
+    "student": "Yacine Benali",
+    "assistant": "Mme. Samira Haddad",
+}
 
 app = Flask(__name__)
 app.secret_key = scaffold.mint()
@@ -79,7 +84,19 @@ def inbox():
     username = session.get("username")
     if username is None:
         return redirect(url_for("login"))
-    return render_template("inbox.html", username=username, messages=MESSAGES[username])
+    messages = [
+        {
+            "from": DISPLAY_NAMES.get(message["from"], message["from"]),
+            "body": message["body"],
+        }
+        for message in MESSAGES[username]
+    ]
+    return render_template(
+        "inbox.html",
+        username=username,
+        display_name=DISPLAY_NAMES.get(username, username),
+        messages=messages,
+    )
 
 
 @app.post("/api/inbox")

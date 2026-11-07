@@ -25,17 +25,17 @@ ACCOUNTS = {
     "student": {"password": STUDENT_PASSWORD, "role": "customer"},
     # The support agent is the bot's browser, not a player account. Her
     # password IS the flag: the admin-bot handler receives the team's flag at
-    # run time (ctx.job.flags), so nobody can sign in as her directly — and
-    # she never appears in the (public) handler source with a secret.
+    # run time (ctx.job.flags), so nobody can sign in as her directly. She
+    # never appears in the (public) handler source with a secret.
     "agent": {"password": scaffold.read_flag(), "role": "agent"},
 }
 
 THREADS = {
     1: {
-        "subject": "Parcel PK-10482 never arrived",
+        "subject": "Parcel PS-10482 never arrived",
         "owner": "student",
-        "opened": "14 Oct 94",
-        "reference": "PK-10482",
+        "opened": "14 Oct 2025",
+        "reference": "PS-10482",
         "status": "Open",
         "messages": [
             {
@@ -43,14 +43,14 @@ THREADS = {
                 "role": "customer",
                 "copy_label": "Customer copy",
                 "when": "14 Oct 09:41",
-                "body": "My parcel PK-10482 was marked delivered on Monday, but it never arrived.",
+                "body": "My parcel PS-10482 was marked delivered on Monday, but nobody knocked. I was home all day.",
             },
             {
                 "author": "agent",
                 "role": "agent",
                 "copy_label": "Desk copy",
                 "when": "14 Oct 11:08",
-                "body": "Thanks for reporting this. I have asked the depot to trace it.",
+                "body": "Thanks for reporting this. I have asked the Bab Ezzouar depot to trace it.",
             },
         ],
     }
@@ -58,6 +58,11 @@ THREADS = {
 
 ROLE_BY_AUTHOR = {"student": "customer", "agent": "agent"}
 COPY_BY_AUTHOR = {"student": "Customer copy", "agent": "Desk copy"}
+
+DISPLAY_NAMES = {
+    "student": "Yacine Benali",
+    "agent": "Mme. Samira Haddad",
+}
 
 app = Flask(__name__)
 app.secret_key = scaffold.mint()
@@ -72,13 +77,27 @@ def agent_page(template: str, **context):
     return response
 
 
+def customer_messages(thread: dict) -> list[dict[str, object]]:
+    """The customer view shows every message with the author's display name."""
+    return [
+        {
+            "author": DISPLAY_NAMES.get(message["author"], message["author"]),
+            "role": message["role"],
+            "copy_label": message["copy_label"],
+            "when": message["when"],
+            "body": message["body"],
+        }
+        for message in thread["messages"]
+    ]
+
+
 def desk_messages(thread: dict) -> list[dict[str, object]]:
     """The desk view keeps the formatting agents and customers write."""
     # Agents paste formatted replies into the thread, so the desk view puts
     # each stored message into the page exactly as it was written.
     return [
         {
-            "author": message["author"],
+            "author": DISPLAY_NAMES.get(message["author"], message["author"]),
             "role": message["role"],
             "copy_label": message["copy_label"],
             "when": message["when"],
@@ -146,7 +165,13 @@ def ticket(ticket_id):
                     "body": body,
                 }
             )
-    return render_template("ticket.html", ticket_id=ticket_id, thread=thread)
+    return render_template(
+        "ticket.html",
+        ticket_id=ticket_id,
+        thread=thread,
+        owner_display=DISPLAY_NAMES.get(thread["owner"], thread["owner"]),
+        messages=customer_messages(thread),
+    )
 
 
 @app.get("/agent/tickets/<int:ticket_id>")
@@ -160,6 +185,7 @@ def agent_ticket(ticket_id):
         "agent_ticket.html",
         ticket_id=ticket_id,
         thread=thread,
+        owner_display=DISPLAY_NAMES.get(thread["owner"], thread["owner"]),
         messages=desk_messages(thread),
         flag=FLAG,
     )

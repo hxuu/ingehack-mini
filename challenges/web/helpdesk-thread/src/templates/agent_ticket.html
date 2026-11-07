@@ -1,15 +1,15 @@
 {% extends "base.html" %}
-{% block title %}{{ thread.subject }} &mdash; support desk{% endblock %}
+{% block title %}{{ thread.subject }} &middot; support desk{% endblock %}
 {% block folder_class %} b-folder--desk{% endblock %}
 {% block tab %}AGENT &middot; {{ "%04d"|format(ticket_id) }}{% endblock %}
 {% block leaf %}
 <div class="b-leaf">
   <header class="b-head">
     <div class="b-fileline"><span>File 04 / Customer complaints</span><span>Card {{ "%04d"|format(ticket_id) }}</span></div>
-    <p class="b-staff">Agent copy &mdash; do not file with the customer forms</p>
+    <p class="b-staff">Agent copy. Do not file with the customer forms.</p>
     <h1>{{ thread.subject }}</h1>
     <dl class="b-meta">
-      <div><dt>Account</dt><dd>{{ thread.owner }}</dd></div>
+      <div><dt>Account</dt><dd>{{ owner_display }}</dd></div>
       <div><dt>Opened</dt><dd>{{ thread.opened }}</dd></div>
       <div><dt>Reference</dt><dd>{{ thread.reference }}</dd></div>
       <div><dt>Status</dt><dd>{{ thread.status }}</dd></div>

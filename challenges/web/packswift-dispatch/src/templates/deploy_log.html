@@ -1,27 +1,30 @@
 {% extends "base.html" %}
-{% block title %}Deploy log &mdash; PackSwift Dispatch{% endblock %}
+{% block title %}Deploy log &middot; PackSwift Dispatch{% endblock %}
 {% block body %}
 <p class="b-kicker">Shift log</p>
 <h1 class="b-h1">Deploy log</h1>
-<p class="b-lede">What changed at the northern depot.</p>
+<p class="b-lede">What changed at the Bab Ezzouar depot.</p>
 <ol class="b-log">
   <li>
-    <p class="b-log-time">11 March <b>09:12</b></p>
+    <p class="b-log-time">11 November <b>09:12</b></p>
     <p class="b-log-actor">Edge</p>
-    <p class="b-log-text">requests whose path starts with <code>/internal/</code> are answered at
-    the edge with a 403. The edge does not contact the dispatch application for these.</p>
+    <p class="b-log-text">The edge answers any request whose path starts with
+    <code>/internal/</code> with a 403. It does not contact the dispatch application for
+    these.</p>
   </li>
   <li>
-    <p class="b-log-time">11 March <b>09:12</b></p>
+    <p class="b-log-time">11 November <b>09:12</b></p>
     <p class="b-log-actor">Application</p>
-    <p class="b-log-text">address decoding left at the default. The application still decodes
-    the address before it chooses a page; this was already the behaviour and was not changed.</p>
+    <p class="b-log-text">Address decoding stays at the default. The application still decodes
+    the address before it chooses a page. This behaviour predates the change, and nobody
+    touched it.</p>
   </li>
   <li>
-    <p class="b-log-time">11 March <b>09:30</b></p>
+    <p class="b-log-time">11 November <b>09:30</b></p>
     <p class="b-log-actor">Edge</p>
-    <p class="b-log-text">rule deployed to every node. No application deploy.</p>
+    <p class="b-log-text">We deployed the rule to every node. We did not deploy the
+    application.</p>
   </li>
 </ol>
-<p class="b-signoff">Signed off at 09:41 &middot; S. Rennie</p>
+<p class="b-signoff">Signed off at 09:41 &middot; S. Benali</p>
 {% endblock %}

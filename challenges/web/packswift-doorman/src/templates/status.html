@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Connection status &mdash; PackSwift{% endblock %}
+{% block title %}Connection status &middot; PackSwift{% endblock %}
 {% block content %}
 <p class="c-kicker">Gateway notice</p>
 <div class="c-card">
   <h1 class="c-h1 c-h1--small">Connection status</h1>
   <p>Signed in via the staff sign-on gateway.</p>
-  <p>The role was set upstream. The gateway adds the <code>{{ header }}</code> header to the request before it reaches the portal, and the portal reads it from there.</p>
+  <p>The gateway sets the role upstream. It adds the <code>{{ header }}</code> header to the request before the request reaches the portal, and the portal reads the role from there.</p>
   <p>This page repeats the name of the header only.</p>
   <p class="c-meta">Status slip 88 &middot; keep for your shift</p>
 </div>

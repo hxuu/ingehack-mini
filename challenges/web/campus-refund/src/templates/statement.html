@@ -1,25 +1,25 @@
 {% extends "base.html" %}
-{% block title %}Statement &mdash; Bursary{% endblock %}
+{% block title %}Statement &middot; El Minha{% endblock %}
 {% block content %}
 <section class="a-page a-page-left">
-  <p class="a-kicker">Account particulars</p>
+  <p class="a-kicker">Account details</p>
   <h1 class="a-name">Student account</h1>
   <dl class="a-fields">
-    <div><dt>Account</dt><dd>STU-86-0417</dd></div>
-    <div><dt>Name</dt><dd>{{ username }}</dd></div>
-    <div><dt>Term</dt><dd>Michaelmas 1986</dd></div>
-    <div><dt>Status</dt><dd>In good standing</dd></div>
+    <div><dt>Account</dt><dd>UING-2025-0417</dd></div>
+    <div><dt>Name</dt><dd>{{ display_name }}</dd></div>
+    <div><dt>Year</dt><dd>2025/2026 &middot; Semester 2</dd></div>
+    <div><dt>Status</dt><dd>Registered</dd></div>
   </dl>
   <div class="a-balance">
     <span>Balance</span>
-    <strong>&pound;{{ "%.2f"|format(balance) }}</strong>
+    <strong>{{ "{:,.2f}".format(balance) }} DA</strong>
   </div>
-  <p class="a-note">Keep this statement for your records. The bursary cannot accept
+  <p class="a-note">Keep this statement for your records. The minha office cannot accept
   liability for cash handed over without a stamped slip.</p>
   {% if flag %}
-  <span class="a-stamp">Paid &middot; 04 Nov 86</span>
+  <span class="a-stamp">Paid &middot; 04 Nov 2025</span>
   {% else %}
-  <span class="a-stamp a-stamp--open">No refund</span>
+  <span class="a-stamp a-stamp--open">No refund yet</span>
   {% endif %}
 </section>
 
@@ -37,17 +37,17 @@
         </tr>
       </thead>
       <tbody>
-        <tr><td>02 Oct</td><td>Term fee &mdash; Michaelmas</td><td class="num">240.00</td><td class="num"></td><td class="num">240.00</td></tr>
-        <tr><td>06 Oct</td><td>Laboratory deposit</td><td class="num">35.00</td><td class="num"></td><td class="num">275.00</td></tr>
-        <tr><td>14 Oct</td><td>Bursary award</td><td class="num"></td><td class="num">155.00</td><td class="num">120.00</td></tr>
+        <tr><td>02 Oct</td><td>Registration fee</td><td class="num">200.00</td><td class="num"></td><td class="num">200.00</td></tr>
+        <tr><td>06 Oct</td><td>Laboratory deposit</td><td class="num">350.00</td><td class="num"></td><td class="num">550.00</td></tr>
+        <tr><td>14 Oct</td><td>Minha payment</td><td class="num"></td><td class="num">2,000.00</td><td class="num">1,450.00</td></tr>
         {% if flag %}
-        <tr><td>04 Nov</td><td>Refund &mdash; bursary counter</td><td class="num"></td><td class="num">{{ "%.2f"|format(balance - 120.0) }}</td><td class="num">{{ "%.2f"|format(balance) }}</td></tr>
+        <tr><td>04 Nov</td><td>Refund &middot; minha counter</td><td class="num"></td><td class="num">{{ "{:,.2f}".format(balance - 1450.0) }}</td><td class="num">{{ "{:,.2f}".format(balance) }}</td></tr>
         {% endif %}
       </tbody>
       <tfoot>
         <tr>
           <td colspan="4">Balance carried forward</td>
-          <td class="num">{{ "%.2f"|format(balance) }}</td>
+          <td class="num">{{ "{:,.2f}".format(balance) }}</td>
         </tr>
       </tfoot>
     </table>
@@ -56,7 +56,7 @@
   {% if flag %}
   <aside class="a-credit">
     <p class="a-kicker">Credit advice</p>
-    <p>Refund approved at the counter and credited to your account.</p>
+    <p>The counter approved a refund and credited it to your account.</p>
     <p class="a-ref">Reference note</p>
     <pre class="a-flag">{{ flag }}</pre>
   </aside>

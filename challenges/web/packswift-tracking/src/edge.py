@@ -18,7 +18,7 @@ def edge_refusal(status: int, path: str = "/track") -> bytes:
     """A refusal body from the same drawing set the application serves."""
     if status == 403:
         body = skin.edge_page(
-            title="Not available — PackSwift Tracking",
+            title="Not available · PackSwift Tracking",
             sheet_no="04",
             kicker="EXCEPTION &middot; ANSWERED AT THE EDGE",
             heading="Not available",
@@ -37,7 +37,7 @@ def edge_refusal(status: int, path: str = "/track") -> bytes:
         return page(403, "Forbidden", body)
 
     body = skin.edge_page(
-        title="Not accepted — PackSwift Tracking",
+        title="Not accepted · PackSwift Tracking",
         sheet_no="05",
         kicker="EXCEPTION &middot; ANSWERED AT THE EDGE",
         heading="Not accepted",

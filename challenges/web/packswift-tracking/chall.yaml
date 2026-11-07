@@ -1,17 +1,21 @@
 name: Where Requests End
 category: web
 author: hxuu
-hidden: true
+hidden: false
 description: |
-  PackSwift's tracking page runs behind an edge that was hardened last quarter. The
-  application behind it was not, and nobody noticed because the two have never
-  disagreed in production.
+  PackSwift's tracking page runs behind an edge that the team hardened last
+  quarter. The application behind it did not get the same work, and nobody
+  noticed because the two never disagreed in production.
 
-  This one is hard. Asking for help is expected, and you will want a tool that lets
-  you write requests by hand. The onboarding page explains how to set one up.
+  This one is hard. Asking for help is expected, and you will want a tool
+  that lets you write requests by hand. The onboarding page explains how to
+  set one up.
 
-  Reachable at **http://packswift-tracking-<team-id>.challs.ingeniums.club:9487/**
-  — plain HTTP, per-team instance.
+  > [!CONNECTION]
+  > http://packswift-tracking-TEAM-ID.challs.ingeniums.club:9487/
+
+  Replace `TEAM-ID` with the id shown on your challenge page. The instance is
+  per team and speaks plain HTTP.
 points: {min: 150, max: 500}
 tiebreakEligible: true
 tags: [hard, HTTP Protocol, Web Architecture]
