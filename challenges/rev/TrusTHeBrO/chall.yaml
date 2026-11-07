@@ -35,11 +35,6 @@ description: |
 
   ---
 
-  Attachment: `GenniniPro.apk` — install it, or open it with `jadx` /
-  `apktool`. The app talks to our Neural Core at
-  `https://function-bun-production-d79f.up.railway.app/` and to Google's
-  Gemini API with whatever key you feed it.
-
   Flag format: `ingehack{...}`
 
 points:
