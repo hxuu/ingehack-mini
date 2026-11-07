@@ -17,12 +17,11 @@ description: |
 
   **Connection**
   Press **Start**. When the instance is up, connect to the displayed SSH
-  endpoint — it rides the TLS terminator, so wrap the client:
+  endpoint; it rides the TLS terminator, so wrap the client:
 
-  ```sh
-  ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' \
-      player@<instance-host> -p <port>
-  ```
+  > [!CONNECTION]
+  > ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' player@<instance-host> -p <port>
+
   Password: `player123`. A plain terminal over `nc` is enough to start, but
   you will need more than one session before the end.
 

@@ -6,9 +6,11 @@ description: |
   BookNook sells used books, and the staff keep a few unreleased titles off
   the public shelves. Get a look at what they're hiding.
 
-  Reachable at **http://search-and-destroy.challs.ingeniums.club:9487/** or
-  **https://search-and-destroy.challs.ingeniums.club:9488/** (scheme follows the
-  port: 9487 is plain HTTP, 9488 is TLS).
+  > [!CONNECTION]
+  > https://search-and-destroy.challs.ingeniums.club:9488/
+
+  Reachable at **http://search-and-destroy.challs.ingeniums.club:9487/**
+  (scheme follows the port: 9487 is plain HTTP, 9488 is TLS).
 points: {min: 100, max: 200}
 tiebreakEligible: true
 tags: [beginner, SQL Injection, Databases, Input Validation]

@@ -18,10 +18,10 @@ description: |
 
   **Connection**
   SSH sits behind the TLS terminator, so wrap the client:
-  ```sh
-  ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' \
-      y4ss1n3@rumor-mill-3.challs.ingeniums.club -p 9450
-  ```
+
+  > [!CONNECTION]
+  > ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' y4ss1n3@rumor-mill-3.challs.ingeniums.club -p 9450
+
   Password: `4rt4z4`. A TTY is required: `su` prompts on the terminal, so a
   raw `nc` session cannot complete the chain.
 

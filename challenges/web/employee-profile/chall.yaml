@@ -6,9 +6,11 @@ description: |
   StaffHub is the company intranet, and the login page hands out a demo
   account. Being logged in doesn't mean you should see everything.
 
-  Reachable at **http://employee-profile.challs.ingeniums.club:9487/** or
-  **https://employee-profile.challs.ingeniums.club:9488/** (scheme follows the
-  port: 9487 is plain HTTP, 9488 is TLS).
+  > [!CONNECTION]
+  > https://employee-profile.challs.ingeniums.club:9488/
+
+  Reachable at **http://employee-profile.challs.ingeniums.club:9487/**
+  (scheme follows the port: 9487 is plain HTTP, 9488 is TLS).
 points: {min: 100, max: 300}
 tiebreakEligible: false
 tags: [beginner, Access Control, Authorization, HTTP Protocol]
