@@ -20,10 +20,10 @@ description: |
 
   **Connection**
   SSH sits behind the TLS terminator, so wrap the client:
-  ```sh
-  ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' \
-      ctf@sudoers.challs.ingeniums.club -p 9450
-  ```
+
+  > [!CONNECTION]
+  > ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' ctf@sudoers.challs.ingeniums.club -p 9450
+
   Password: `ctf`
 
   **Hint**

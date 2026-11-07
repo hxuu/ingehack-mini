@@ -7,8 +7,10 @@ description: |
 
   Hints: the flag is in the env
 
-  Reachable at **http://is-this-actually-pwn-<team-id>.challs.ingeniums.club:<tcp-mapped-port>** —
-  plain HTTP, no TLS.
+  > [!CONNECTION]
+  > http://is-this-actually-pwn-<team-id>.challs.ingeniums.club:<tcp-mapped-port>
+
+  Plain HTTP, no TLS.
 points: {min: 500, max: 1000}
 tiebreakEligible: true
 tags: [beginner, Buffer Overflow, Path Traversal, HTTP Protocol]

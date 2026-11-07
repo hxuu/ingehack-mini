@@ -6,9 +6,11 @@ description: |
   NetCheck is an internal tool that pings whatever host you give it. See if
   it can be made to do something else.
 
-  Reachable at **http://ping-utility.challs.ingeniums.club:9487/** or
-  **https://ping-utility.challs.ingeniums.club:9488/** (scheme follows the
-  port: 9487 is plain HTTP, 9488 is TLS).
+  > [!CONNECTION]
+  > https://ping-utility.challs.ingeniums.club:9488/
+
+  Reachable at **http://ping-utility.challs.ingeniums.club:9487/**
+  (scheme follows the port: 9487 is plain HTTP, 9488 is TLS).
 points: {min: 150, max: 350}
 tiebreakEligible: true
 tags: [beginner, Command Injection, Operating Systems, Input Validation]

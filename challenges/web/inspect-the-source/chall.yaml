@@ -6,9 +6,11 @@ description: |
   Vault Co. just launched its new login portal and swears nothing was left
   behind. Find the flag.
 
-  Reachable at **http://inspect-the-source.challs.ingeniums.club:9487/** or
-  **https://inspect-the-source.challs.ingeniums.club:9488/** (scheme follows the
-  port: 9487 is plain HTTP, 9488 is TLS).
+  > [!CONNECTION]
+  > https://inspect-the-source.challs.ingeniums.club:9488/
+
+  Reachable at **http://inspect-the-source.challs.ingeniums.club:9487/**
+  (scheme follows the port: 9487 is plain HTTP, 9488 is TLS).
 points: {min: 50, max: 150}
 tiebreakEligible: false
 tags: [beginner, Browser Trust Boundaries, HTTP Protocol, Data Encoding]

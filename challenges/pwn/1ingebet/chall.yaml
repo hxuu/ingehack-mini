@@ -5,9 +5,11 @@ hidden: false
 description: |
   I heard inge is going into betting, pretty scandalous if I say so myself.
 
-  Reachable at **http://1ingebet.challs.ingeniums.club:9487/** or
-  **https://1ingebet.challs.ingeniums.club:9488/** (scheme follows the port:
-  9487 is plain HTTP, 9488 is TLS).
+  > [!CONNECTION]
+  > https://1ingebet.challs.ingeniums.club:9488/
+
+  Reachable at **http://1ingebet.challs.ingeniums.club:9487/** (scheme
+  follows the port: 9487 is plain HTTP, 9488 is TLS).
 
   They call the table "provably fair" and proudly link their certified source
   in the footer. Win 10 rounds in a row to collect the prize.

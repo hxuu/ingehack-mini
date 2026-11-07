@@ -10,7 +10,8 @@ description: |
 
   This is a raw TCP service. Connect with:
 
-  `ncat --ssl --ssl-verify bbls.challs.ingeniums.club 9450`
+  > [!CONNECTION]
+  > ncat --ssl --ssl-verify bbls.challs.ingeniums.club 9450
 
   Send one JSON object per line.
 difficulty: easy

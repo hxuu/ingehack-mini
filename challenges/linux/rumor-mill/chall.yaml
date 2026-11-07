@@ -7,7 +7,7 @@ tiebreakEligible: false
 description: |
   Rumor Mill
   ──────────
-  A rumor has been circulating among the team. Someone left a flag behind — but
+  A rumor has been circulating among the team. Someone left a flag behind, but
   it's locked inside another user's home directory, and only that user can read it.
 
   You've been dropped into y4ss1n3's account with nothing but a handover note and
@@ -19,12 +19,10 @@ description: |
   **Connection:** SSH runs behind the TLS terminator, so wrap the client (the
   mapped `tcp-ssl` port is 9450):
 
-  ```sh
-  ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' \
-      y4ss1n3@rumor-mill.challs.ingeniums.club -p 9450
-  ```
+  > [!CONNECTION]
+  > ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' y4ss1n3@rumor-mill.challs.ingeniums.club -p 9450
 
-  Password: `Welcome123`. A TTY is required — `su` prompts on the terminal, so
+  Password: `Welcome123`. A TTY is required: `su` prompts on the terminal, so
   a raw `nc` session cannot complete the chain.
 
   **Goal:** read the real flag and submit it.

@@ -5,7 +5,7 @@ hidden: false
 description: |
   **Welcome to Ingehack Mini.**
 
-  There is nothing to prove here — this one exists so you can get comfortable
+  There is nothing to prove here: this one exists so you can get comfortable
   with the platform. It is worth **0 points**, so it never moves the
   scoreboard. Take your time.
 
@@ -13,9 +13,13 @@ description: |
 
   1. Most challenges give you a description, a flag box, and sometimes files.
      This one has no files: the challenge *is* a website.
-  2. Open **http://sanity-check.challs.ingeniums.club:9487/** (plain HTTP) or
-     **https://sanity-check.challs.ingeniums.club:9488/** (TLS). The port
-     decides the scheme — `https://` on :9487 is the mistake that makes
+  2. Open:
+
+     > [!CONNECTION]
+     > https://sanity-check.challs.ingeniums.club:9488/
+
+     **http://sanity-check.challs.ingeniums.club:9487/** (plain HTTP). The
+     port decides the scheme: `https://` on :9487 is the mistake that makes
      Traefik answer 404, not your browser being broken.
   3. Read the page it serves, follow the one instruction on it, and paste the
      flag into the box below.
@@ -25,7 +29,7 @@ description: |
   answer it got back is in that list. A good part of this event is just
   reading that list.
 
-  Stuck? Ask a mentor — that is what they are for. Good luck, and have fun.
+  Stuck? Ask a mentor; that is what they are for. Good luck, and have fun.
 
   This one is shared: every team sees the same flag.
 points: {min: 0, max: 0}
