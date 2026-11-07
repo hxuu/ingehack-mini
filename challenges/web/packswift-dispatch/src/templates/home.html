@@ -3,7 +3,7 @@
 {% set code = request.args.get("code", "").strip() %}
 <p class="b-kicker">Customer enquiries</p>
 <h1 class="b-h1">Track a parcel</h1>
-<p class="b-lede">Customer tracking for the Bab Ezzouar depot.</p>
+<p class="b-lede">Customer tracking for the ESI SBA depot.</p>
 <p class="b-copy">Track a parcel with the code on your receipt. Staff tools are handled by
 the edge.</p>
 <form class="b-slip" action="/" method="get">
@@ -16,8 +16,8 @@ the edge.</p>
 </form>
 {% if code %}
 <div class="b-result">
-  <p>Parcel <b>{{ code }}</b> was last scanned at the Bab Ezzouar depot this morning.</p>
-  <p class="b-result-meta">D&eacute;p&ocirc;t Bab Ezzouar &middot; 06:12 &middot; route Alger to Oran</p>
+  <p>Parcel <b>{{ code }}</b> was last scanned at the ESI SBA depot this morning.</p>
+  <p class="b-result-meta">D&eacute;p&ocirc;t ESI SBA &middot; 06:12 &middot; route Alger to Oran</p>
   <span class="b-pen" aria-hidden="true"></span>
 </div>
 {% endif %}

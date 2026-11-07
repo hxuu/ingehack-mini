@@ -53,7 +53,7 @@ THREADS = {
                 "role": "agent",
                 "copy_label": "Desk copy",
                 "when": "14 Oct 11:08",
-                "body": "Thanks for reporting this. I have asked the Bab Ezzouar depot to trace it.",
+                "body": "Thanks for reporting this. I have asked the ESI SBA depot to trace it.",
             },
         ],
     }
