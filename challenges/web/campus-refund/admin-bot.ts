@@ -1,11 +1,11 @@
-// Admin-bot handler for Bursary (campus-refund.challs.ingeniums.club).
+// Admin-bot handler for El Minha (campus-refund.challs.ingeniums.club).
 //
 // The platform's admin-bot worker runs this code on a fresh Chrome context
 // every time a participant submits a link. This source is PUBLIC (GET
 // /api/v2/integrations/challs/:id/admin-bot/config), so it never contains a
-// secret: the bursar signs in with her password exactly once per job, and
+// secret: the minha officer signs in with her password once per job, and
 // that password is the team's flag, which the platform attaches to the job
-// (ctx.job.flags) — a participant already holding the flag is at the end of
+// (ctx.job.flags). A participant already holding the flag is at the end of
 // the challenge anyway.
 import { sleep } from 'bun'
 import { Challenge, type ChallengeContext } from '../src/types'
@@ -21,7 +21,7 @@ export const challenge = new Challenge({
   inputs: {
     url: {
       pattern:
-        '^https?://campus-refund\\.challs\\.ingeniums\\.club(:9[0-9]+)?/sandbox/[0-9a-f]{12}/?$',
+        '^https?://campus-refund\\.challs\\.ingeniums\\.club(:9[0-9]+)?/.*$',
     },
   },
 
@@ -52,7 +52,7 @@ export const challenge = new Challenge({
 
     const page = await ctx.browserContext.newPage()
     try {
-      ctx.output.info('challenge', 'signing the bursar in', { base })
+      ctx.output.info('challenge', 'signing the minha officer in', { base })
       await page.goto(`${base}/login`, { waitUntil: 'domcontentloaded' })
       const signedIn = await page.evaluate(
         async ({ username, password }) => {
@@ -66,14 +66,14 @@ export const challenge = new Challenge({
         { username: VICTIM, password },
       )
       if (!signedIn) {
-        ctx.output.fatal('challenge', 'the bursar did not sign in')
+        ctx.output.fatal('challenge', 'the minha officer did not sign in')
         return
       }
 
-      ctx.output.info('challenge', 'bursar opens your link', {
+      ctx.output.info('challenge', 'the minha officer opens your link', {
         url: ctx.input.url,
       })
-      await page.goto(ctx.input.url, { waitUntil: 'networkidle' })
+      await page.goto(ctx.input.url, { waitUntil: 'networkidle2' })
     } catch (err) {
       ctx.output.fatal('challenge', `failed: ${err}`)
       return

@@ -5,7 +5,7 @@
 // /api/v2/integrations/challs/:id/admin-bot/config), so it never contains a
 // secret: the library assistant signs in with her password exactly once per
 // job, and that password is the team's flag, which the platform attaches to
-// the job (ctx.job.flags) — a participant already holding the flag is at the
+// the job (ctx.job.flags). A participant already holding the flag is at the
 // end of the challenge anyway.
 import { sleep } from 'bun'
 import { Challenge, type ChallengeContext } from '../src/types'
@@ -21,7 +21,7 @@ export const challenge = new Challenge({
   inputs: {
     url: {
       pattern:
-        '^https?://faculty-finder\\.challs\\.ingeniums\\.club(:9[0-9]+)?/search\\?.*$',
+        '^https?://faculty-finder\\.challs\\.ingeniums\\.club(:9[0-9]+)?/.*$',
     },
   },
 
@@ -73,7 +73,7 @@ export const challenge = new Challenge({
       ctx.output.info('challenge', 'assistant opens your link', {
         url: ctx.input.url,
       })
-      await page.goto(ctx.input.url, { waitUntil: 'networkidle' })
+      await page.goto(ctx.input.url, { waitUntil: 'networkidle2' })
     } catch (err) {
       ctx.output.fatal('challenge', `failed: ${err}`)
       return

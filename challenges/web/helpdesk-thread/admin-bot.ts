@@ -5,7 +5,7 @@
 // /api/v2/integrations/challs/:id/admin-bot/config), so it never contains a
 // secret: the support agent signs in with her password exactly once per job,
 // and that password is the team's flag, which the platform attaches to the
-// job (ctx.job.flags) — a participant already holding the flag is at the end
+// job (ctx.job.flags). A participant already holding the flag is at the end
 // of the challenge anyway.
 import { sleep } from 'bun'
 import { Challenge, type ChallengeContext } from '../src/types'
@@ -70,12 +70,12 @@ export const challenge = new Challenge({
         return
       }
 
-      // Her desk view of the thread: what she sees there is the desk copy —
+      // Her desk view of the thread: what she sees there is the desk copy,
       // which renders whatever a customer wrote into the thread.
       ctx.output.info('challenge', 'agent opens the desk thread', {
         url: `${base}/agent/tickets/1`,
       })
-      await page.goto(`${base}/agent/tickets/1`, { waitUntil: 'networkidle' })
+      await page.goto(`${base}/agent/tickets/1`, { waitUntil: 'networkidle2' })
     } catch (err) {
       ctx.output.fatal('challenge', `failed: ${err}`)
       return
