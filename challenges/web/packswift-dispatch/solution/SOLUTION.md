@@ -24,6 +24,15 @@ returns 403 from the edge.
 A playtester finds a path the edge rejects and the application accepts within 25
 minutes, and can say which component made which decision.
 
+## Running it
+
+`python3 challenges/web/solve.py dispatch`
+
+The unified runner resolves this directory and runs its solver against
+`https://packswift-dispatch.challs.ingeniums.club:9488/`. No token is needed for
+this static challenge. The full challenge URL works in place of the id:
+`https://ctf.ingeniums.club/challenges?challenge=dispatch`.
+
 ## Open items
 
 - `src/` not written yet. Two components in one container: an edge process with a prefix

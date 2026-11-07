@@ -22,6 +22,15 @@ contains the flag. No other route does.
 A playtester who has never opened devtools finds the dispatcher dashboard within 25
 minutes, without being told the header name.
 
+## Running it
+
+`python3 challenges/web/solve.py the-doorman`
+
+The unified runner resolves this directory and runs its solver against
+`https://packswift-doorman.challs.ingeniums.club:9488/`. No token is needed for
+this static challenge. The full challenge URL works in place of the id:
+`https://ctf.ingeniums.club/challenges?challenge=the-doorman`.
+
 ## Open items
 
 - `/status` names the `X-PackSwift-Role` header and says the gateway set it upstream,
