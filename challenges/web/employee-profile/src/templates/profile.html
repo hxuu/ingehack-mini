@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>StaffHub &mdash; {{ employee["full_name"] }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <h1>StaffHub</h1>
+      <p>Employee intranet</p>
+    </div>
+    <div class="userbox">
+      <span>
+        Signed in as <strong>{{ viewer["username"] }}</strong>
+        (#{{ viewer["id"] }})
+      </span>
+      <a href="{{ url_for('logout') }}">Sign out</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="card">
+      <div class="profile-head">
+        <div>
+          <h2>{{ employee["full_name"] }}</h2>
+          <p class="muted">{{ employee["role"] }} &middot; {{ employee["department"] }}</p>
+        </div>
+        <span class="badge">Employee #{{ employee["id"] }}</span>
+      </div>
+
+      <dl class="details">
+        <dt>Username</dt>
+        <dd>{{ employee["username"] }}</dd>
+
+        <dt>Role</dt>
+        <dd>{{ employee["role"] }}</dd>
+
+        <dt>Department</dt>
+        <dd>{{ employee["department"] }}</dd>
+
+        <dt>Email</dt>
+        <dd>{{ employee["email"] }}</dd>
+
+        <dt>Phone</dt>
+        <dd>{{ employee["phone"] }}</dd>
+
+        <dt>Notes</dt>
+        <dd class="notes">{{ employee["notes"] }}</dd>
+      </dl>
+    </section>
+
+    <p class="hint">
+      Your profile is at <code>/profile?id={{ viewer["id"] }}</code>.
+    </p>
+  </main>
+
+  <footer>
+    <p>StaffHub &mdash; a tiny company intranet. All employees and data are fictional.</p>
+  </footer>
+</body>
+</html>

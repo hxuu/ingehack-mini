@@ -1,0 +1,16 @@
+name: flash-coupon
+author: h1tl4r
+category: web
+hidden: true
+description: |
+  FlashMart gives new shoppers a few credits and one promo code, and the
+  Flag Pack costs far more than they can afford. Find a way to buy it.
+
+  Reachable at **http://flash-coupon.challs.ingeniums.club:9487/** or
+  **https://flash-coupon.challs.ingeniums.club:9488/** (scheme follows the
+  port: 9487 is plain HTTP, 9488 is TLS).
+points: {min: 250, max: 600}
+tiebreakEligible: true
+tags: [beginner, Race Conditions, Concurrency, Databases]
+flag: ingehack{ch3ck_th3n_us3_th3n_l0s3}
+instanced: false

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BookNook &mdash; Search</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <h1>BookNook</h1>
+    <p>Used books, new adventures.</p>
+  </header>
+
+  <main>
+    <form class="search" method="get" action="{{ url_for('search') }}">
+      <input
+        type="text"
+        name="q"
+        value="{{ q }}"
+        placeholder="Search by title..."
+        aria-label="Search by title"
+        autofocus
+      >
+      <button type="submit">Search</button>
+    </form>
+
+    {% if error %}
+    <div class="error">
+      <strong>SQL error:</strong> {{ error }}
+    </div>
+    {% endif %}
+
+    {% if rows is not none %}
+      {% if rows %}
+      <p class="result-count">{{ rows|length }} book(s) found</p>
+      <table class="books">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th class="price">Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+          <tr>
+            <td>{{ row['title'] }}</td>
+            <td>{{ row['author'] }}</td>
+            <td class="price">${{ '%.2f'|format(row['price']) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="empty">No books found for &ldquo;{{ q }}&rdquo;.</p>
+      {% endif %}
+    {% endif %}
+  </main>
+
+  <footer>
+    <p>BookNook &mdash; a tiny used-book shop. Some shelves are staff only.</p>
+  </footer>
+</body>
+</html>

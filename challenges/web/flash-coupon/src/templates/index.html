@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlashMart &mdash; deals at lightning speed</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<main class="card">
+  <header class="shop-header">
+    <div class="brand"><span class="bolt">&#9889;</span> FlashMart</div>
+    <p class="tagline">Flash deals at lightning speed.</p>
+  </header>
+
+  {% if message %}<div class="notice">{{ message }}</div>{% endif %}
+  {% if error %}<div class="error">{{ error }}</div>{% endif %}
+
+  <section class="balance">
+    <p class="label">Your balance</p>
+    <p class="amount"><strong id="balance">{{ user["balance"] }}</strong> credits</p>
+  </section>
+
+  <section class="panel">
+    <h2>Promo code</h2>
+    <p>
+      Every shopper can use the current promo code
+      <code>{{ coupon_code }}</code> once for
+      <strong>+{{ coupon_value }} credits</strong>.
+    </p>
+    <p class="status">
+      Coupon status:
+      {% if user["flash50_redeemed"] %}
+        <span class="used">already used</span>
+      {% else %}
+        <span class="available">available</span>
+      {% endif %}
+    </p>
+    <form method="post" action="{{ url_for('redeem') }}" class="row">
+      <input type="text" name="code" placeholder="{{ coupon_code }}"
+             autocomplete="off" spellcheck="false" aria-label="Coupon code">
+      <button type="submit">Redeem coupon</button>
+    </form>
+  </section>
+
+  <section class="panel">
+    <h2>Flag Pack</h2>
+    <p>
+      The only item that reveals the challenge flag.
+      Price: <strong>{{ flag_pack_price }} credits</strong>.
+    </p>
+    <form method="post" action="{{ url_for('buy') }}">
+      <input type="hidden" name="item" value="flag">
+      <button type="submit" class="buy">Buy Flag Pack</button>
+    </form>
+  </section>
+
+  {% if flag %}
+  <section class="flag-box">
+    <h2>Your flag</h2>
+    <pre id="flag">{{ flag }}</pre>
+  </section>
+  {% endif %}
+
+  <footer>
+    <form method="post" action="{{ url_for('new_account') }}">
+      <button type="submit" class="link">Start with a new account</button>
+    </form>
+    <p>All products, prices and shoppers in FlashMart are fictional.</p>
+  </footer>
+</main>
+</body>
+</html>
