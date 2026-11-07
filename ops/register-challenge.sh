@@ -29,7 +29,10 @@ python3 -c 'import jsonschema' 2>/dev/null || pip install --quiet jsonschema || 
 # ---- build the exact rCTF v2 upsert payload from chall.yaml ----------------
 # chall.yaml contract (challenges/<category>/<name>/chall.yaml):
 #   name, author, category, description, points{min,max}, tags[],
-#   tiebreakEligible?, hidden?, releaseTime?, scoring?
+#   tiebreakEligible?, hidden?, releaseTime?, sortWeight?, scoring?
+#   hidden, releaseTime, and sortWeight are opt-in overrides: omit them to
+#   leave the platform value alone (an admin-UI edit survives), write them to
+#   win.
 #   flags: either
 #     flag: ingehack{...}                          (single static flag), or
 #     flagsFlagProvider / flagsFlagConfig          (full entry), or

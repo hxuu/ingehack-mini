@@ -21,11 +21,18 @@ data = {
     "points": {"min": m.get("points", {}).get("min", 100),
                "max": m.get("points", {}).get("max", 500)},
     "tiebreakEligible": m.get("tiebreakEligible", True),
-    "hidden": m.get("hidden", False),
-    "releaseTime": m.get("releaseTime", None),
     "scoring": m.get("scoring", {"kind": "decay"}),
 }
 if "tags" in m: data["tags"] = m["tags"]
+
+# hidden, releaseTime, and sortWeight are opt-in: omit the key to leave the
+# platform value alone. rCTF's upsert keeps the current value when a key is
+# undefined and only clears it on an explicit null, so a value set in the
+# admin UI survives CI re-registration. Declare the field in chall.yaml to
+# override the platform value explicitly.
+if "hidden" in m: data["hidden"] = m["hidden"]
+if "releaseTime" in m: data["releaseTime"] = m["releaseTime"]
+if "sortWeight" in m: data["sortWeight"] = m["sortWeight"]
 
 # `adminBot: <file>` attaches a platform admin-bot handler. The file (e.g.
 # admin-bot.ts) is the trusted Challenge source for the admin-bots/rctf-ts
