@@ -35,7 +35,7 @@ description: |
 
   ---
 
-  Attachment: `TrusTHeBrO.apk` — install it, or open it with `jadx` /
+  Attachment: `GenniniPro.apk` — install it, or open it with `jadx` /
   `apktool`. The app talks to our Neural Core at
   `https://function-bun-production-d79f.up.railway.app/` and to Google's
   Gemini API with whatever key you feed it.
@@ -58,8 +58,8 @@ tags:
 flag: ingehack{Trust_me_bro_6s5c4df}
 
 files:
-  - name: TrusTHeBrO.apk
-    path: files/TrusTHeBrO.apk
+  - name: GenniniPro.apk
+    path: files/GenniniPro.apk
 
 instanced: false
 container: false
