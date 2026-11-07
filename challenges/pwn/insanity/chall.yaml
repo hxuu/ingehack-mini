@@ -1,7 +1,7 @@
 name: insanity
 author: nothoudaifa
 category: pwn
-hidden: true
+hidden: false
 
 description: |
   good luck ;)

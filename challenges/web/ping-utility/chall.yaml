@@ -1,7 +1,7 @@
 name: ping-utility
 author: h1tl4r
 category: web
-hidden: true
+hidden: false
 description: |
   NetCheck is an internal tool that pings whatever host you give it. See if
   it can be made to do something else.

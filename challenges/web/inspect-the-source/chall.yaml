@@ -1,7 +1,7 @@
 name: inspect-the-source
 author: h1tl4r
 category: web
-hidden: true
+hidden: false
 description: |
   Vault Co. just launched its new login portal and swears nothing was left
   behind. Find the flag.

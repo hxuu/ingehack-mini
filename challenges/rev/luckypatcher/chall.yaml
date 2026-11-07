@@ -1,7 +1,7 @@
 name: luckypatcher
 author: RedhaIWNL
 category: rev
-hidden: true
+hidden: false
 
 description: |
   Alice wakes in the Whispering Woods with no memory of the way home. Ten

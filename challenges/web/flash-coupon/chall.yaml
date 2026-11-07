@@ -1,7 +1,7 @@
 name: flash-coupon
 author: h1tl4r
 category: web
-hidden: true
+hidden: false
 description: |
   FlashMart gives new shoppers a few credits and one promo code, and the
   Flag Pack costs far more than they can afford. Find a way to buy it.

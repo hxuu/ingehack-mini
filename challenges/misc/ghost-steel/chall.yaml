@@ -1,7 +1,7 @@
 name: ghost-steel
 author: s4l1
 category: osint
-hidden: true
+hidden: false
 tiebreakEligible: true
 
 description: |

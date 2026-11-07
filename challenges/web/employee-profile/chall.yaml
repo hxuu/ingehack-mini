@@ -1,7 +1,7 @@
 name: employee-profile
 author: h1tl4r
 category: web
-hidden: true
+hidden: false
 description: |
   StaffHub is the company intranet, and the login page hands out a demo
   account. Being logged in doesn't mean you should see everything.

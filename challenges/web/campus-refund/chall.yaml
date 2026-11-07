@@ -12,6 +12,9 @@ description: |
   her.
 
   Get her browser to approve a refund for you, then reload your statement.
+  Your statement carries a claim code. The counter files a refund under that
+  code, so put it in the page you send her.
+
   When your page is ready, send her the link with the run-bot form on this
   challenge page.
 

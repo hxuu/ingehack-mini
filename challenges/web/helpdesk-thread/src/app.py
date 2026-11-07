@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import re
+import secrets
+
 from flask import (
     Flask,
     abort,
@@ -64,8 +67,32 @@ DISPLAY_NAMES = {
     "agent": "Mme. Samira Haddad",
 }
 
+# The desk files each appended reply under the claim code on the customer's
+# own ticket, not under the shared student account. The container stays
+# static, but one team's reply no longer appears on another team's ticket.
+CLAIM_RE = re.compile(r"[0-9a-f]{8}")
+
 app = Flask(__name__)
 app.secret_key = scaffold.mint()
+
+
+def current_claim() -> str:
+    """Return this browser's claim code, creating one on first use.
+
+    A claim can also arrive as ?claim=, which lets a two-stage solver reuse
+    the code it printed earlier. Claims are random and never enumerate.
+    """
+    requested = request.args.get("claim", "")
+    if requested:
+        if not CLAIM_RE.fullmatch(requested):
+            abort(400)
+        session["claim"] = requested
+        return requested
+    claim = session.get("claim")
+    if not claim:
+        claim = secrets.token_hex(4)
+        session["claim"] = claim
+    return claim
 
 
 def agent_page(template: str, **context):
@@ -77,8 +104,8 @@ def agent_page(template: str, **context):
     return response
 
 
-def customer_messages(thread: dict) -> list[dict[str, object]]:
-    """The customer view shows every message with the author's display name."""
+def customer_messages(thread: dict, claim: str) -> list[dict[str, object]]:
+    """The customer view shows the seed messages and this claim's replies."""
     return [
         {
             "author": DISPLAY_NAMES.get(message["author"], message["author"]),
@@ -88,6 +115,7 @@ def customer_messages(thread: dict) -> list[dict[str, object]]:
             "body": message["body"],
         }
         for message in thread["messages"]
+        if message.get("claim") in (None, claim)
     ]
 
 
@@ -153,6 +181,7 @@ def ticket(ticket_id):
         abort(404)
     if thread["owner"] != username:
         abort(403)
+    claim = current_claim()
     if request.method == "POST":
         body = request.form.get("body", "").strip()
         if body:
@@ -163,6 +192,7 @@ def ticket(ticket_id):
                     "copy_label": COPY_BY_AUTHOR[username],
                     "when": "14 Oct 12:02",
                     "body": body,
+                    "claim": claim,
                 }
             )
     return render_template(
@@ -170,7 +200,8 @@ def ticket(ticket_id):
         ticket_id=ticket_id,
         thread=thread,
         owner_display=DISPLAY_NAMES.get(thread["owner"], thread["owner"]),
-        messages=customer_messages(thread),
+        claim=claim,
+        messages=customer_messages(thread, claim),
     )
 
 
@@ -208,6 +239,9 @@ def append_message(ticket_id):
     body = request.form.get("body", "").strip()
     if not body:
         return jsonify({"error": "nothing to add"}), 400
+    claim = request.form.get("claim", "").strip()
+    if claim and not CLAIM_RE.fullmatch(claim):
+        return jsonify({"error": "bad claim code"}), 400
     thread["messages"].append(
         {
             "author": "agent",
@@ -215,6 +249,7 @@ def append_message(ticket_id):
             "copy_label": "Desk copy",
             "when": "14 Oct 12:02",
             "body": body,
+            "claim": claim or None,
         }
     )
     return jsonify({"ok": True})

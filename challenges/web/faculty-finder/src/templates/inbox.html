@@ -4,9 +4,11 @@
 <section class="b-sheet">
   <div class="b-sheet-head">
     <p class="b-cardlabel">Messages</p>
-    <span class="b-who">Signed in as {{ display_name }}.</span>
+    <span class="b-who">Signed in as {{ display_name }} &middot; claim
+      <code data-claim="{{ claim }}">{{ claim }}</code>.</span>
   </div>
   <h1>Inbox</h1>
+  <p class="b-hint">Messages addressed to your claim code arrive here.</p>
   {% if messages %}
   <ul class="b-messages">
     {% for message in messages %}

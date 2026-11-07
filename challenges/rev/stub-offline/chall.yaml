@@ -1,7 +1,7 @@
 name: stub-offline
 author: 4ym3n
 category: rev
-hidden: true
+hidden: false
 
 description: |
   Find the input this stub accepts.

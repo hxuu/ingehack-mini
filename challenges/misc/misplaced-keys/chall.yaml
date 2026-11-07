@@ -1,7 +1,7 @@
 name: misplaced-keys
 author: s4l1
 category: misc
-hidden: true
+hidden: false
 tiebreakEligible: true
 
 description: |
