@@ -1,5 +1,3 @@
-"""Course Finder: the Faculty of Sciences module search and its inbox."""
-
 from __future__ import annotations
 
 import json
@@ -25,17 +23,9 @@ STUDENT_PASSWORD = scaffold.mint()
 
 ACCOUNTS = {
     "student": STUDENT_PASSWORD,
-    # The library assistant is the bot's browser, not a player account. Her
-    # password IS the flag: the admin-bot handler receives the team's flag at
-    # run time (ctx.job.flags), so nobody can sign in as her without already
-    # being at the end of the challenge. She never appears in the
-    # (public) handler source with a secret.
     "assistant": NOTE,
 }
 
-# Messages are filed under the claim code on the player's own inbox, not under
-# the shared student account. The container stays static, but one team's note
-# no longer appears in another team's inbox.
 INBOXES: dict[str, list[dict[str, str]]] = {}
 
 CLAIM_RE = re.compile(r"[0-9a-f]{8}")
@@ -52,11 +42,6 @@ app.secret_key = scaffold.mint()
 
 
 def current_claim() -> str:
-    """Return this browser's claim code, creating one on first use.
-
-    A claim can also arrive as ?claim=, which lets a two-stage solver reuse
-    the code it printed earlier. Claims are random and never enumerate.
-    """
     requested = request.args.get("claim", "")
     if requested:
         if not CLAIM_RE.fullmatch(requested):
@@ -72,7 +57,6 @@ def current_claim() -> str:
 
 @app.after_request
 def add_policy(response: Response) -> Response:
-    """Every response, including static files and errors, carries the policy."""
     response.headers["Content-Security-Policy"] = "script-src 'self'"
     return response
 
@@ -151,8 +135,6 @@ def my_note():
 @app.get("/api/jsonp")
 def jsonp():
     data = {"suggestions": SUGGESTIONS, "term": request.args.get("q", "")}
-    # The old course widget sends the name of the function it wants called,
-    # so we put that name straight into the script we send back.
     callback = request.args.get("cb", "")
     return Response(f"{callback}({json.dumps(data)})", mimetype="application/javascript")
 

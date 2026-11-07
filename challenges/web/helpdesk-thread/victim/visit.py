@@ -13,8 +13,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "_common"))
 from victim import visit  # noqa: E402
 
 AGENT_USERNAME = "agent"
-# Her password IS the challenge flag. It is the same secret the platform's
-# admin-bot handler receives at run time (ctx.job.flags). Pass it via env.
 AGENT_PASSWORD = os.environ["FLAG"]
 
 

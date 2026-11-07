@@ -32,10 +32,6 @@ instancer:
   timeoutMilliseconds: 1800000
   extendable: true
   expose:
-    # tcp-ssl, not http: the edge and the application must read the same
-    # request differently, and an HTTP proxy in front of the instance would
-    # normalise the length and chunking headers before they ever reach it.
-    # A TCP router terminates TLS and forwards the bytes untouched.
     - kind: tcp-ssl
       hostPrefix: packswift-tracking
       containerName: main

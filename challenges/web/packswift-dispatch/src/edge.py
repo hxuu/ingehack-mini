@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""PackSwift edge: owns port 8080 and forwards everything else to the app."""
 
 from __future__ import annotations
 
@@ -91,7 +90,6 @@ class Handler(socketserver.BaseRequestHandler):
 
         target = parts[1].decode("latin-1", "replace")
         path = target.split("?", 1)[0]
-        # The edge compares the address exactly as it arrived. It never decodes it.
         if path.startswith("/internal/"):
             self.request.sendall(forbidden_response())
             return

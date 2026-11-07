@@ -17,7 +17,6 @@ scaffold.register_source(app, ["app.py", "edge.py"], template="source.html")
 
 
 def path_as_requested() -> str:
-    # Decode the address before choosing a page.
     raw = request.environ.get("RAW_URI") or request.full_path
     return urllib.parse.unquote(raw.split("?", 1)[0])
 

@@ -50,8 +50,6 @@
   </footer>
 </div>
 <script>
-  // The reply form runs in the agent's browser, so it reads the ticket token
-  // from the cookie and sends it with the request.
   const tokenRow = document.cookie.split("; ").find((row) => row.startsWith("agent_token="));
   const ticketToken = tokenRow ? tokenRow.split("=")[1] : "";
   document.getElementById("reply").addEventListener("submit", (event) => {

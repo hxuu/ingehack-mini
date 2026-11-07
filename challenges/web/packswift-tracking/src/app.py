@@ -1,11 +1,3 @@
-"""PackSwift tracking application.
-
-The application reads a length header and reads exactly that many body bytes. It was
-never changed to understand chunked bodies; the edge in front of it was.
-
-The pages are one drawing set. The edge serves its own refusals from the same skin.
-"""
-
 from __future__ import annotations
 
 import os
@@ -267,8 +259,6 @@ class Handler(BaseHTTPRequestHandler):
         path = self.path.split("?", 1)[0]
         if path == "/track":
             length = int(self.headers.get("Content-Length", "0"))
-            # Read exactly the number of bytes the length header names. The tracking
-            # application has always done this and does not read the chunking header.
             body = self.rfile.read(length)
             self._send(200, home_page(self._read_tracking_code(body), submitted=True))
         else:

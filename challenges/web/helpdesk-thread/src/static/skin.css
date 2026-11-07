@@ -493,8 +493,6 @@ body { background: #3b3733; }
 
 .b-foot a { text-decoration: none; border-bottom: 1px solid #b9b19a; }
 
-/* Memo */
-
 .b-memo {
   position: relative;
   width: min(740px, 100%);
@@ -611,8 +609,6 @@ body { background: #3b3733; }
   mix-blend-mode: multiply;
 }
 
-/* Printout stack */
-
 .b-stack {
   position: relative;
   width: min(900px, 100%);
@@ -658,8 +654,6 @@ body { background: #3b3733; }
   line-height: 1.62;
   white-space: pre;
 }
-
-/* Refusal form */
 
 .b-refusal {
   position: relative;

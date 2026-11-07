@@ -1,12 +1,3 @@
-// Admin-bot handler for Open Ticket (helpdesk-thread.challs.ingeniums.club).
-//
-// The platform's admin-bot worker runs this code on a fresh Chrome context
-// every time a participant submits a job. This source is PUBLIC (GET
-// /api/v2/integrations/challs/:id/admin-bot/config), so it never contains a
-// secret: the support agent signs in with her password exactly once per job,
-// and that password is the team's flag, which the platform attaches to the
-// job (ctx.job.flags). A participant already holding the flag is at the end
-// of the challenge anyway.
 import { sleep } from 'bun'
 import { Challenge, type ChallengeContext } from '../src/types'
 
@@ -16,8 +7,6 @@ export const challenge = new Challenge({
   timeoutMilliseconds: 30_000,
   browser: 'chrome',
 
-  // Any path on the challenge host is accepted. The handler only needs the
-  // origin: the desk view it opens is the ticket already in the thread.
   inputs: {
     url: {
       pattern:
@@ -25,9 +14,6 @@ export const challenge = new Challenge({
     },
   },
 
-  // Allowlist the challenge host, deny everything else. PAC rules match on
-  // strings and never resolve DNS; the catch-all deny stops 127.0.0.1.nip.io
-  // style aliases reaching anything inside the VMs.
   restrictDomains: {
     host: {
       allowRegex: [{ pattern: '^helpdesk-thread\\.challs\\.ingeniums\\.club$' }],
@@ -70,8 +56,6 @@ export const challenge = new Challenge({
         return
       }
 
-      // Her desk view of the thread: what she sees there is the desk copy,
-      // which renders whatever a customer wrote into the thread.
       ctx.output.info('challenge', 'agent opens the desk thread', {
         url: `${base}/agent/tickets/1`,
       })
@@ -80,8 +64,6 @@ export const challenge = new Challenge({
       ctx.output.fatal('challenge', `failed: ${err}`)
       return
     }
-    // The desk page keeps running while she reads: enough for the message
-    // script to reach the ticket API and land the reply in the thread.
     await sleep(8_000)
   },
 })

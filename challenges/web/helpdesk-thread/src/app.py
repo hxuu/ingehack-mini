@@ -1,5 +1,3 @@
-"""Open Ticket: PackSwift's support desk and its two views of one thread."""
-
 from __future__ import annotations
 
 import re
@@ -26,10 +24,6 @@ FLAG = scaffold.read_flag()
 
 ACCOUNTS = {
     "student": {"password": STUDENT_PASSWORD, "role": "customer"},
-    # The support agent is the bot's browser, not a player account. Her
-    # password IS the flag: the admin-bot handler receives the team's flag at
-    # run time (ctx.job.flags), so nobody can sign in as her directly. She
-    # never appears in the (public) handler source with a secret.
     "agent": {"password": scaffold.read_flag(), "role": "agent"},
 }
 
@@ -67,9 +61,6 @@ DISPLAY_NAMES = {
     "agent": "Mme. Samira Haddad",
 }
 
-# The desk files each appended reply under the claim code on the customer's
-# own ticket, not under the shared student account. The container stays
-# static, but one team's reply no longer appears on another team's ticket.
 CLAIM_RE = re.compile(r"[0-9a-f]{8}")
 
 app = Flask(__name__)
@@ -77,11 +68,6 @@ app.secret_key = scaffold.mint()
 
 
 def current_claim() -> str:
-    """Return this browser's claim code, creating one on first use.
-
-    A claim can also arrive as ?claim=, which lets a two-stage solver reuse
-    the code it printed earlier. Claims are random and never enumerate.
-    """
     requested = request.args.get("claim", "")
     if requested:
         if not CLAIM_RE.fullmatch(requested):
@@ -96,16 +82,12 @@ def current_claim() -> str:
 
 
 def agent_page(template: str, **context):
-    """Render a desk screen with the ticket token available to its scripts."""
     response = make_response(render_template(template, **context))
-    # The reply form on this screen reads the ticket token out of the cookie,
-    # so the cookie is stored where the page's own scripts can reach it.
     response.set_cookie("agent_token", AGENT_TOKEN, httponly=False, samesite="Lax")
     return response
 
 
 def customer_messages(thread: dict, claim: str) -> list[dict[str, object]]:
-    """The customer view shows the seed messages and this claim's replies."""
     return [
         {
             "author": DISPLAY_NAMES.get(message["author"], message["author"]),
@@ -120,9 +102,6 @@ def customer_messages(thread: dict, claim: str) -> list[dict[str, object]]:
 
 
 def desk_messages(thread: dict) -> list[dict[str, object]]:
-    """The desk view keeps the formatting agents and customers write."""
-    # Agents paste formatted replies into the thread, so the desk view puts
-    # each stored message into the page exactly as it was written.
     return [
         {
             "author": DISPLAY_NAMES.get(message["author"], message["author"]),
