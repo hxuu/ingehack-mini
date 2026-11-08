@@ -1,0 +1,33 @@
+name: bblsv2
+author: koyphshi
+category: crypto
+hidden: true
+tiebreakEligible: true
+
+description: |
+  The first BLS layer was only a preview. This time, the pairing check has
+  been patched and the batch coefficient is guarded more carefully.
+
+  **Connection:** this is a raw TCP service behind the TLS terminator. Use:
+
+  ```sh
+  ncat --ssl --ssl-verify bblsv2.challs.ingeniums.club 9450
+  ```
+
+  Send one JSON object per line.
+
+difficulty: medium
+points:
+  min: 100
+  max: 300
+
+tags:
+  - medium
+  - pairing
+  - BLS
+  - BN128
+  - crypto
+
+flag: ingehack{seems_like_i_have_to_read_real_books_:(_}
+instanced: false
+tcpPort: 13416
