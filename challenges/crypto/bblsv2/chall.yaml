@@ -31,3 +31,7 @@ tags:
 flag: ingehack{seems_like_i_have_to_read_real_books_:(_}
 instanced: false
 tcpPort: 13416
+
+files:
+  - name: chall.py
+    path: files/chall.py
