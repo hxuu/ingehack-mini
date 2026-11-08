@@ -1,0 +1,46 @@
+name: zeus
+author: koyphshi
+category: crypto
+hidden: true
+tiebreakEligible: true
+
+description: |
+  Introducing Zeus: a compact, SNARK-friendly hash inspired by Poseidon.
+  Zeus uses a larger native field, but it also removes one of the constraints
+  that made the original construction well behaved.
+
+  You are given two files:
+
+  - `zeus_circuit.md` — the R1CS circuit used by the challenge.
+  - `server.py` — the server that evaluates the public part of the circuit.
+
+  **Connection:** this is a raw TCP service behind the TLS terminator. Use:
+
+  ```sh
+  ncat --ssl --ssl-verify zeus.challs.ingeniums.club 9450
+  ```
+
+  Send one JSON object per line.
+
+difficulty: medium
+points:
+  min: 100
+  max: 300
+
+tags:
+  - medium
+  - Poseidon
+  - R1CS
+  - zk
+  - hash
+  - crypto
+
+flag: ingehack{even_highschool_tricks_followed_me_here_~-~___}
+instanced: false
+tcpPort: 13417
+
+files:
+  - name: zeus_circuit.md
+    path: files/zeus_circuit.md
+  - name: server.py
+    path: files/server.py
