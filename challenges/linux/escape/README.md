@@ -54,13 +54,15 @@ entry host, `find` + `cat` the planted root-owned flag.
 
 ```sh
 docker build -t escape:v1.0.0 .
+# no --network-alias: the real instancer does not set aliases; only
+# the manifest Hostname values resolve.
 docker network create escnet
 docker run -d --name esc-db --hostname db-host --network escnet \
-  --network-alias db --memory 256m --pids-limit 128 \
+  --memory 256m --pids-limit 128 \
   --security-opt no-new-privileges \
   -e ROLE=db -e RCTF_FLAG='ingehack{...}' escape:v1.0.0
 docker run -d --name esc-entry --hostname entry-host --network escnet \
-  --network-alias entry --memory 256m --pids-limit 128 \
+  --memory 256m --pids-limit 128 \
   --security-opt no-new-privileges --cap-add NET_ADMIN \
   -e ROLE=entry escape:v1.0.0
 CONTAINER=esc-entry solution/verify_solution.sh   # → RESULT: PASS
@@ -76,5 +78,5 @@ are the puzzle's clue set, not secrets to protect).
 |---|---|---|
 | `ubuntu:20.04`, two Dockerfiles/compose | `ubuntu:22.04`, one image, `ROLE` switch | platform CI builds a single image per challenge dir |
 | `postgres:13`-shaped container | `postgresql-14` from jammy (same clusters + pg_hba flow) | allows a single image; role mapping identical |
-| listener IP hardcoded `172.20.0.10` | resolved at db boot via `getent hosts entry` | instancer network IPs are dynamic per instance |
+| listener IP hardcoded `172.20.0.10` | resolved at db boot via `getent hosts entry-host` | instancer network IPs are dynamic per instance; service-name aliases don't exist (EndpointsConfig is empty), the manifest `Hostname` does — so the chain addresses `entry-host` |
 | flag baked into repo | runtime plant from `${RCTF_FLAG}` | instanced challenge ⇒ per-team flags |
