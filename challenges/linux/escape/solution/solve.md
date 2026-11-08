@@ -21,8 +21,15 @@ try. Don't waste the first hour: the capability leads nowhere.)
 
 ## 2. Find the database host
 
+The two containers share one internal network, but the platform's
+instancer does not register service-name aliases — only the manifest
+`Hostname` values resolve: `entry-host` (you) and `db-host` (the db).
+Both are on the same subnet you're on, so recon is straightforward:
+
 ```sh
-nmap -sn 172.20.0.0/24     # (or your expected subnet — scan from the box, not from memory)
+ip route get 8.8.8.8        # learn your subnet (e.g. 172.31.0.0/16 — it is *not* 172.20.0.0/24)
+nmap -sn <your-subnet>      # entry-host (you) + db-host
+nmap -p 5432 <db-host>      # postgres — or just: getent hosts db-host
 ```
 
 The `db` host answers on 5432 — postgres. Connect (one session per
