@@ -1,7 +1,7 @@
 name: every-step-counts
 author: s4l1
 category: osint
-hidden: true
+hidden: false
 releaseTime: null
 tiebreakEligible: true
 
@@ -18,24 +18,18 @@ description: |
   A student noticed. The world unraveled from there.
 
   Hopefully the challenge won't be taken down by the US :-:
+  
   ---
 
   **Q1 — Which fitness tracking platform published this global heatmap?**
 
-  **Q2 — Find the X (Twitter) username, without the @, of the student who first noticed that the heatmap exposed military bases.**
-  Capitalization as written on his profile.
+  **Q2 — Find the X (Twitter) username, without the @, of the student who first noticed that the heatmap exposed military bases.** Capitalization as written on his profile.
 
-  **Q3 — On what date (UTC) did he post the tweet exposing the bases?**
-  Format: `DD-MM-YYYY`
+  **Q3 — On what date (UTC) did he post the tweet exposing the bases?** Format: `DD-MM-YYYY`
 
-  **Q4 — On January 2018 the company's CEO published an open letter promising
-  to review its features and simplify its privacy settings. What is his full name?**
-  Format: `Firstname_Lastname`
+  **Q4 — On January 2018 the company's CEO published an open letter promising to review its features and simplify its privacy settings. What is his full name?** Format: `Firstname_Lastname`
 
-  **Q5 — In July 2018, a published follow-up investigation showing
-  that another fitness brand's app was exposing the home addresses of soldiers
-  and intelligence staff. Which company ? **
-  Format: one word.
+  **Q5 — In July 2018, a published follow-up investigation showing that another fitness brand's app was exposing the home addresses of soldiers and intelligence staff. Which company?** Format: One word.
   
   ---
 
