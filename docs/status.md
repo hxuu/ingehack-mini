@@ -848,19 +848,29 @@ global (`hidden`/`releaseTime`), so this is a Platform Patch (ADR 0007).
 - **Payload**: `ops/chall-payload.py` passes `requires` through opt-in, same
   rule as `hidden`/`releaseTime`/`sortWeight`; `[]` clears. Documented in
   `docs/research/rctf-v2-api-schema.md`.
-- **Manifest**: `challenges/linux/patient-one/chall.yaml` now has
-  `hidden: false` + `requires: [patient-zero]`. `patient-zero` stays
-  `hidden: true` — it is the author's publish switch. Until it is published
-  (or scheduled), patient-one is visible-but-gated and no team can see it, so
-  the series stays dark. Publishing patient-zero is a one-field change.
+- **Manifest**: `challenges/linux/patient-one/chall.yaml` has
+  `hidden: false` + `requires: [patient-zero]`; `patient-zero` was published
+  the same day (`hidden: false`, see below), so the series is now live end to
+  end: Part 1 is public, Part 2 appears only for teams that solve it.
 - **Live verification (2026-11-09)**: fresh perms-0 QA team registered, then
   *before* a prerequisite solve: `GET /api/v2/challs` excluded patient-one and
   `PUT …/patient-one/instance` → `badChallenge`; *after* inserting a
-  `solves(patient-zero, team)` row: the list included patient-one (31 → 32) and
+  `solves(patient-zero, team)` row: the list included patient-one (+1 entry) and
   the instance started (`tcp-ssl`, host advertised), banner
   `SSH-2.0-OpenSSH_9.2p1` through `…:9450`. Anonymous list still excluded
-  patient-one (requires gating) and patient-zero (hidden). QA solve, user, and
-  instance were deleted afterwards; `solves(patient-zero)` back to 0.
+  patient-one (requires gating). QA solve, user, and instance were deleted
+  afterwards; `solves(patient-zero)` back to 0.
+- **Published `patient-zero` (2026-11-09)**: `forensics/patient-zero/chall.yaml`
+  flipped to `hidden: false` and applied live with a targeted admin `PUT`
+  `{"data":{"hidden":false}}` — `ops/update-challenge.sh` refuses manifests
+  with local handouts (upload wiring unproven), and the full upsert would have
+  needed the file upload. Undefined keys keep their current value, so the
+  existing handout/description/points were untouched (diff: only `hidden`).
+  Verified: anonymous list 31 → 32 with `patient-zero` present and
+  `patient-one` still absent; the description and
+  `esi_sba_breach.pcapng` (114091 bytes) are served; the triage service
+  answers `openssl s_client …:9450` with the ESI-SBA IRU banner.
+  `solves(patient-zero)` = 0 at publish time.
 - **Gotcha found and fixed — instancer drops ALL capabilities**: the freshly
   merged `patient-one` container crash-looped (`groupadd: failure while writing
   changes to /etc/gshadow`, `useradd/usermod … /etc/shadow`). The docker

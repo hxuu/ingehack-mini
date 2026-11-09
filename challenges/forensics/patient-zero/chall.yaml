@@ -2,7 +2,7 @@ name: patient-zero
 author: Ch1Hub
 category: forensics
 difficulty: easy
-hidden: true
+hidden: false
 tiebreakEligible: true
 
 description: |
