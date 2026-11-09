@@ -34,6 +34,12 @@ if "hidden" in m: data["hidden"] = m["hidden"]
 if "releaseTime" in m: data["releaseTime"] = m["releaseTime"]
 if "sortWeight" in m: data["sortWeight"] = m["sortWeight"]
 
+# requires: [challenge-id, ...] keeps a challenge invisible to a team until it
+# has solved every listed challenge (a series). Opt-in like the fields above:
+# omit the key to leave the platform value alone. The check runs in the
+# Platform's participant query, not here; this only declares the dependency.
+if "requires" in m: data["requires"] = m["requires"]
+
 # `adminBot: <file>` attaches a platform admin-bot handler. The file (e.g.
 # admin-bot.ts) is the trusted Challenge source for the admin-bots/rctf-ts
 # provider; the API validates it against the live worker and derives the

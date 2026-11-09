@@ -2,8 +2,14 @@ name: patient-one
 author: Ch1Hub
 category: linux
 difficulty: insane
-hidden: true
+hidden: false
 tiebreakEligible: true
+
+# Series gate: the Platform keeps this challenge out of a team's list (and
+# refuses its instance, solves, and submissions) until that team has solved
+# `patient-zero`. Enforced by the `ingehack-unlock-v1` Platform Patch.
+requires:
+  - patient-zero
 
 description: |
   You have obtained authenticated shell access to the internal workstation of the compromised account.
@@ -49,3 +55,17 @@ instancer:
       mem_limit: 512m
       read_only: false
       pids_limit: 256
+      # The instancer drops ALL capabilities by default, but this image is a
+      # full userland: the entrypoint creates users/groups and starts sshd,
+      # which needs these to write /etc/shadow and switch users. Verified:
+      # without them the container crash-loops on `groupadd`/`useradd`.
+      cap_add:
+        - CHOWN
+        - DAC_OVERRIDE
+        - FOWNER
+        - SETUID
+        - SETGID
+        - SYS_CHROOT
+        - AUDIT_WRITE
+        - NET_BIND_SERVICE
+        - KILL

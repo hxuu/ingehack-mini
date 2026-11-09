@@ -66,6 +66,7 @@ keep current values — docs challenge-update note):
     "tags": ["beginner"],
     "hidden": false,
     "releaseTime": null,                // Unix ms int, or null
+    "requires": ["patient-zero"],       // challenge ids; our Platform Patch
     "instancerConfig": { ... },         // null clears; see §2/§3
     "adminBotConfig": { "code": "admin-bot" },  // null clears
     "scoring": { "kind": "decay" }      // or {"kind":"dynamic","source":{...}}
@@ -98,6 +99,11 @@ keep current values — docs challenge-update note):
   upsert keeps the current value for an undefined key and only clears it on an
   explicit null. That lets an admin-UI edit survive CI re-registration; a
   manifest value still overrides.
+- **requires**: `string[]` of challenge ids. Not upstream rCTF — added by the
+  `ingehack-unlock-v1` Platform Patch (ADR 0007). A challenge that declares it
+  is invisible to a team (and its instance/submit/solves routes answer
+  `badChallenge`) until that team has a `flag` solve on every named challenge.
+  Opt-in in `chall-payload.py`; send `[]` to clear.
 - Response `goodChallengeUpdateV2`: `data` = full
   `AdminChallengeSchemaV2` (`responses/good-challenge-update-v2.ts`), incl
   `id`, files with nullable `size`, `hidden` (null→false,
