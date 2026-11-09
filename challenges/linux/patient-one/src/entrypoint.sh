@@ -118,7 +118,13 @@ chmod 0660 /var/lib/sss/db/cache_ESI-SBA.DZ.ldb
 rm -rf /tmp/setup
 
 # 5. Plant Flag in /flag
-FLAG_VALUE="${RCTF_FLAG:-ingehack{K3rb3r0s_SSSD_LDB_GSS4P1_R0ut1n3_1nj3ct10n_h0w_3duc4t1v3_w4s_th4t_!}}"
+# Do NOT write this as "${RCTF_FLAG:-ingehack{...}: the first `}` in the
+# default ends the expansion, so an injected RCTF_FLAG comes out with an
+# extra trailing `}` and never matches the submitted flag.
+FLAG_VALUE="${RCTF_FLAG:-}"
+if [ -z "$FLAG_VALUE" ]; then
+    FLAG_VALUE='ingehack{K3rb3r0s_SSSD_LDB_GSS4P1_R0ut1n3_1nj3ct10n_h0w_3duc4t1v3_w4s_th4t_!}'
+fi
 echo "$FLAG_VALUE" > /flag
 chmod 0400 /flag
 chown root:root /flag

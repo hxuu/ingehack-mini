@@ -885,3 +885,21 @@ global (`hidden`/`releaseTime`), so this is a Platform Patch (ADR 0007).
 - **Rule of thumb**: a challenge that starts sshd or creates users at runtime
   needs `cap_add` in its instancer service; `cap_drop: ALL` (instancer default)
   is only safe for single-process, non-root services.
+
+## Fix: patient-one setuid + flag quoting — 2026-11-09 (verified)
+
+Live-found after publish. Two defects in `challenges/linux/patient-one`:
+
+- **`no-new-privileges` blocks the intended sudo step**: the instancer default
+  `security_opt` made `sudo -n /usr/local/bin/sba-backup --run` fail with
+  `The "no new privileges" flag is set`. Fixed with `security_opt: []` on the
+  service. Repro: same caps with/without the flag; with it sudo refuses, with
+  `[]` the backup hooks run as root.
+- **injected flag gained an extra `}`**: `FLAG_VALUE="${RCTF_FLAG:-ingehack{…}}"`
+  ends the expansion at the default's closing brace, so the injected
+  `RCTF_FLAG=ingehack{…}` became `ingehack{…}}` in `/flag` and could never
+  submit. Fixed by assigning the fallback separately in `src/entrypoint.sh`.
+  Verified locally: `/flag` now byte-identical to the manifest flag, and the
+  official `ldbsearch → kinit → ssh -K → sudo` chain prints the flag.
+- Image change, so it ships through the normal merged-PR pipeline; running
+  instances must be recreated to pick up the new image and security config.
