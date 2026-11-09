@@ -22,10 +22,6 @@ description: |
 
   Password: `guest`
 
-  **Hint**
-  A login shell is one layer of control. What the account is allowed to run
-  is another.
-
 difficulty: medium
 points:
   min: 100
