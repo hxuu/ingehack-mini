@@ -9,8 +9,6 @@ description: |
   An internal perimeter server has suffered an unauthorized intrusion.
   Network taps recorded suspicious traffic during the incident.
 
-  **Progression:** `patient-zero` ➔ `patient-one` (solving this challenge unlocks Part 2).
-
   Analyze the provided network packet capture (`esi_sba_breach.pcapng`) to investigate the
   initial attack vector, lateral movement, and compromised credentials. Once you have
   identified the adversary's actions, interact with the triage verification service to

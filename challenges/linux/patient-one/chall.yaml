@@ -6,10 +6,7 @@ hidden: true
 tiebreakEligible: true
 
 description: |
-  **Note:** This challenge is Part 2 of the series and unlocks only after solving `patient-zero` (`patient-zero` ➔ `patient-one`).
-
-  Following the perimeter breach triage, you have obtained authenticated shell access
-  to the internal workstation of the compromised account.
+  You have obtained authenticated shell access to the internal workstation of the compromised account.
 
   **Goal:** Read `/flag`.
 
