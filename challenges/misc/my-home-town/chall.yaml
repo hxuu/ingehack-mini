@@ -1,0 +1,34 @@
+name: MyHomeTown
+author: RedhaIWNL
+category: misc
+hidden: true
+tiebreakEligible: true
+
+description: |
+  A lot of history. Different ages, different empires.
+
+  The flag is:
+
+  `ingehack{SURNAME_CITY_SPAN_LAT_LON}`
+
+  - **SURNAME** — the surname of the man behind the title on the plaque.
+  - **CITY** — the city of the auxiliary archers stationed at the site.
+  - **SPAN** — the span of the building's single arch, in metres.
+  - **LAT_LON** — the exact place from which the attached image was taken.
+
+  Uppercase, no accents. `SPAN` is digits only. `LAT_LON` is WGS84,
+  latitude first, three decimal places.
+
+  The attached image is your only handout.
+
+points: {min: 300, max: 600}
+tags: [hard, osint, geoint, geolocation, historical-research]
+
+flag: ingehack{PELISSIER_PALMYRA_10_35.233_5.702}
+
+files:
+  - name: my-home-town.png
+    path: files/my-home-town.png
+
+instanced: false
+container: false
