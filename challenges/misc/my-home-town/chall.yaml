@@ -1,6 +1,6 @@
 name: MyHomeTown
 author: RedhaIWNL
-category: misc
+category: osint
 hidden: false
 tiebreakEligible: true
 
@@ -21,7 +21,7 @@ description: |
 
   The attached image is your only handout.
 
-points: {min: 300, max: 600}
+points: {min: 300, max: 500}
 tags: [hard, osint, geoint, geolocation, historical-research]
 
 flag: ingehack{PELISSIER_PALMYRA_10_35.233_5.702}
