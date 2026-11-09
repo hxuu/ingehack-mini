@@ -1,7 +1,7 @@
 name: every-step-counts
 author: s4l1
 category: osint
-hidden: false
+hidden: true
 releaseTime: null
 tiebreakEligible: true
 
@@ -36,6 +36,7 @@ description: |
   that another fitness brand's app was exposing the home addresses of soldiers
   and intelligence staff. Which company ? **
   Format: one word.
+  
   ---
 
   🚩 Combine the five answers into one flag: `ingehack{Q1_Q2_Q3_Q4_Q5}`
