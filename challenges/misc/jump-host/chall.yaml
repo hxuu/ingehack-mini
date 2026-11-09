@@ -1,0 +1,44 @@
+name: jump-host
+author: s4l1
+category: misc
+hidden: true
+tiebreakEligible: true
+
+description: |
+  **Briefing**
+  This jump host was locked down years ago: one `guest` account and a PATH
+  containing only the three tools that were deemed safe. The admin's flag is
+  at `/home/admin/flag.txt`.
+
+  **Objective**
+  Read `/home/admin/flag.txt`.
+
+  **Connection**
+  SSH sits behind the TLS terminator, so wrap the client:
+
+  > [!CONNECTION]
+  > ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' guest@jump-host.challs.ingeniums.club -p 9450
+
+  Password: `guest`
+
+  **Hint**
+  A login shell is one layer of control. What the account is allowed to run
+  is another.
+
+difficulty: medium
+points:
+  min: 100
+  max: 500
+
+tags:
+  - linux
+  - shell
+  - access control
+  - privilege escalation
+  - ssh
+
+flag: ingehack{rb4sh_1s_n0t_4_j41l}
+instanced: false
+# Raw-TCP route: ops/deploy-static.sh puts a Traefik TCP router on the tcp
+# entrypoint (published as the mapped tcp-ssl port) for this container port.
+tcpPort: 22
