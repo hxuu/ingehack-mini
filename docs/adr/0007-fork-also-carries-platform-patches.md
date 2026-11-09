@@ -49,6 +49,22 @@ routes. With no token, or without `challsRead`, the `hidden`/`releaseTime`
 filter still applies exactly as before; the integration tests assert both
 directions.
 
+## Second patch: `requires` gates a challenge per team
+
+A challenge series needs Part 2 to appear only for teams that solved Part 1.
+`hidden`/`releaseTime` are global, so the participant endpoints cannot express
+it. Challenge data gains an optional `requires: string[]`: a challenge that
+declares it is absent from the participant list (and its solves, scores, flag
+submit, admin-bot, and instance routes answer `badChallenge`) for callers with
+no identity, and appears for a team only once that team has a `flag` solve on
+every named id. The check lives in `getChallenges` (one solved-id query per
+list) and `getChallenge`, so every participant route inherits it; `challsRead`
+holders keep the preview bypass from the first patch.
+
+Ships as `ingehack-unlock-v1` (branch `platform/unlock`, based on
+`ingehack-author-preview-v1`). Evidence is its own integration tests plus the
+live two-team check in `docs/status.md`.
+
 ## Consequences
 
 - The fork is no longer only a theme; its README states which patches it

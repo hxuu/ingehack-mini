@@ -812,3 +812,66 @@ solve left the flag readable for every team that signed in afterwards.
 - Participants get `badNotStarted` until `17:30 UTC`; after that the public
   query filters `hidden = false AND releaseTime <= now`. The `authors`
   account (`challsRead`) sees every challenge by design.
+
+## Series gate: `requires` + `patient-one` runtime fix — 2026-11-09 (verified)
+
+Part 2 of the Ch1Hub series (`linux/patient-one`) must appear per team only
+after that team solves Part 1 (`forensics/patient-zero`). rCTF's visibility is
+global (`hidden`/`releaseTime`), so this is a Platform Patch (ADR 0007).
+
+- **Platform Patch `ingehack-unlock-v1`** — release git `eadc9b6c` (tag
+  `ingehack-unlock-v1`) on branch `platform/unlock`, based on the live
+  `ingehack-author-preview-v1` (tag `ingehack-author-preview-v1` = `f0f78e8b`;
+  base commit `a3082c1a`). Branch and tag are pushed to
+  `hxuu/ingehack-skin`; the branch has one docs commit after the release
+  commit (README patch table) and the tag points at the release.
+  Image `ghcr.io/otter-sec/rctf:ingehack-unlock-v1`, shipped registry-less
+  (`docker save | ssh … docker load`), tarball kept at
+  `/opt/rctf/images/ingehack-unlock-v1.tar.gz`; deployed by
+  `RCTF_GIT_REF=ingehack-unlock-v1` + force-recreate. **Rollback**:
+  `RCTF_GIT_REF=ingehack-author-preview-v1`; `/opt/rctf/.env.pre-unlock-backup`
+  is the pre-deploy file. Local and VM-loaded `/app/apps/api/dist/index.js`
+  md5 identical (`d397fe9c…`).
+- **Semantics**: challenge data gains optional `requires: string[]`. A challenge
+  that declares it is non-public for callers with no identity, and public for a
+  team only once it has a `flag` solve on every named id. Enforced in
+  `getChallenges` (one solved-id query per list) and `getChallenge`, so the
+  participant list, solves, scores, flag submit, admin-bot routes, and the v2
+  instance lifecycle all inherit it. `challsRead` holders keep the preview
+  bypass (see hidden/unreleased challenges without solving). The admin-solve
+  audit log is not involved; `getPrivateChallenge` paths are untouched.
+- **Tests**: 6 new cases in
+  `tests/server/tests/integration/challenge-visibility.test.ts` (anonymous,
+  unsolved team, solved team, solves endpoint, submit before/after, preview
+  bypass). Full server suite: 648 pass. types/db/api typecheck clean, oxlint
+  clean, oxfmt applied.
+- **Payload**: `ops/chall-payload.py` passes `requires` through opt-in, same
+  rule as `hidden`/`releaseTime`/`sortWeight`; `[]` clears. Documented in
+  `docs/research/rctf-v2-api-schema.md`.
+- **Manifest**: `challenges/linux/patient-one/chall.yaml` now has
+  `hidden: false` + `requires: [patient-zero]`. `patient-zero` stays
+  `hidden: true` — it is the author's publish switch. Until it is published
+  (or scheduled), patient-one is visible-but-gated and no team can see it, so
+  the series stays dark. Publishing patient-zero is a one-field change.
+- **Live verification (2026-11-09)**: fresh perms-0 QA team registered, then
+  *before* a prerequisite solve: `GET /api/v2/challs` excluded patient-one and
+  `PUT …/patient-one/instance` → `badChallenge`; *after* inserting a
+  `solves(patient-zero, team)` row: the list included patient-one (31 → 32) and
+  the instance started (`tcp-ssl`, host advertised), banner
+  `SSH-2.0-OpenSSH_9.2p1` through `…:9450`. Anonymous list still excluded
+  patient-one (requires gating) and patient-zero (hidden). QA solve, user, and
+  instance were deleted afterwards; `solves(patient-zero)` back to 0.
+- **Gotcha found and fixed — instancer drops ALL capabilities**: the freshly
+  merged `patient-one` container crash-looped (`groupadd: failure while writing
+  changes to /etc/gshadow`, `useradd/usermod … /etc/shadow`). The docker
+  instancer defaults to `cap_drop: ALL`; any image with a real userland
+  (runtime `useradd`, sshd switching users) cannot work under it. Reproduced
+  with `docker run --cap-drop ALL`; fixed in the manifest with
+  `services.main.cap_add: [CHOWN, DAC_OVERRIDE, FOWNER, SETUID, SETGID,
+  SYS_CHROOT, AUDIT_WRITE, NET_BIND_SERVICE, KILL]` and verified: container
+  `Up`, sshd listening, password login as `a.amrane` works, `/flag` stays
+  `0400 root:root` (permission denied to the user). Manifest-only change; no
+  image rebuild needed and no other challenge is affected.
+- **Rule of thumb**: a challenge that starts sshd or creates users at runtime
+  needs `cap_add` in its instancer service; `cap_drop: ALL` (instancer default)
+  is only safe for single-process, non-root services.
