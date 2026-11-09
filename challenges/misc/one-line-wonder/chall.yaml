@@ -1,7 +1,7 @@
 name: one-line-wonder
 author: s4l1
 category: misc
-hidden: true
+hidden: false
 tiebreakEligible: true
 
 description: |
@@ -28,9 +28,6 @@ description: |
   For an interactive session, run the same `openssl s_client ...` command and
   type your line once the connection is up. The service answers one line and
   closes the connection.
-
-  **Hint**
-  Python is more permissive about names than it looks.
 
 difficulty: medium
 points:
