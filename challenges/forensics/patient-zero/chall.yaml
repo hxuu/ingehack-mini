@@ -1,0 +1,47 @@
+name: patient-zero
+author: Ch1Hub
+category: forensics
+difficulty: easy
+hidden: true
+tiebreakEligible: true
+
+description: |
+  An internal perimeter server has suffered an unauthorized intrusion.
+  Network taps recorded suspicious traffic during the incident.
+
+  **Progression:** `patient-zero` ➔ `patient-one` (solving this challenge unlocks Part 2).
+
+  Analyze the provided network packet capture (`esi_sba_breach.pcapng`) to investigate the
+  initial attack vector, lateral movement, and compromised credentials. Once you have
+  identified the adversary's actions, interact with the triage verification service to
+  confirm your findings and retrieve the flag.
+
+  **Connection:** The triage verification service runs behind a TLS terminator:
+
+  ```sh
+  openssl s_client -quiet -connect patient-zero.challs.ingeniums.club:9450
+  ```
+  or
+  ```sh
+  ncat --ssl patient-zero.challs.ingeniums.club 9450
+  ```
+
+points:
+  min: 100
+  max: 500
+
+tags:
+  - beginner
+  - forensics
+  - network-analysis
+  - pcapng
+  - incident-response
+  - threat-intelligence
+
+flag: ingehack{p4t13nt_z3r0_3s1_sb4_G0t_PWN3d_!}
+instanced: false
+tcpPort: 1337
+
+files:
+  - name: esi_sba_breach.pcapng
+    path: files/esi_sba_breach.pcapng

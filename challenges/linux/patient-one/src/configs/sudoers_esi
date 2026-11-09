@@ -1,0 +1,2 @@
+# ESI-SBA Delegated IT Backup Rule
+svc_ad_sync ALL=(root) NOPASSWD: /usr/local/bin/sba-backup --run

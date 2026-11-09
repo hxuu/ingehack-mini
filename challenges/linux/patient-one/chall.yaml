@@ -1,0 +1,54 @@
+name: patient-one
+author: Ch1Hub
+category: linux
+difficulty: insane
+hidden: true
+tiebreakEligible: true
+
+description: |
+  **Note:** This challenge is Part 2 of the series and unlocks only after solving `patient-zero` (`patient-zero` ➔ `patient-one`).
+
+  Following the perimeter breach triage, you have obtained authenticated shell access
+  to the internal workstation of the compromised account.
+
+  **Goal:** Read `/flag`.
+
+  **Connection:** SSH runs behind a TLS terminator, so wrap the client in `openssl s_client`:
+
+  ```sh
+  ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' \
+      a.amrane@<INSTANCE_HOST> -p 9450
+  ```
+
+  Password: `Amrane#SBA2026`
+
+  *(Replace `<INSTANCE_HOST>` with your team's instance hostname shown on the card)*
+
+points:
+  min: 100
+  max: 500
+
+tags:
+  - insane
+  - linux
+  - active-directory
+  - kerberos
+  - sssd
+  - privilege-escalation
+
+flag: ingehack{K3rb3r0s_SSSD_LDB_GSS4P1_R0ut1n3_1nj3ct10n_h0w_3duc4t1v3_w4s_th4t_!}
+
+instanced: true
+instancer:
+  challengeIntegrationId: patient-one
+  timeoutMilliseconds: 1800000
+  extendable: true
+  expose:
+    - {kind: tcp-ssl, hostPrefix: patient-one, containerName: main, containerPort: 22, shouldDisplay: true, title: "Patient One (SSH over TLS)"}
+  services:
+    main:
+      environment:
+        RCTF_FLAG: ${RCTF_FLAG}
+      mem_limit: 512m
+      read_only: false
+      pids_limit: 256
