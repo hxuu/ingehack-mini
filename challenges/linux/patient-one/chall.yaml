@@ -55,6 +55,12 @@ instancer:
       mem_limit: 512m
       read_only: false
       pids_limit: 256
+      # sudo (setuid root) is the intended privilege-escalation step, but the
+      # instancer default `no-new-privileges` blocks setuid binaries from
+      # gaining privileges. Verified: without this override, `sudo -n
+      # /usr/local/bin/sba-backup --run` fails with "The 'no new privileges'
+      # flag is set"; with it, the backup hook runs as root.
+      security_opt: []
       # The instancer drops ALL capabilities by default, but this image is a
       # full userland: the entrypoint creates users/groups and starts sshd,
       # which needs these to write /etc/shadow and switch users. Verified:
