@@ -2,6 +2,7 @@ name: every-step-counts
 author: s4l1
 category: osint
 hidden: false
+releaseTime: null
 tiebreakEligible: true
 
 description: |
@@ -14,32 +15,27 @@ description: |
   the perimeters, patrol routes, and layouts of secret outposts directly onto
   a public map.
 
-  A 20-year-old student noticed. The world unraveled from there.
+  A student noticed. The world unraveled from there.
 
-  Five questions. One flag. No shortcuts.
-
+  Hopefully the challenge won't be taken down by the US :-:
   ---
 
   **Q1 — Which fitness tracking platform published this global heatmap?**
 
-  **Q2 — Find the X (Twitter) username, without the @, of the 20-year-old
-  Australian international security student who first noticed that the heatmap
-  exposed military bases.**
+  **Q2 — Find the X (Twitter) username, without the @, of the student who first noticed that the heatmap exposed military bases.**
   Capitalization as written on his profile.
 
   **Q3 — On what date (UTC) did he post the tweet exposing the bases?**
   Format: `DD-MM-YYYY`
 
-  **Q4 — On 29 January 2018 the company's CEO published an open letter promising
+  **Q4 — On January 2018 the company's CEO published an open letter promising
   to review its features and simplify its privacy settings. What is his full name?**
   Format: `Firstname_Lastname`
 
-  **Q5 — In July 2018, Bellingcat published a follow-up investigation showing
+  **Q5 — In July 2018, a published follow-up investigation showing
   that another fitness brand's app was exposing the home addresses of soldiers
-  and intelligence staff. Which company?**
+  and intelligence staff. Which company ? **
   Format: one word.
-  Hint: `site:bellingcat.com fitness app soldiers home addresses`
-
   ---
 
   🚩 Combine the five answers into one flag: `ingehack{Q1_Q2_Q3_Q4_Q5}`
@@ -56,7 +52,6 @@ tags:
   - osint
   - corporate-intelligence
   - social-media-research
-  - bellingcat-investigation
   - open-source-records
 
 flag: ingehack{Strava_Nrg8000_27-01-2018_James_Quarles_Polar}
