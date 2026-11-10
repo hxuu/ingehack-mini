@@ -22,6 +22,10 @@ STUDENT_PASSWORD = scaffold.mint()
 AGENT_TOKEN = scaffold.mint()
 FLAG = scaffold.read_flag()
 
+MAX_REQUEST_BYTES = 16 * 1024
+MAX_BODY_CHARS = 2_000
+MAX_THREAD_MESSAGES = 500
+
 ACCOUNTS = {
     "student": {"password": STUDENT_PASSWORD, "role": "customer"},
     "agent": {"password": scaffold.read_flag(), "role": "agent"},
@@ -41,6 +45,7 @@ THREADS = {
                 "copy_label": "Customer copy",
                 "when": "14 Oct 09:41",
                 "body": "My parcel PS-10482 was marked delivered on Monday, but nobody knocked. I was home all day.",
+                "pinned": True,
             },
             {
                 "author": "agent",
@@ -48,6 +53,7 @@ THREADS = {
                 "copy_label": "Desk copy",
                 "when": "14 Oct 11:08",
                 "body": "Thanks for reporting this. I have asked the ESI SBA depot to trace it.",
+                "pinned": True,
             },
         ],
     }
@@ -65,6 +71,16 @@ CLAIM_RE = re.compile(r"[0-9a-f]{8}")
 
 app = Flask(__name__)
 app.secret_key = scaffold.mint()
+app.config["MAX_CONTENT_LENGTH"] = MAX_REQUEST_BYTES
+
+
+def append_to_thread(thread: dict, message: dict) -> None:
+    """Append one message and keep the rendered thread bounded."""
+    thread["messages"].append(message)
+    if len(thread["messages"]) > MAX_THREAD_MESSAGES:
+        pinned = [item for item in thread["messages"] if item.get("pinned")]
+        recent = [item for item in thread["messages"] if not item.get("pinned")]
+        thread["messages"] = pinned + recent[-(MAX_THREAD_MESSAGES - len(pinned)):]
 
 
 def current_claim() -> str:
@@ -163,8 +179,11 @@ def ticket(ticket_id):
     claim = current_claim()
     if request.method == "POST":
         body = request.form.get("body", "").strip()
+        if len(body) > MAX_BODY_CHARS:
+            abort(400, description="the message is too long")
         if body:
-            thread["messages"].append(
+            append_to_thread(
+                thread,
                 {
                     "author": username,
                     "role": ROLE_BY_AUTHOR[username],
@@ -172,7 +191,7 @@ def ticket(ticket_id):
                     "when": "14 Oct 12:02",
                     "body": body,
                     "claim": claim,
-                }
+                },
             )
     return render_template(
         "ticket.html",
@@ -218,10 +237,13 @@ def append_message(ticket_id):
     body = request.form.get("body", "").strip()
     if not body:
         return jsonify({"error": "nothing to add"}), 400
+    if len(body) > MAX_BODY_CHARS:
+        return jsonify({"error": "the message is too long"}), 400
     claim = request.form.get("claim", "").strip()
     if claim and not CLAIM_RE.fullmatch(claim):
         return jsonify({"error": "bad claim code"}), 400
-    thread["messages"].append(
+    append_to_thread(
+        thread,
         {
             "author": "agent",
             "role": "agent",
@@ -229,7 +251,7 @@ def append_message(ticket_id):
             "when": "14 Oct 12:02",
             "body": body,
             "claim": claim or None,
-        }
+        },
     )
     return jsonify({"ok": True})
 

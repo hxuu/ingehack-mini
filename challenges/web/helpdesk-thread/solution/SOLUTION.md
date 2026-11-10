@@ -49,6 +49,10 @@ the sanitisation is doing too little work.
   so the front end can read them", presented as convenience, not as a risk.
 - Deliberately non-HttpOnly cookie; that is the lesson, so it must look like a normal
   decision in the source.
+- The thread is bounded so one visit cannot make the next one unloadable: request
+  bodies over 16 KiB are rejected, message bodies are capped at 2,000 characters,
+  and only the newest 500 messages (plus the two seeded ones) are kept. A payload
+  that echoes the page back is therefore truncated on append, not multiplied.
 
 ## Running it end to end
 
