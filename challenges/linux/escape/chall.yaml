@@ -72,6 +72,10 @@ instancer:
       environment:
         ROLE: db
         RCTF_FLAG: ${RCTF_FLAG}
+      # The instancer defaults to cap_drop: ['ALL']; PostgreSQL cannot chown
+      # its data dir, setuid to postgres, or start without the Docker default
+      # capability set, so opt back in explicitly (same as `entry`).
+      cap_drop: []
       mem_limit: 256m
       read_only: false
       pids_limit: 128

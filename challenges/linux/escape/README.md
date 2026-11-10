@@ -31,6 +31,10 @@ entry host, `find` + `cat` the planted root-owned flag.
 | `docker/db-start.sh` | ROLE=db: starts PG14, creates `appuser`/`appdb`, plants the flag + bait note (with the *resolved* listener IP), then execs `tail -f` with the flag vars stripped from PID1 env. |
 | `docker/player_readme.txt` | entry `.README` — capabilities misdirection. |
 | `docker/sysadmin_note.txt` | planted at `/critical/.sysadmin_note.txt` (bait). |
+| `docker/entry-start.sh` / `docker/db-start.sh` | also start the log mirror and set `/run/escape-role`. |
+| `docker/escape-log-common.sh` | per-session bash/psql history + structured command log. |
+| `docker/escape-shell.sh` | player's passwd shell; logs one-off `ssh host 'cmd'` runs. |
+| `docker/profile-escape.sh`, `docker/bashrc-escape.sh` | interactive-shell hooks (login + `bash -i` reverse shell). |
 
 ## Instancer design notes
 
@@ -42,6 +46,13 @@ entry host, `find` + `cat` the planted root-owned flag.
   [NET_ADMIN]` and `cap_drop: []` (the default `cap_drop: [ALL]` would
   break sshd). Players see `cap_net_admin` in `capsh --print`, exactly
   like the author's package.
+- `db` **must also set `cap_drop: []`**. The instancer default is
+  `cap_drop: ['ALL']`; with it, root cannot `chown`/`mkdir` the flag tree
+  or `setuid` to `postgres`, so `pg_ctlcluster` never starts and the
+  database never listens on 5432 (the "DB is not showing" failure).
+- `pg_hba.conf` accepts `0.0.0.0/0` + `::/0` with `scram-sha-256`. The
+  internal network is the only interface, and pinning a subnet breaks
+  whenever the instancer's address pool differs from `172.16.0.0/12`.
 - The interactive expose is the `entry` container's port 22
   (`tcp-ssl`, prefix `escape`). `db` is never exposed; it is only
   reachable from inside the internal network.
@@ -71,6 +82,40 @@ CONTAINER=esc-entry solution/verify_solution.sh   # → RESULT: PASS
 Leak scan of the built image: **0** hits for the flag or `RCTF_FLAG`;
 the `player123`/`devpass123` credentials are deliberately baked in (they
 are the puzzle's clue set, not secrets to protect).
+
+Run `db` **without** `--cap-drop ALL` (default Docker caps) for parity —
+that is exactly what `cap_drop: []` restores on the instancer.
+
+## Interaction logging (author-side)
+
+The image records what players do so the author can review a live instance.
+It is observability, not a security boundary (a player can disable it in
+their own shell).
+
+- **entry**: every interactive command line goes to
+  `/var/log/escape/entry.log` with UTC timestamp, session id, user,
+  `SSH_CONNECTION`, cwd and command. One-off `ssh host 'cmd'` runs are logged
+  by the login-shell wrapper (`docker/escape-shell.sh`).
+- **db**: the `COPY ... TO PROGRAM` reverse shell is `bash -i`, so
+  `/etc/bash.bashrc` records the same way to `/var/log/escape/db.log`.
+  PostgreSQL also logs connections and every statement
+  (`log_statement = 'all'`), so the psql side is visible too.
+- **per session**: `/var/log/escape/sessions/<session>.log` (detail),
+  `.history` (bash), `.psql` (psql history). Each shell gets its own
+  `HISTFILE`, so the planted `/home/player/.bash_history` leak is preserved
+  instead of being overwritten by the first player.
+- Both central logs are mirrored to the container output by a root `tail`:
+
+```sh
+docker ps --filter name=escape
+docker logs -f <entry-container>        # live commands + sshd auth
+docker logs -f <db-container>           # SQL + reverse-shell commands
+docker exec <entry-container> cat /var/log/escape/entry.log
+docker exec <entry-container> ls -l /var/log/escape/sessions
+```
+
+Instances are destroyed at timeout, so read the logs while the instance is
+alive (they live in the container, not on the host).
 
 ## Deliberate deviations from the author's package
 

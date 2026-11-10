@@ -7,10 +7,25 @@
 # PROGRAM), find /usr/local/.sys_cache_7f3a2b/flag.txt, `cat` it. The flag is
 # staged here at instance start and is never baked into the image; the RCE
 # user (uid 999 postgres) still cannot read /proc/1/environ of root.
-set -euo pipefail
+set -Eeuo pipefail
+trap 'rc=$?; echo "db-start: FAILED (line ${LINENO}, rc=${rc})" >&2' ERR
 
 FLAG="${RCTF_FLAG:-${FLAG:-}}"
 PG_VER=14
+
+# --- 0. interaction logging ---------------------------------------------------
+# The reverse shell lands on this host as `postgres`; /etc/bash.bashrc logs it
+# to /var/log/escape/db.log, which a root tail mirrors to the container log.
+# PostgreSQL query/connection logging (Dockerfile) is mirrored the same way.
+printf 'db' > /run/escape-role
+mkdir -p /var/log/escape/sessions
+: >> /var/log/escape/db.log
+chmod 1777 /var/log/escape/sessions
+chmod 666  /var/log/escape/db.log
+stdbuf -oL tail -F -n +1 /var/log/escape/db.log 2>/dev/null &
+# Debian's pg_ctlcluster redirects the server's stderr to this file; mirror it
+# too so `docker logs <db>` shows connections and SQL statements live.
+stdbuf -oL tail -F -n +1 /var/log/postgresql/postgresql-14-main.log 2>/dev/null &
 
 # --- 1. plant the root-owned files -------------------------------------------
 mkdir -p /critical /usr/local/.sys_cache_7f3a2b
@@ -48,7 +63,10 @@ fi
 # note always carries something connectable.
 LISTEN=""
 for _ in $(seq 1 45); do
-    LISTEN=$(getent hosts entry-host | awk 'NR==1 {print $1}')
+    # `|| true` is required: getent returns 2 while the peer is not up yet and
+    # `set -e` + `pipefail` would otherwise kill the db before the DB is even
+    # initialised (entry and db start order is not guaranteed).
+    LISTEN=$(getent hosts entry-host 2>/dev/null | awk 'NR==1 {print $1}' || true)
     [ -n "$LISTEN" ] && break
     sleep 2
 done
