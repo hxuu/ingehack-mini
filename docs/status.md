@@ -903,3 +903,23 @@ Live-found after publish. Two defects in `challenges/linux/patient-one`:
   official `ldbsearch → kinit → ssh -K → sudo` chain prints the flag.
 - Image change, so it ships through the normal merged-PR pipeline; running
   instances must be recreated to pick up the new image and security config.
+
+## Fix: helpdesk-thread desk page runaway — 2026-11-10 (verified)
+
+`open-ticket`'s admin bot timed out at its 30 s budget. The desk view
+(`/agent/tickets/1`) was **141,804,279 bytes**: the static container keeps one
+global thread, every stored payload runs on each agent visit, and some payloads
+appended `document.body.innerText` back into that same thread. With no cap on
+body size or message count, the page grew super-linearly; the bot could never
+reach `networkidle2` before `withTimeout` fired.
+
+- Immediate: `docker restart static-helpdesk-thread` cleared the in-memory
+  thread. The desk page dropped to 3,903 bytes and `solution/solve.py --stage
+  all` returned the flag end to end (job `a9d960a9-febf-460a-87d8-3c64db9838d2`).
+- Durable: `src/app.py` now sets `MAX_CONTENT_LENGTH` to 16 KiB, rejects message
+  bodies over 2,000 chars, and keeps the two seeded messages plus the newest
+  500 messages. Worst-case desk page is ≈ 1.2 MB.
+- Verified locally: Docker build clean; Chromium ran the intended path (payload
+  → agent visit → flag filed under the claim) and the cap checks returned
+  400/413/500 as expected. A merge recreates the static container, which also
+  resets the thread.
