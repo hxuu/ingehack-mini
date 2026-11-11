@@ -45,6 +45,7 @@ COPY docker/entrypoint.sh     /entrypoint.sh
 # Not a security boundary.
 COPY docker/escape-log-common.sh /usr/local/lib/escape/log.sh
 COPY docker/escape-persist.sh    /usr/local/lib/escape/persist.sh
+COPY docker/escape-mirror.sh     /usr/local/lib/escape/mirror.sh
 COPY docker/profile-escape.sh    /etc/profile.d/escape-session.sh
 COPY docker/bashrc-escape.sh     /etc/bash.bashrc.escape
 COPY docker/escape-shell.sh      /usr/local/bin/escape-shell
@@ -53,7 +54,8 @@ RUN cat /etc/bash.bashrc.escape >> /etc/bash.bashrc \
  && rm -f /etc/bash.bashrc.escape \
  && mkdir -p /var/log/escape/sessions \
  && chmod 755 /usr/local/bin/escape-shell /usr/local/lib/escape/log.sh \
-      /usr/local/lib/escape/persist.sh /etc/profile.d/escape-session.sh \
+      /usr/local/lib/escape/persist.sh /usr/local/lib/escape/mirror.sh \
+      /etc/profile.d/escape-session.sh \
  && usermod -s /usr/local/bin/escape-shell player
 
 RUN chown player:player /home/player/.README \

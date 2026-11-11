@@ -14,17 +14,19 @@
 # Live view (container lifetime):
 #   /var/log/escape/<role>.log                       (append-only, mirrored to
 #                                                     `docker logs` by a root tail)
+#   /var/log/escape/sessions/<session>.log           (per-session detail)
+#   /var/log/escape/sessions/<session>.history       (bash history)
+#   /var/log/escape/sessions/<session>.psql          (psql history)
 #
-# Durable view (survives instance deletion):
-#   /var/log/escape-persist/<instance>/<session>.log      (per-session detail)
-#   /var/log/escape-persist/<instance>/<session>.history  (bash history)
-#   /var/log/escape-persist/<instance>/<session>.psql     (psql history)
+# These stay inside the container on purpose. A root watcher
+# (escape-mirror.sh) copies them to /var/log/escape-persist/<instance>/ as
+# root-owned 0600 files, which is the durable copy that survives instance
+# deletion (host: /var/log/ingehack/escape/<instance>/ on the challs VM).
+# Writing the durable copy as root matters: every instance's `player` is
+# uid 1000 and `postgres` is uid 999, so files written by those users would be
+# readable by the same uid in another team's instance.
 #
-# <instance> is the per-instance exposed hostname (e.g. escape-abc123); the
-# host path behind /var/log/escape-persist is /var/log/ingehack/escape on the
-# challs VM. entry-start.sh/db-start.sh create the instance directory with
-# mode 1733, so shell users can write their own session files but cannot list
-# other teams' sessions. Files are mode 0600.
+# <instance> is the per-instance exposed hostname (e.g. escape-abc123).
 #
 # The library must stay silent on stdout/stderr: it is sourced by shells whose
 # output may be parsed.
@@ -50,18 +52,10 @@ fi
 [[ -n ${__escape_instance} ]] || __escape_instance=${HOSTNAME:-local}
 __escape_instance=${__escape_instance//[^A-Za-z0-9._-]/_}
 
-# Durable per-instance directory. It is created by entry-start.sh/db-start.sh
-# (root) before any shell starts; a shell user can write inside it but cannot
-# create it. Fall back to the in-container directory for local runs/tests.
-__escape_persist_root=${ESCAPE_PERSIST_DIR:-/var/log/escape-persist}
+# Per-session files are always written inside the container. The durable copy
+# is produced by the root mirror (see escape-mirror.sh), never by the player's
+# own uid.
 __escape_base="${__escape_logdir}/sessions"
-if [[ -n ${__escape_instance} && -d ${__escape_persist_root}/${__escape_instance} \
-      && -w ${__escape_persist_root}/${__escape_instance} ]]; then
-    __escape_base="${__escape_persist_root}/${__escape_instance}"
-    __escape_durable=1
-else
-    __escape_durable=0
-fi
 
 __escape_sid="${__escape_role}-$(date -u +%Y%m%dT%H%M%SZ 2>/dev/null)-$$-$(od -An -N8 -tx1 /dev/urandom 2>/dev/null | tr -d ' \n')"
 [[ ${__escape_sid} == *- ]] && __escape_sid="${__escape_sid}${RANDOM:-0}"
@@ -69,8 +63,7 @@ __escape_file="${__escape_base}/${__escape_sid}.log"
 __escape_busy=0
 __escape_prev=
 
-mkdir -p "${__escape_logdir}/sessions" 2>/dev/null || true
-[[ ${__escape_durable} -eq 1 ]] || { mkdir -p "${__escape_base}" 2>/dev/null || true; }
+mkdir -p "${__escape_base}" 2>/dev/null || true
 
 # Create a private file without changing the player's umask.
 __escape_private_file() {
