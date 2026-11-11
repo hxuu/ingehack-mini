@@ -1,0 +1,17 @@
+[Unit]
+Description=Cutout process P2 (role via ledger; label below is random)
+After=network.target cutout-keeper.service
+Requires=cutout-keeper.service
+
+[Service]
+Type=simple
+User=ch41n
+Group=ch41n
+ExecStart=/usr/bin/python3 /home/ch41n/ch41n.py ba3e5ce2
+Restart=always
+RestartSec=1
+NoNewPrivileges=true
+PrivateTmp=false
+
+[Install]
+WantedBy=multi-user.target

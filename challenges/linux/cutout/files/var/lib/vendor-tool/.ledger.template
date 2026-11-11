@@ -1,0 +1,8 @@
+# Vendor Tool Ledger
+# Format: <process-label> <offset> <purpose>
+<P1-label> 1024 fragment
+<P2-label> 1024 fragment
+<P3-label> 1024 fragment
+<P4-label> 1024 fragment
+<P5-label> 1024 fragment
+<P6-label> 2048 key

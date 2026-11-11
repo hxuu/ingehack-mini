@@ -1,0 +1,6 @@
+[Unit]
+Description=Cutout watchdog (snoop reaper + node restart)
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/watchdog.sh

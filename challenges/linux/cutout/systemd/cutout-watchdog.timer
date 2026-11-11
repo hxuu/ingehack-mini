@@ -1,0 +1,9 @@
+[Unit]
+Description=Run cutout watchdog every 30s
+
+[Timer]
+OnBootSec=10s
+OnUnitInactiveSec=30s
+
+[Install]
+WantedBy=timers.target

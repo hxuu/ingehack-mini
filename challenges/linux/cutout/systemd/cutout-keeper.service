@@ -1,0 +1,16 @@
+[Unit]
+Description=Cutout keeper service (fd holder, lends via SCM_RIGHTS)
+After=network.target
+
+[Service]
+Type=simple
+ExecStartPre=/bin/mkdir -p /run/cutout
+ExecStartPre=/bin/sh -c "chmod 1777 /run/cutout"
+ExecStart=/bin/bash /usr/local/bin/keeper.sh
+Restart=always
+RestartSec=1
+NoNewPrivileges=true
+PrivateTmp=false
+
+[Install]
+WantedBy=multi-user.target
