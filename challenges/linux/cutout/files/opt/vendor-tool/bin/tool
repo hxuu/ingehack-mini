@@ -1,0 +1,6 @@
+#!/bin/sh
+# Vendor Tool (decoy). Harmless state viewer for operators.
+echo "vendor-tool 2.4.1 (build 20261102)"
+echo "  state: $(test -r /var/lib/vendor-tool/.ledger && echo online || echo offline)"
+echo "  hint: nothing of operational interest lives in this binary."
+exit 0

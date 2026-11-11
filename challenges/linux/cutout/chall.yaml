@@ -1,0 +1,78 @@
+name: cutout
+author: boul3h14
+category: linux
+hidden: true
+tiebreakEligible: true
+
+description: |
+  **Cutout**
+  ─────────
+  Six processes. Two are lying. One holds the key. The rest hold the truth —
+  but you'll have to decrypt it first.
+
+  You are boul3h14. Somewhere on this box, a chain of fragments leads to the
+  flag. Trust nothing you read until you've verified it.
+
+  **Objective**
+  Recover the flag.
+
+  **Connection**
+  Press **Start**. When the instance is up, connect to the displayed SSH
+  endpoint — it rides the TLS terminator, so wrap the client:
+
+  > [!CONNECTION]
+  > ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' boul3h14@<instance-host> -p <port>
+
+  Password: `Welcome123`.
+
+difficulty: hard
+points:
+  min: 500
+  max: 500
+
+tags:
+  - hard
+  - linux
+  - proc-fd
+  - xor
+  - chain
+
+flag: ingehack{ch41n_0f_cust0dy}
+instanced: true
+instancer:
+  challengeIntegrationId: cutout
+  timeoutMilliseconds: 1800000
+  extendable: true
+  expose:
+    - kind: tcp-ssl
+      hostPrefix: cutout
+      containerName: cutout
+      containerPort: 22
+      shouldDisplay: true
+      title: "SSH (via TLS)"
+  services:
+    cutout:
+      hostname: challenge-cutout
+      # useradd/runuser/sshd need the session caps; verified: with
+      # NET_BIND_SERVICE only, runuser fails "cannot set groups: Operation
+      # not permitted" and no daemon/keeper spawns.
+      cap_add:
+        - CHOWN
+        - DAC_OVERRIDE
+        - FOWNER
+        - SETUID
+        - SETGID
+        - SYS_CHROOT
+        - AUDIT_WRITE
+        - KILL
+      cap_drop: [ALL]
+      mem_limit: 512m
+      cpus: 0.5
+      pids_limit: 256
+      read_only: false
+      security_opt: ["no-new-privileges"]
+      networks: [internal]
+  networks:
+    internal:
+      driver: bridge
+      internal: true
