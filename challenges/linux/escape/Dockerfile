@@ -39,9 +39,12 @@ COPY docker/db-start.sh       /opt/escape/db-start.sh
 COPY docker/entrypoint.sh     /entrypoint.sh
 
 # --- interaction logging (author-side observability) --------------------------
-# Per-session bash/psql history + a central append-only log that a root `tail`
-# mirrors to the container log. Not a security boundary.
+# Per-session bash/psql history plus a command log. The root tails mirror the
+# log to the container output (live) and, when the instancer mounts the `logs`
+# volume, to a per-instance host directory that survives instance deletion.
+# Not a security boundary.
 COPY docker/escape-log-common.sh /usr/local/lib/escape/log.sh
+COPY docker/escape-persist.sh    /usr/local/lib/escape/persist.sh
 COPY docker/profile-escape.sh    /etc/profile.d/escape-session.sh
 COPY docker/bashrc-escape.sh     /etc/bash.bashrc.escape
 COPY docker/escape-shell.sh      /usr/local/bin/escape-shell
@@ -50,7 +53,7 @@ RUN cat /etc/bash.bashrc.escape >> /etc/bash.bashrc \
  && rm -f /etc/bash.bashrc.escape \
  && mkdir -p /var/log/escape/sessions \
  && chmod 755 /usr/local/bin/escape-shell /usr/local/lib/escape/log.sh \
-      /etc/profile.d/escape-session.sh \
+      /usr/local/lib/escape/persist.sh /etc/profile.d/escape-session.sh \
  && usermod -s /usr/local/bin/escape-shell player
 
 RUN chown player:player /home/player/.README \

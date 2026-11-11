@@ -15,17 +15,37 @@ PG_VER=14
 
 # --- 0. interaction logging ---------------------------------------------------
 # The reverse shell lands on this host as `postgres`; /etc/bash.bashrc logs it
-# to /var/log/escape/db.log, which a root tail mirrors to the container log.
+# to /var/log/escape/db.log, which a root tail mirrors to the container log
+# (live) and to the per-instance durable directory (host
+# /var/log/ingehack/escape/<instance>), which survives instance deletion.
 # PostgreSQL query/connection logging (Dockerfile) is mirrored the same way.
 printf 'db' > /run/escape-role
 mkdir -p /var/log/escape/sessions
 : >> /var/log/escape/db.log
 chmod 1777 /var/log/escape/sessions
 chmod 666  /var/log/escape/db.log
-stdbuf -oL tail -F -n +1 /var/log/escape/db.log 2>/dev/null &
-# Debian's pg_ctlcluster redirects the server's stderr to this file; mirror it
-# too so `docker logs <db>` shows connections and SQL statements live.
-stdbuf -oL tail -F -n +1 /var/log/postgresql/postgresql-14-main.log 2>/dev/null &
+
+. /usr/local/lib/escape/persist.sh
+INSTANCE=$(__escape_instance_name)
+printf '%s\n' "$INSTANCE" > /run/escape-instance
+chmod 644 /run/escape-instance
+
+PERSIST_DIR=$(__escape_persist_instance) || PERSIST_DIR=
+if [ -n "$PERSIST_DIR" ]; then
+    : >> "$PERSIST_DIR/db.log"
+    chmod 600 "$PERSIST_DIR/db.log" 2>/dev/null || true
+    stdbuf -oL tail -F -n +1 /var/log/escape/db.log 2>/dev/null \
+        | stdbuf -oL tee -a "$PERSIST_DIR/db.log" &
+    : >> "$PERSIST_DIR/postgres.log"
+    chmod 600 "$PERSIST_DIR/postgres.log" 2>/dev/null || true
+    stdbuf -oL tail -F -n +1 /var/log/postgresql/postgresql-14-main.log 2>/dev/null \
+        | stdbuf -oL tee -a "$PERSIST_DIR/postgres.log" &
+else
+    stdbuf -oL tail -F -n +1 /var/log/escape/db.log 2>/dev/null &
+    # Debian's pg_ctlcluster redirects the server's stderr to this file; mirror
+    # it too so `docker logs <db>` shows connections and SQL statements live.
+    stdbuf -oL tail -F -n +1 /var/log/postgresql/postgresql-14-main.log 2>/dev/null &
+fi
 
 # --- 1. plant the root-owned files -------------------------------------------
 mkdir -p /critical /usr/local/.sys_cache_7f3a2b

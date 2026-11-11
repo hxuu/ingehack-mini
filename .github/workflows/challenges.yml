@@ -180,6 +180,24 @@ jobs:
                   -p 9305 root@ssh.alpha.openscaler.net \
                   docker load
 
+      - name: Ensure persistent log directory (instanced)
+        if: steps.chall.outputs.instanced == 'true'
+        # A challenge may back its `logs` volume with this host path (see
+        # escape/chall.yaml). The instancer deletes the named volume with the
+        # instance, but a bind-backed volume leaves the directory behind, so
+        # author-side logs survive the instance. Create it before the first
+        # instance can reference it.
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          install -m 600 /dev/null ~/.ssh/id_ed25519
+          echo "$SSH_DEPLOY_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          eval $(ssh-agent -s) >/dev/null
+          ssh-add ~/.ssh/id_ed25519 >/dev/null
+          ssh -o StrictHostKeyChecking=accept-new -p 9305 \
+              root@ssh.alpha.openscaler.net \
+              "mkdir -p /var/log/ingehack/${{ steps.chall.outputs.name }} && chmod 711 /var/log/ingehack/${{ steps.chall.outputs.name }}"
+
       - name: Register instanced challenge (rCTF v2 admin API, bot perms-3)
         if: steps.chall.outputs.instanced == 'true'
         env:
