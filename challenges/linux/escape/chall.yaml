@@ -62,17 +62,23 @@ instancer:
       hostname: entry-host
       environment:
         ROLE: entry
+        # Per-instance hostname, used to give each instance its own persistent
+        # log directory (logs from different teams must never mix).
+        RCTF_EXPOSED_HOSTNAMES: ${RCTF_EXPOSED_HOSTNAMES}
       cap_add: [NET_ADMIN]
       cap_drop: []
       mem_limit: 256m
       read_only: false
       pids_limit: 128
       networks: [ctf-internal]
+      volumes:
+        - logs:/var/log/escape-persist
     db:
       hostname: db-host
       environment:
         ROLE: db
         RCTF_FLAG: ${RCTF_FLAG}
+        RCTF_EXPOSED_HOSTNAMES: ${RCTF_EXPOSED_HOSTNAMES}
       # The instancer defaults to cap_drop: ['ALL']; PostgreSQL cannot chown
       # its data dir, setuid to postgres, or start without the Docker default
       # capability set, so opt back in explicitly (same as `entry`).
@@ -81,7 +87,20 @@ instancer:
       read_only: false
       pids_limit: 128
       networks: [ctf-internal]
+      volumes:
+        - logs:/var/log/escape-persist
   networks:
     ctf-internal:
       driver: bridge
       internal: true
+  # The instancer creates a per-instance named volume, then deletes it with
+  # the instance. Backing the volume with a host path makes `docker volume rm`
+  # remove only the volume metadata; the directory (and the logs) survive.
+  # CI creates /var/log/ingehack/escape on the challs VM before registering.
+  volumes:
+    logs:
+      driver: local
+      driver_opts:
+        type: none
+        o: bind
+        device: /var/log/ingehack/escape

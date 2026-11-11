@@ -31,8 +31,9 @@ entry host, `find` + `cat` the planted root-owned flag.
 | `docker/db-start.sh` | ROLE=db: starts PG14, creates `appuser`/`appdb`, plants the flag + bait note (with the *resolved* listener IP), then execs `tail -f` with the flag vars stripped from PID1 env. |
 | `docker/player_readme.txt` | entry `.README` — capabilities misdirection. |
 | `docker/sysadmin_note.txt` | planted at `/critical/.sysadmin_note.txt` (bait). |
-| `docker/entry-start.sh` / `docker/db-start.sh` | also start the log mirror and set `/run/escape-role`. |
+| `docker/entry-start.sh` / `docker/db-start.sh` | also create the per-instance durable log directory, start the log mirror, and set `/run/escape-role` + `/run/escape-instance`. |
 | `docker/escape-log-common.sh` | per-session bash/psql history + structured command log. |
+| `docker/escape-persist.sh` | derives the per-instance log directory from the exposed hostname; sourced by both start scripts. |
 | `docker/escape-shell.sh` | player's passwd shell; logs one-off `ssh host 'cmd'` runs. |
 | `docker/profile-escape.sh`, `docker/bashrc-escape.sh` | interactive-shell hooks (login + `bash -i` reverse shell). |
 
@@ -60,6 +61,10 @@ entry host, `find` + `cat` the planted root-owned flag.
   `${RCTF_FLAG}` to the flag file at boot and then drops `FLAG` /
   `RCTF_FLAG` from PID1's environment (`exec env -u ...`), so instance
   flags work and `/proc/1/environ` leaks nothing.
+- The durable log volume is a bind-backed named volume (`logs` ->
+  `/var/log/ingehack/escape`). The CI ship job creates the host directory
+  before registration; the instancer deletes the named volume with the
+  instance, but the host directory and its logs survive.
 
 ## Verified locally (parity run)
 
@@ -88,22 +93,30 @@ that is exactly what `cap_drop: []` restores on the instancer.
 
 ## Interaction logging (author-side)
 
-The image records what players do so the author can review a live instance.
-It is observability, not a security boundary (a player can disable it in
-their own shell).
+The image records what players do so the author can review interactions after
+the fact. It is observability, not a security boundary (a player can disable it
+in their own shell).
 
 - **entry**: every interactive command line goes to
-  `/var/log/escape/entry.log` with UTC timestamp, session id, user,
+  `/var/log/escape/entry.log` with UTC timestamp, instance, session id, user,
   `SSH_CONNECTION`, cwd and command. One-off `ssh host 'cmd'` runs are logged
   by the login-shell wrapper (`docker/escape-shell.sh`).
 - **db**: the `COPY ... TO PROGRAM` reverse shell is `bash -i`, so
   `/etc/bash.bashrc` records the same way to `/var/log/escape/db.log`.
   PostgreSQL also logs connections and every statement
   (`log_statement = 'all'`), so the psql side is visible too.
-- **per session**: `/var/log/escape/sessions/<session>.log` (detail),
-  `.history` (bash), `.psql` (psql history). Each shell gets its own
-  `HISTFILE`, so the planted `/home/player/.bash_history` leak is preserved
-  instead of being overwritten by the first player.
+- **per session**: `<session>.log` (detail), `.history` (bash), `.psql`
+  (psql history). Each shell gets its own `HISTFILE`, so the planted
+  `/home/player/.bash_history` leak is preserved instead of being overwritten
+  by the first player.
+- **durable**: the manifest declares a `logs` volume backed by
+  `/var/log/ingehack/escape` on the challs VM (a bind-backed named volume).
+  The instancer deletes its named volume with the instance, but the host
+  directory survives. Each instance writes to
+  `<host>/<instance>/` (e.g. `escape-abc123.challs.ingeniums.club/`), mode
+  `1733`, files mode `0600`, so teams cannot list or read each other's
+  sessions. The root tails also append `entry.log`, `db.log` and
+  `postgres.log` there.
 - Both central logs are mirrored to the container output by a root `tail`:
 
 ```sh
@@ -111,11 +124,21 @@ docker ps --filter name=escape
 docker logs -f <entry-container>        # live commands + sshd auth
 docker logs -f <db-container>           # SQL + reverse-shell commands
 docker exec <entry-container> cat /var/log/escape/entry.log
-docker exec <entry-container> ls -l /var/log/escape/sessions
 ```
 
-Instances are destroyed at timeout, so read the logs while the instance is
-alive (they live in the container, not on the host).
+`docker logs` is live-only. After the instance expires, read the durable copy
+from the challs VM as root:
+
+```sh
+ssh -p 9305 root@ssh.alpha.openscaler.net
+ls -l /var/log/ingehack/escape/
+grep -R . /var/log/ingehack/escape/escape-abc123/
+```
+
+The `<instance>` value is the instance's exposed hostname
+(`<instance>.challs.ingeniums.club`), so it can be matched to the team that
+started it. The directory is created by the CI ship job before registration;
+if it is missing, the volume mount fails and the instance will not start.
 
 ## Deliberate deviations from the author's package
 

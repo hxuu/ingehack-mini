@@ -9,13 +9,29 @@ trap 'rc=$?; echo "entry-start: FAILED (line ${LINENO}, rc=${rc})" >&2' ERR
 
 # --- interaction logging ------------------------------------------------------
 # The player's shell hooks append to /var/log/escape/entry.log; a root tail
-# mirrors it to the container log so the author can watch `docker logs <entry>`
-# live. Per-session bash/psql histories live under sessions/.
+# mirrors it to the container log (live, `docker logs <entry>`) and to the
+# per-instance durable directory (host /var/log/ingehack/escape/<instance>),
+# which survives instance deletion. Per-session bash/psql histories are written
+# straight to that durable directory by the shell hooks.
 printf 'entry' > /run/escape-role
 mkdir -p /var/log/escape/sessions
 : >> /var/log/escape/entry.log
 chmod 1777 /var/log/escape/sessions
 chmod 666  /var/log/escape/entry.log
-stdbuf -oL tail -F -n +1 /var/log/escape/entry.log 2>/dev/null &
+
+. /usr/local/lib/escape/persist.sh
+INSTANCE=$(__escape_instance_name)
+printf '%s\n' "$INSTANCE" > /run/escape-instance
+chmod 644 /run/escape-instance
+
+PERSIST_DIR=$(__escape_persist_instance) || PERSIST_DIR=
+if [ -n "$PERSIST_DIR" ]; then
+    : >> "$PERSIST_DIR/entry.log"
+    chmod 600 "$PERSIST_DIR/entry.log" 2>/dev/null || true
+    stdbuf -oL tail -F -n +1 /var/log/escape/entry.log 2>/dev/null \
+        | stdbuf -oL tee -a "$PERSIST_DIR/entry.log" &
+else
+    stdbuf -oL tail -F -n +1 /var/log/escape/entry.log 2>/dev/null &
+fi
 
 exec /usr/sbin/sshd -D -e
