@@ -1,0 +1,101 @@
+name: fetch-logs
+
+# Read the durable challenge logs without VM access.
+#
+# The challs VM is only reachable with the deploy key (SSH_DEPLOY_PRIVATE_KEY),
+# which exists as a GitHub secret and cannot be read back. This workflow uses
+# it the same way the deploy job does: SSH as root, tar the requested log
+# directory, upload it as a run artifact. Maintainers trigger it from the
+# Actions tab or with `gh workflow run`; no OpenScaler account is needed.
+#
+# The tarball contains player commands and may contain flags. It is visible to
+# anyone with read access to this repository, so keep retention short and
+# treat the download as sensitive.
+
+on:
+  workflow_dispatch:
+    inputs:
+      challenge:
+        description: "Challenge name under /var/log/ingehack (e.g. escape)"
+        required: true
+        default: escape
+      instance:
+        description: "Optional instance hostname; empty fetches every instance"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate inputs
+        env:
+          CHALLENGE: ${{ inputs.challenge }}
+          INSTANCE: ${{ inputs.instance }}
+        run: |
+          set -euo pipefail
+          if ! [[ $CHALLENGE =~ ^[a-z0-9][a-z0-9-]*$ ]]; then
+            echo "::error::challenge must match ^[a-z0-9][a-z0-9-]*$"; exit 1
+          fi
+          if [ -n "$INSTANCE" ] && ! [[ $INSTANCE =~ ^[A-Za-z0-9._-]+$ ]]; then
+            echo "::error::instance must match ^[A-Za-z0-9._-]+$"; exit 1
+          fi
+
+      - name: Fetch logs over SSH
+        env:
+          SSH_DEPLOY_PRIVATE_KEY: ${{ secrets.SSH_DEPLOY_PRIVATE_KEY }}
+          CHALLENGE: ${{ inputs.challenge }}
+          INSTANCE: ${{ inputs.instance }}
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          install -m 600 /dev/null ~/.ssh/id_ed25519
+          printf '%s\n' "$SSH_DEPLOY_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          eval $(ssh-agent -s) >/dev/null
+          ssh-add ~/.ssh/id_ed25519 >/dev/null
+
+          target=$CHALLENGE
+          [ -z "$INSTANCE" ] || target="$CHALLENGE/$INSTANCE"
+          mkdir -p out
+          ssh -o StrictHostKeyChecking=accept-new -o BatchMode=yes \
+              -p 9305 root@ssh.alpha.openscaler.net \
+              "set -e
+               test -d \"/var/log/ingehack/$target\" || {
+                   echo '::error::/var/log/ingehack/$target does not exist'; exit 1; }
+               du -sh \"/var/log/ingehack/$target\"
+               tar -czf - -C /var/log/ingehack \"$target\"" > out/logs.tgz
+
+          echo "fetched $target: $(tar -tzf out/logs.tgz | wc -l) files"
+        id: fetch
+
+      - name: Summarise
+        env:
+          CHALLENGE: ${{ inputs.challenge }}
+          INSTANCE: ${{ inputs.instance }}
+        run: |
+          {
+            echo "### Challenge logs: \`$CHALLENGE${INSTANCE:+/$INSTANCE}\`"
+            echo
+            echo "- $(tar -tzf out/logs.tgz | wc -l) files, $(du -h out/logs.tgz | cut -f1) compressed"
+            echo "- artifact: \`challenge-logs-$CHALLENGE\`"
+            echo
+            echo "Download with:"
+            echo
+            echo '```sh'
+            echo "gh run download $GITHUB_RUN_ID -n challenge-logs-$CHALLENGE -D /tmp/opencode/$CHALLENGE-logs"
+            echo "tar -xzf /tmp/opencode/$CHALLENGE-logs/logs.tgz -C /tmp/opencode/$CHALLENGE-logs"
+            echo '```'
+            echo
+            echo "Contains player commands and possibly flags; delete the download when done."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: challenge-logs-${{ inputs.challenge }}
+          path: out/logs.tgz
+          if-no-files-found: error
+          # Logs may contain flags; do not keep them around indefinitely.
+          retention-days: 14
