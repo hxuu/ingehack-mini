@@ -3,15 +3,16 @@
 Linux CTF challenge — Rumor series, #2. Medium, 200–500 points.
 Flag format: `ingehack{...}`.
 
-A static SSH container (`tcpPort: 2222`) on Ubuntu 22.04. Four non-root
-accounts, a stale handover note, a rotated password, base64-encoded password
-fragments with a decoy, and an AES-256-CBC encrypted flag.
+A per-player, instancer-spawned SSH container (`instanced: true`) on Ubuntu
+22.04. Four non-root accounts, a stale handover note, a rotated password,
+base64-encoded password fragments with a decoy, and an AES-256-CBC encrypted
+flag.
 
 ## Layout
 
 ```text
 challenges/linux/rumor-mill-2/
-├── chall.yaml          # static flag, tcp-ssl description, 200–500 pts
+├── chall.yaml          # instancer block, tcp-ssl expose
 ├── Dockerfile
 ├── src/
 │   ├── entrypoint.sh   # users, files, hardening, sshd (root, runtime)
@@ -23,7 +24,7 @@ challenges/linux/rumor-mill-2/
 └── README.md
 ```
 
-## Local build and run
+## Local build and run (instancer shape)
 
 ```sh
 docker build -t rumor-mill-2:local .
@@ -31,15 +32,20 @@ docker build -t rumor-mill-2:local .
 docker run -d --name rumor-mill-2 \
   --hostname challenge-rumor-mill-2 \
   -p 2225:2222 \
+  --cap-drop=ALL \
+  --cap-add=CHOWN --cap-add=DAC_OVERRIDE --cap-add=FOWNER \
+  --cap-add=SETUID --cap-add=SETGID --cap-add=SYS_CHROOT \
+  --cap-add=AUDIT_WRITE --cap-add=KILL \
+  --pids-limit 128 --memory 256m \
   -e 'FLAG=ingehack{rum0rs_4r3_b4s364_4ll_th3_w4y_d0wn}' \
   rumor-mill-2:local
 ```
 
-CI injects the flag from `chall.yaml` (`ops/deploy-static.sh` passes it as
-`FLAG`), so the image itself never bakes it. The entrypoint stages the value
-root-only and re-execs with a clean environment, keeping it out of
-`/proc/1/environ`. The plaintext flag is not present in `entrypoint.sh`,
-`verify.sh`, or any copied solution directory.
+The `FLAG` value stands in for the instancer's `${RCTF_FLAG}` injection
+(`FLAG: ${RCTF_FLAG}` in `chall.yaml`), so the image itself never bakes it.
+The entrypoint stages the value root-only and re-execs with a clean
+environment, keeping it out of `/proc/1/environ`. The plaintext flag is not
+present in `entrypoint.sh`, `verify.sh`, or any copied solution directory.
 
 ## Verify
 
@@ -54,26 +60,19 @@ must-fail/must-succeed player path, hardening H1–H25, and explicit flag-leak
 checks (`/entrypoint.sh`, `/verify.sh`, `/solutions`, `/etc/rumor-mill/flag`,
 readable homes).
 
-## Player connection (local)
-
-Host port **2225** maps to container port **2222** so this challenge never
-clashes with Rumor Mill #1 (2222) or its ingehack-mini build (2223):
-
-```sh
-ssh -p 2225 y4ss1n3@localhost
-# password: Welcome123
-```
-
 ## Player connection (deployed)
+
+Press **Start**; the instancer spawns a per-player instance. Then:
 
 ```sh
 ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' \
-    y4ss1n3@rumor-mill-2.challs.ingeniums.club -p 9450
+    y4ss1n3@<INSTANCE_HOST> -p 9450
 # password: Welcome123
 ```
 
-The mapped `tcp-ssl` port comes from `docs/status.md` (`1337 → 9450`).
-`tcpPort: 2222` is the container port Traefik forwards to.
+The mapped `tcp-ssl` port comes from `docs/status.md` (`1337 → 9450`);
+`expose[0].containerPort: 2222` is the container port the instancer forwards
+to.
 
 ## Intended path
 
