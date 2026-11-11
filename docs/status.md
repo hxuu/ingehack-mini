@@ -51,6 +51,42 @@ Note: public ports are auto-assigned by OpenScaler, so bookmark them via
 - Firewall: `12237` must only be reachable from 10.0.47.5 (nothing else opens it;
   revisit with ufw at DNS time).
 
+### Author-side challenge logs (durable)
+
+Player sessions are logged by the challenge image, not by the platform, and the
+copies survive instance deletion. Read them as root on this VM (the same host CI
+deploys to; CI authenticates with `SSH_DEPLOY_PRIVATE_KEY`, a human needs their
+own key authorized).
+
+- Host path: `/var/log/ingehack/<challenge>/<instance-hostname>/`, e.g.
+  `/var/log/ingehack/escape/escape-9363adedbd06.challs.ingeniums.club/`.
+  Only challenges that declare the bind-backed `logs` volume write here
+  (currently `escape`); CI creates the parent directory for every instanced
+  challenge.
+- Per instance: `entry.log`, `db.log`, `postgres.log` (root tails of the
+  central logs) plus `<role>-<ts>-<pid>-<rand>.log` (per-session detail),
+  `.history` (bash) and `.psql` (psql history). `postgres.log` carries
+  connections and every statement (`log_statement = 'all'`), so the
+  `COPY … TO PROGRAM` RCE is visible there.
+- Files are root-owned `0600`, instance dirs `1733`. Players (`player` uid 1000)
+  and the db reverse shell (`postgres` uid 999) have the same uids in every
+  instance, which is why the durable copies are written by a root watcher
+  rather than by the shells themselves.
+- `<instance-hostname>` is exactly what the team is shown at Start. The
+  platform keeps no instance rows (it delegates to the instancer), so after
+  deletion that hostname is the only join key back to a team. While the
+  instance is alive the labels give it:
+  `docker ps -a --filter label=io.es3n1n.instancer.instance_id=<12hex>`
+  then `docker inspect <container> --format '{{json .Config.Labels}}'`
+  (`io.es3n1n.instancer.team_id`).
+- Read: `ls -l /var/log/ingehack/escape/`,
+  `grep -R . /var/log/ingehack/escape/<hostname>/`,
+  `tail -f /var/log/ingehack/escape/<hostname>/entry.log`.
+  Live-only alternative: `docker logs <entry-container>` / `docker logs <db-container>`.
+- Retention: one directory per instance start and nothing prunes them. Archive
+  or delete after the event, e.g.
+  `find /var/log/ingehack/escape -mindepth 1 -maxdepth 1 -mtime +30 -exec rm -rf {} +`.
+
 ## Verified end-to-end (2026-10-22)
 
 1. Platform web + API up: `/api/v1/challs` 200, auth guards 401, public 200.
