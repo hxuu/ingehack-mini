@@ -11,8 +11,9 @@ trap 'rc=$?; echo "entry-start: FAILED (line ${LINENO}, rc=${rc})" >&2' ERR
 # The player's shell hooks append to /var/log/escape/entry.log; a root tail
 # mirrors it to the container log (live, `docker logs <entry>`) and to the
 # per-instance durable directory (host /var/log/ingehack/escape/<instance>),
-# which survives instance deletion. Per-session bash/psql histories are written
-# straight to that durable directory by the shell hooks.
+# which survives instance deletion. Per-session files are written inside the
+# container and mirrored there by a root watcher, so their durable copies are
+# root-owned and unreadable by another instance's player.
 printf 'entry' > /run/escape-role
 mkdir -p /var/log/escape/sessions
 : >> /var/log/escape/entry.log
@@ -30,6 +31,8 @@ if [ -n "$PERSIST_DIR" ]; then
     chmod 600 "$PERSIST_DIR/entry.log" 2>/dev/null || true
     stdbuf -oL tail -F -n +1 /var/log/escape/entry.log 2>/dev/null \
         | stdbuf -oL tee -a "$PERSIST_DIR/entry.log" &
+    . /usr/local/lib/escape/mirror.sh
+    __escape_mirror_sessions "$PERSIST_DIR"
 else
     stdbuf -oL tail -F -n +1 /var/log/escape/entry.log 2>/dev/null &
 fi

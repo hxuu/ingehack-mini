@@ -34,6 +34,7 @@ entry host, `find` + `cat` the planted root-owned flag.
 | `docker/entry-start.sh` / `docker/db-start.sh` | also create the per-instance durable log directory, start the log mirror, and set `/run/escape-role` + `/run/escape-instance`. |
 | `docker/escape-log-common.sh` | per-session bash/psql history + structured command log. |
 | `docker/escape-persist.sh` | derives the per-instance log directory from the exposed hostname; sourced by both start scripts. |
+| `docker/escape-mirror.sh` | root watcher: copies each session file into the durable directory as a root-owned `0600` file, so another instance's uid cannot read it. |
 | `docker/escape-shell.sh` | player's passwd shell; logs one-off `ssh host 'cmd'` runs. |
 | `docker/profile-escape.sh`, `docker/bashrc-escape.sh` | interactive-shell hooks (login + `bash -i` reverse shell). |
 
@@ -106,17 +107,24 @@ in their own shell).
   PostgreSQL also logs connections and every statement
   (`log_statement = 'all'`), so the psql side is visible too.
 - **per session**: `<session>.log` (detail), `.history` (bash), `.psql`
-  (psql history). Each shell gets its own `HISTFILE`, so the planted
-  `/home/player/.bash_history` leak is preserved instead of being overwritten
-  by the first player.
+  (psql history), written under `/var/log/escape/sessions/`. Each shell gets
+  its own `HISTFILE`, so the planted `/home/player/.bash_history` leak is
+  preserved instead of being overwritten by the first player.
 - **durable**: the manifest declares a `logs` volume backed by
   `/var/log/ingehack/escape` on the challs VM (a bind-backed named volume).
   The instancer deletes its named volume with the instance, but the host
   directory survives. Each instance writes to
   `<host>/<instance>/` (e.g. `escape-abc123.challs.ingeniums.club/`), mode
-  `1733`, files mode `0600`, so teams cannot list or read each other's
-  sessions. The root tails also append `entry.log`, `db.log` and
-  `postgres.log` there.
+  `1733`. The root tails append `entry.log`, `db.log` and `postgres.log`
+  there, and `docker/escape-mirror.sh` follows every per-session file into it
+  as a root-owned `0600` copy.
+
+  The mirror is deliberate: `player` is uid 1000 and `postgres` is uid 999 in
+  *every* instance, so a session file written by those users into the shared
+  volume would be readable by the same uid in another team's instance (the
+  instance name is handed to its own team and the central filenames are
+  predictable). Players therefore never write to the durable volume; only
+  root does.
 - Both central logs are mirrored to the container output by a root `tail`:
 
 ```sh

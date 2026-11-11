@@ -18,6 +18,9 @@ PG_VER=14
 # to /var/log/escape/db.log, which a root tail mirrors to the container log
 # (live) and to the per-instance durable directory (host
 # /var/log/ingehack/escape/<instance>), which survives instance deletion.
+# Per-session files are written inside the container and mirrored there by a
+# root watcher, so their durable copies are root-owned and unreadable by
+# another instance's shell users.
 # PostgreSQL query/connection logging (Dockerfile) is mirrored the same way.
 printf 'db' > /run/escape-role
 mkdir -p /var/log/escape/sessions
@@ -40,6 +43,8 @@ if [ -n "$PERSIST_DIR" ]; then
     chmod 600 "$PERSIST_DIR/postgres.log" 2>/dev/null || true
     stdbuf -oL tail -F -n +1 /var/log/postgresql/postgresql-14-main.log 2>/dev/null \
         | stdbuf -oL tee -a "$PERSIST_DIR/postgres.log" &
+    . /usr/local/lib/escape/mirror.sh
+    __escape_mirror_sessions "$PERSIST_DIR"
 else
     stdbuf -oL tail -F -n +1 /var/log/escape/db.log 2>/dev/null &
     # Debian's pg_ctlcluster redirects the server's stderr to this file; mirror
