@@ -56,7 +56,21 @@ Note: public ports are auto-assigned by OpenScaler, so bookmark them via
 Player sessions are logged by the challenge image, not by the platform, and the
 copies survive instance deletion. Read them as root on this VM (the same host CI
 deploys to; CI authenticates with `SSH_DEPLOY_PRIVATE_KEY`, a human needs their
-own key authorized).
+own key authorized). **With no OpenScaler/VM access at all**, use the
+`fetch-logs` workflow instead — it SSHes with the CI deploy key and uploads the
+directory as a run artifact:
+
+```sh
+gh workflow run fetch-logs.yml -f challenge=escape
+gh run watch "$(gh run list --workflow fetch-logs.yml --limit 1 --json databaseId --jq '.[0].databaseId')"
+gh run download "$(gh run list --workflow fetch-logs.yml --limit 1 --json databaseId --jq '.[0].databaseId')" \
+  -n challenge-logs-escape -D /tmp/opencode/escape-logs
+tar -xzf /tmp/opencode/escape-logs/logs.tgz -C /tmp/opencode/escape-logs
+```
+
+Pass `-f instance=escape-<uid>.challs.ingeniums.club` to fetch a single
+instance. The artifact contains player commands and possibly flags; it is
+visible to anyone with read access to this repository and is kept 14 days.
 
 - Host path: `/var/log/ingehack/<challenge>/<instance-hostname>/`, e.g.
   `/var/log/ingehack/escape/escape-9363adedbd06.challs.ingeniums.club/`.
