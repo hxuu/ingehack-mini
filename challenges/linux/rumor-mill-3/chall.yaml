@@ -17,10 +17,11 @@ description: |
   Recover the flag. Verify what you are told.
 
   **Connection**
-  SSH sits behind the TLS terminator, so wrap the client:
+  Press **Start** to spawn your instance. SSH sits behind the TLS terminator,
+  so wrap the client (the mapped `tcp-ssl` port is 9450):
 
   > [!CONNECTION]
-  > ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' y4ss1n3@rumor-mill-3.challs.ingeniums.club -p 9450
+  > ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' y4ss1n3@<INSTANCE_HOST> -p 9450
 
   Password: `4rt4z4`. A TTY is required: `su` prompts on the terminal, so a
   raw `nc` session cannot complete the chain.
@@ -29,8 +30,6 @@ description: |
   `ingehack{...}`
 
 difficulty: hard
-# The ingest schema (ops/chall-payload.py) reads points.min/max. Both are 500
-# so the challenge is exactly the spec's 500 points.
 points:
   min: 100
   max: 500
@@ -45,7 +44,43 @@ tags:
   - decoy
 
 flag: ingehack{3v3ry0n3_l13d_bu7_th3_l0g_d1dn7}
-instanced: false
-# Raw-TCP route: ops/deploy-static.sh puts a Traefik TCP router on the tcp
-# entrypoint (published as the mapped tcp-ssl port, 9450) for this port.
-tcpPort: 2222
+instanced: true
+instancer:
+  # Stable id — keep across renames/updates.
+  challengeIntegrationId: rumor-mill-3
+  timeoutMilliseconds: 1800000
+  extendable: true
+  expose:
+    - kind: tcp-ssl
+      hostPrefix: rumor-mill-3
+      containerName: rumor-mill-3
+      containerPort: 2222
+      shouldDisplay: true
+      title: "SSH (via TLS)"
+  services:
+    rumor-mill-3:
+      hostname: challenge-rumor-mill-3
+      environment:
+        # the instancer bakes the per-team value into ${RCTF_FLAG}; the
+        # entrypoint stages it root-only and re-execs with env -i
+        FLAG: ${RCTF_FLAG}
+        SSH_PORT: "2222"
+      # no-new-privileges must NOT apply: the intended chain runs `su`
+      # (setuid), which it would block. Verified: with the instancer default,
+      # `su n0d4` fails with "The 'no new privileges' flag is set"; with an
+      # empty security_opt, su works and the chain completes.
+      security_opt: []
+      cap_drop: [ALL]
+      cap_add:
+        - CHOWN
+        - DAC_OVERRIDE
+        - FOWNER
+        - SETUID
+        - SETGID
+        - SYS_CHROOT
+        - AUDIT_WRITE
+        - KILL
+      mem_limit: 256m
+      read_only: false
+      pids_limit: 128
+      networks: [ctf-internal]

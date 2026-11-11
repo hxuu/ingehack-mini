@@ -3,14 +3,15 @@
 Hard Linux CTF challenge (Rumor series, #3 of 3, finale). **500 points.**
 Flag format: `ingehack{...}`.
 
-A static SSH container (`tcpPort: 2222`) on Ubuntu 22.04. Every note lies;
-the auth log is the only truth.
+A per-player, instancer-spawned SSH container (`instanced: true`, one image,
+one service) on Ubuntu 22.04. Every note lies; the auth log is the only
+truth.
 
 ## Layout
 
 ```text
 challenges/linux/rumor-mill-3/
-├── chall.yaml          # static flag, tcp-ssl description, points 500/500
+├── chall.yaml          # instancer block, tcp-ssl expose, points 100–500
 ├── Dockerfile
 ├── src/
 │   ├── entrypoint.sh   # users, files, encrypted flag, log, hardening
@@ -22,7 +23,7 @@ challenges/linux/rumor-mill-3/
 └── README.md
 ```
 
-## Local build and run
+## Local build and run (instancer shape)
 
 ```sh
 docker build -t rumor-mill-3:mini .
@@ -30,16 +31,19 @@ docker build -t rumor-mill-3:mini .
 docker run -d --name rumor-mill-3-liars-mini \
   --hostname challenge-rumor-mill-3 \
   -p 2227:2222 \
+  --cap-drop=ALL \
+  --cap-add=CHOWN --cap-add=DAC_OVERRIDE --cap-add=FOWNER \
+  --cap-add=SETUID --cap-add=SETGID --cap-add=SYS_CHROOT \
+  --cap-add=AUDIT_WRITE --cap-add=KILL \
+  --pids-limit 128 --memory 256m \
   -e 'FLAG=ingehack{3v3ry0n3_l13d_bu7_th3_l0g_d1dn7}' \
   rumor-mill-3:mini
 ```
 
-Host port **2227** keeps this clear of Rumor #1 (2222/2223) and #2
-(2224/2225); the standalone build uses **2226**.
-
-The entrypoint stages `FLAG` root-only and re-execs with `env -i`, so it never
-appears in `/proc/1/environ`. The image contains no plaintext flag, key, or
-fixed password.
+The `FLAG` value stands in for the instancer's `${RCTF_FLAG}` injection
+(`FLAG: ${RCTF_FLAG}` in `chall.yaml`). The entrypoint stages `FLAG` root-only
+and re-execs with `env -i`, so it never appears in `/proc/1/environ`. The
+image contains no plaintext flag, key, or fixed password.
 
 ## Verify
 
@@ -50,14 +54,16 @@ CONTAINER=rumor-mill-3-liars-mini solution/verify_solution.sh
 
 ## Player connection (deployed)
 
+Press **Start**; the instancer spawns a per-player instance. Then:
+
 ```sh
 ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' \
-    y4ss1n3@rumor-mill-3.challs.ingeniums.club -p 9450
+    y4ss1n3@<INSTANCE_HOST> -p 9450
 # password: 4rt4z4
 ```
 
-The mapped `tcp-ssl` port comes from `docs/status.md` (`1337 → 9450`).
-`tcpPort: 2222` is the container port Traefik forwards to.
+The mapped `tcp-ssl` port comes from `docs/status.md` (`1337 → 9450`);
+`expose[0].containerPort: 2222` is the container port the instancer forwards to.
 
 ## Intended path
 
