@@ -83,3 +83,9 @@ instancer:
       read_only: false
       pids_limit: 128
       networks: [ctf-internal]
+  # per-instance network; the service above references it, so it must be
+  # declared here (same as escape) or the rCTF upsert rejects the payload
+  networks:
+    ctf-internal:
+      driver: bridge
+      internal: true
