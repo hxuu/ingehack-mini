@@ -3,24 +3,30 @@
 Linux CTF challenge — Rumor series, #1. Easy, 100–300 points.
 Flag format: `ingehack{...}`.
 
-A static SSH container. Four non-root accounts, chained handover notes, one
-decoy. Players start as `y4ss1n3` and `su` through `n0d4` to `boul3h14`.
+A per-player, instancer-spawned SSH container (`instanced: true`). Four
+non-root accounts, chained handover notes, one decoy. Players start as
+`y4ss1n3` and `su` through `n0d4` to `boul3h14`.
 
-## Local build and run
+## Local build and run (instancer shape)
 
 ```sh
 docker build -t rumor-mill:local .
 docker run -d --name rumor-mill \
   --hostname challenge-rumor-mill \
   -p 2222:2222 \
+  --cap-drop=ALL \
+  --cap-add=CHOWN --cap-add=DAC_OVERRIDE --cap-add=FOWNER \
+  --cap-add=SETUID --cap-add=SETGID --cap-add=SYS_CHROOT \
+  --cap-add=AUDIT_WRITE --cap-add=KILL \
+  --pids-limit 128 --memory 256m \
   -e 'FLAG=ingehack{su_1s_n0t_4lm1ghty_y0u_kn0w}' \
   rumor-mill:local
 ```
 
-CI injects the flag from `chall.yaml` (`ops/deploy-static.sh` passes it as
-`FLAG`), so the image itself never bakes it. The entrypoint stages the value
-root-only and re-execs with a clean environment, keeping it out of
-`/proc/1/environ`.
+The `FLAG` value stands in for the instancer's `${RCTF_FLAG}` injection
+(`FLAG: ${RCTF_FLAG}` in `chall.yaml`), so the image itself never bakes it.
+The entrypoint stages the value root-only and re-execs with a clean
+environment, keeping it out of `/proc/1/environ`.
 
 ## Verify
 
@@ -35,14 +41,17 @@ only when all pass.
 
 ## Player connection (deployed)
 
+Press **Start**; the instancer spawns a per-player instance. Then:
+
 ```sh
 ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' \
-    y4ss1n3@rumor-mill.challs.ingeniums.club -p 9450
+    y4ss1n3@<INSTANCE_HOST> -p 9450
 # password: Welcome123
 ```
 
-The mapped `tcp-ssl` port comes from `docs/status.md` (`1337 → 9450`).
-`tcpPort: 2222` is the container port Traefik forwards to.
+The mapped `tcp-ssl` port comes from `docs/status.md` (`1337 → 9450`);
+`expose[0].containerPort: 2222` is the container port the instancer forwards
+to.
 
 ## Notes and deviations
 
@@ -58,8 +67,7 @@ The mapped `tcp-ssl` port comes from `docs/status.md` (`1337 → 9450`).
    `/root/gh3nj4_password.txt` (mode 600).
 4. **Hostname:** the image supports `--hostname challenge-rumor-mill`. Docker
    does not grant `CAP_SYS_ADMIN`, so the entrypoint cannot set it at runtime;
-   `ops/deploy-static.sh` does not pass `--hostname`, so in the CI deployment
-   the hostname is the container id unless that ops script adds the flag.
+   the instancer sets it via the service's `hostname:` field.
 5. **`pam_motd` is disabled** in `/etc/pam.d/sshd`; it writes a `0644`
    `~/.cache/motd.legal-displayed` into a player's home on every login, which
    would break the `0600` invariant. `PrintMotd yes` still shows `/etc/motd`.

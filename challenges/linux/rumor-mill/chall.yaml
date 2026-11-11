@@ -16,11 +16,11 @@ description: |
 
   Find the flag. Trust nothing until you've verified it.
 
-  **Connection:** SSH runs behind the TLS terminator, so wrap the client (the
-  mapped `tcp-ssl` port is 9450):
+  **Connection:** Press **Start** to spawn your instance. SSH runs behind the
+  TLS terminator, so wrap the client (the mapped `tcp-ssl` port is 9450):
 
   > [!CONNECTION]
-  > ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' y4ss1n3@rumor-mill.challs.ingeniums.club -p 9450
+  > ssh -o ProxyCommand='openssl s_client -quiet -servername %h -connect %h:%p' y4ss1n3@<INSTANCE_HOST> -p 9450
 
   Password: `Welcome123`. A TTY is required: `su` prompts on the terminal, so
   a raw `nc` session cannot complete the chain.
@@ -43,7 +43,43 @@ tags:
   - permissions
 
 flag: ingehack{su_1s_n0t_4lm1ghty_y0u_kn0w}
-instanced: false
-# Raw-TCP route: ops/deploy-static.sh puts a Traefik TCP router on the tcp
-# entrypoint (published as the mapped tcp-ssl port) for this container port.
-tcpPort: 2222
+instanced: true
+instancer:
+  # Stable id — keep across renames/updates.
+  challengeIntegrationId: rumor-mill
+  timeoutMilliseconds: 1800000
+  extendable: true
+  expose:
+    - kind: tcp-ssl
+      hostPrefix: rumor-mill
+      containerName: rumor-mill
+      containerPort: 2222
+      shouldDisplay: true
+      title: "SSH (via TLS)"
+  services:
+    rumor-mill:
+      hostname: challenge-rumor-mill
+      environment:
+        # the instancer bakes the per-team value into ${RCTF_FLAG}; the
+        # entrypoint stages it root-only and re-execs with env -i
+        FLAG: ${RCTF_FLAG}
+        SSH_PORT: "2222"
+      # no-new-privileges must NOT apply: the intended chain runs `su`
+      # (setuid), which it would block. Verified with the instancer default:
+      # su fails "The 'no new privileges' flag is set"; with an empty
+      # security_opt, su works and the chain completes.
+      security_opt: []
+      cap_drop: [ALL]
+      cap_add:
+        - CHOWN
+        - DAC_OVERRIDE
+        - FOWNER
+        - SETUID
+        - SETGID
+        - SYS_CHROOT
+        - AUDIT_WRITE
+        - KILL
+      mem_limit: 256m
+      read_only: false
+      pids_limit: 128
+      networks: [ctf-internal]
