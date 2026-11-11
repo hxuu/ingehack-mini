@@ -64,8 +64,8 @@ jobs:
               -p 9305 root@ssh.alpha.openscaler.net \
               "set -e
                test -d \"/var/log/ingehack/$target\" || {
-                   echo '::error::/var/log/ingehack/$target does not exist'; exit 1; }
-               du -sh \"/var/log/ingehack/$target\"
+                   echo '::error::/var/log/ingehack/$target does not exist' >&2; exit 1; }
+               du -sh \"/var/log/ingehack/$target\" >&2
                tar -czf - -C /var/log/ingehack \"$target\"" > out/logs.tgz
 
           echo "fetched $target: $(tar -tzf out/logs.tgz | wc -l) files"
