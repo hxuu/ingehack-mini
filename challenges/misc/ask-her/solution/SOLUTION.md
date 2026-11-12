@@ -1,8 +1,9 @@
 # Solution — Ask Her
 
 **Flag:** printed by the solver. Each team's instance carries its own
-dynamically minted flag, so the value below the walkthrough will not match
-another team's evidence.
+dynamically minted flag (the flag entry is owned by the platform admin UI, so
+the value may differ from any published write-up), so the value below the
+walkthrough will not match another team's evidence.
 
 The challenge is a four-stage recovery: repair enough of a ZIP to get the
 backup tool, pull three XOR-obfuscated fragments out of three different

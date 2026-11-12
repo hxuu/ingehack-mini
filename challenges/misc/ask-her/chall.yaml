@@ -45,7 +45,16 @@ tags:
   - steganography
   - zip
 
-flagsDynamicBase: ingehack{c0rrupt3d_z1p_1n_p0ck3t_4nd_m3m0ry}
+# The flag entry lives in the platform admin UI. `flagOwnedByPlatform` makes
+# CI register this challenge WITHOUT touching the flag, so an admin edit is
+# never overwritten by a later merge (ops/register-challenge.sh). The base
+# below is only the seed for the very first registration, while the platform
+# still has no flag entry.
+#
+# The base has 15 lowercase letters, so `mode: auto` mints per-team flags in
+# "tail" form: ingehack{sh3_w4s_w41t1ng_f0r_y0u_t0_4sk_<10 hex chars>}.
+flagOwnedByPlatform: true
+flagsDynamicBase: ingehack{sh3_w4s_w41t1ng_f0r_y0u_t0_4sk}
 flagsDynamicMode: auto
 
 instanced: true

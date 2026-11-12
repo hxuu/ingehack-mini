@@ -9,8 +9,10 @@ fi
 
 # Assign first, then match: writing ${RCTF_FLAG:-ingehack{...}} inline makes
 # the shell close the expansion at the first '}' (see docs/status.md).
+# The charset is deliberately permissive: the flag is owned by the platform
+# admin UI, so it may contain any printable character except braces.
 flag="$RCTF_FLAG"
-if ! printf '%s' "$flag" | grep -Eq '^ingehack\{[A-Za-z0-9_]+\}$'; then
+if ! printf '%s' "$flag" | grep -Eq '^ingehack\{[^{}]+\}$'; then
     echo "ask-her: RCTF_FLAG is not a valid ingehack{...} flag" >&2
     exit 1
 fi

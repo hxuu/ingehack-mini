@@ -59,6 +59,14 @@ elif "flagsDynamicBase" in m:       # per-team flags (instanced challenges)
                                  "mode": m.get("flagsDynamicMode", "auto")}}]
 elif "flag" in m:                   # single static
     data["flags"] = [{"provider": "flags/static", "config": {"flag": m["flag"]}}]
+elif m.get("flagOwnedByPlatform"):
+    # The platform admin UI owns the flag entry: send no flags at all, so
+    # rCTF's partial upsert keeps whatever the admin set (an omitted field
+    # keeps its current value). The challenge must already carry a flag on
+    # the platform — otherwise submissions cannot succeed and instances get
+    # no RCTF_FLAG to inject.
+    print(f"{manifest}: flagOwnedByPlatform — no flag sent; the platform "
+          f"admin UI owns the flag entry", file=sys.stderr)
 else:
     sys.exit(f"{manifest}: no flag entry (flag / flags / flagsDynamicBase)")
 

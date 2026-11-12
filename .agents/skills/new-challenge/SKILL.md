@@ -83,6 +83,10 @@ Create `challenges/<category>/<name>/` with:
   (markdown), `points: {min,max}`, `tags` (concept tags), `tiebreakEligible`,
   flag (`flag:` static OR `flagsDynamicBase` per-team), `files[]` handouts,
   and for instanced challenges `instanced: true` plus an `instancer` block.
+  `flagOwnedByPlatform: true` hands the flag entry to the platform admin UI:
+  CI then registers without touching the flag (the manifest's base is only
+  the seed for the first registration), so admin edits survive every later
+  merge. Declare it only when the flag really should live on the platform.
   Description-only challenges add `container: false` (default is `true` for
   `instanced: false`); `instanced: true` always means a container.
   Copy the shape from the exemplars instead of writing from memory:

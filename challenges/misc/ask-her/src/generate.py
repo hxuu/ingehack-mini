@@ -42,7 +42,9 @@ OFF_SECRET = 0x2008
 OFF_CRC = 0x2038
 OFF_FRAG_A = 0x2040
 OFF_DECOY_A = 0x2050
-FLAG_RE = re.compile(r"^ingehack\{[A-Za-z0-9_]+\}$")
+# Permissive on purpose: the flag is owned by the platform admin UI and may
+# contain any printable character except braces.
+FLAG_RE = re.compile(r"^ingehack\{[^{}]+\}$")
 
 
 def die(msg):
