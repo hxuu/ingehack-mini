@@ -55,15 +55,13 @@ tags:
   - steganography
   - zip
 
-# The flag entry is owned by the platform admin UI: `flagOwnedByPlatform`
-# makes CI register without touching an existing flag entry, so the base can
-# be edited in the UI and never be overwritten by a later merge. The base below
-# is only the seed for a platform that has no flag entry yet.
+# The flag entry is owned by the platform admin UI — the base can be edited
+# there and every instance mints its team flag from it. This manifest value
+# is what CI registers, so a merge here re-applies it.
 #
 # The base has 15 lowercase letters, so `mode: auto` mints per-team flags in
 # "tail" form: ingehack{<base>_<10 hex chars>}. Each team's own minted flag
 # is what the instance bakes into its capture.
-flagOwnedByPlatform: true
 flagsDynamicBase: ingehack{sh3_w4s_w41t1ng_f0r_y0u_t0_4sk}
 flagsDynamicMode: auto
 
