@@ -1,9 +1,8 @@
 # Solution — Ask Her
 
-**Flag:** printed by the solver. Each team's instance carries its own
-dynamically minted flag (the flag entry is owned by the platform admin UI, so
-the value may differ from any published write-up), so the value below the
-walkthrough will not match another team's evidence.
+**Flag:** printed by the solver. The flag is owned by the platform admin UI
+and is baked into the capture's encrypted record, so the value below the
+walkthrough matches this deployment only.
 
 The challenge is a four-stage recovery: repair enough of a ZIP to get the
 backup tool, pull three XOR-obfuscated fragments out of three different
@@ -12,23 +11,21 @@ the capture.
 
 `solution/solve.py` automates the whole path and prints the flag.
 
-## Step 0 — Download your evidence set
+## Step 0 — Get the handouts
 
-Press **Start** on the challenge, then download the four files from your
-instance (`http://ask-her-<team-id>.challs.ingeniums.club:9487/`) into one
-directory:
+The challenge ships four files as attachments:
+
+`backup_corrupted.zip`, `memory.raw`, `traffic.pcap`, `README_challenge.txt`
+
+They are also committed in the challenge's `files/` directory, so you can work
+straight from the repository.
 
 ```bash
-mkdir -p evidence
-cd evidence
-curl -O http://ask-her-<team-id>.challs.ingeniums.club:9487/backup_corrupted.zip
-curl -O http://ask-her-<team-id>.challs.ingeniums.club:9487/memory.raw
-curl -O http://ask-her-<team-id>.challs.ingeniums.club:9487/traffic.pcap
-curl -O http://ask-her-<team-id>.challs.ingeniums.club:9487/README_challenge.txt
+python3 solution/solve.py files/
 ```
 
-The method is identical for every team; fragments B and C, the archive
-bytes, the memory image, the capture and the flag differ per team.
+The method is the same for everyone; the archive bytes, the memory image, the
+capture and the flag are fixed for this deployment.
 
 ---
 
@@ -122,15 +119,29 @@ filename*.
 ## Run the reference solver
 
 ```bash
-python3 solution/solve.py evidence/
-# [*] evidence directory: /path/to/evidence
+python3 solution/solve.py files/
+# [*] evidence directory: /path/to/files
 # [*] recovered 4 entries from the corrupted zip
 # [*] keygen: 'Key fragment A: 4b33' without env, 'Key fragment A: 4b32' with BACKUP_KEY_A
-# [*] PNG alpha fragments -> <team C>
-# [*] session.dat candidates: ['<team B>']
+# [*] PNG alpha fragments -> <fragment C>
+# [*] session.dat candidates: ['<fragment B>']
 # [*] marker found at offset 0x2000
-# [*] fragments A=4b32 B=<team B> C=<team C>; master secret recovered (CRC32 ok)
-# ingehack{<your team's flag>}
+# [*] fragments A=4b32 B=<fragment B> C=<fragment C>; master secret recovered (CRC32 ok)
+# ingehack{...}
 ```
 
 Requirements: Python 3 and the `openssl` CLI (used for AES-CBC).
+
+## Regenerating the handouts
+
+The handouts are built by `src/generate.py` (authoring tool, no runtime
+container). If the flag changes, rebuild them so the capture still decrypts to
+the new value:
+
+```bash
+python3 src/generate.py --flag 'ingehack{...}' --out files
+```
+
+It rewrites `backup_corrupted.zip`, `memory.raw`, `traffic.pcap` and
+`README_challenge.txt` with fresh fragments B and C, keeping them consistent
+with each other.
