@@ -57,7 +57,7 @@ tags:
 # Changing it means rebuilding the handouts and committing them:
 #   python3 src/generate.py --flag 'ingehack{...}' --out files
 # The platform entry is registered from this manifest, so it follows along.
-flag: ingehack{sh3_t4lk3s_b4ck_1n_th3_d4rk_0r_4sk_h3r_n0w}
+flag: ingehack{sh3_w4s_w41t1ng_f0r_y0u_t0_4sk}
 
 instanced: false
 container: false
