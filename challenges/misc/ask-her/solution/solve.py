@@ -21,10 +21,6 @@ import sys
 import tempfile
 import zlib
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-BASE = os.path.dirname(HERE)
-PUBLIC = os.path.join(BASE, "files")
-
 XOR_KEY = 0x5A
 
 
@@ -219,10 +215,16 @@ def decrypt_session(pcap_path, master_secret):
 
 
 def main():
+    # Artifacts are served by the per-team instance; pass the directory you
+    # downloaded them into (default: the current directory).
+    public = sys.argv[1] if len(sys.argv) > 1 else os.getcwd()
+    if not os.path.isdir(public):
+        raise SystemExit(f"not a directory: {public}")
+    print(f"[*] evidence directory: {os.path.abspath(public)}")
     tmp = tempfile.mkdtemp(prefix="askher-")
     try:
         # 1. recover the archive entries despite the destroyed central dir
-        raw = open(os.path.join(PUBLIC, "backup_corrupted.zip"), "rb").read()
+        raw = open(os.path.join(public, "backup_corrupted.zip"), "rb").read()
         entries = read_local_zip(raw)
         for need in ("backup_tool", "session.dat", "notes.png"):
             if need not in entries:
@@ -265,7 +267,7 @@ def main():
         print(f"[*] session.dat candidates: {cands}")
 
         # 5. locate the marker in memory.raw via the pcap client random
-        cap = parse_pcap(os.path.join(PUBLIC, "traffic.pcap"))
+        cap = parse_pcap(os.path.join(public, "traffic.pcap"))
         server_port = next(p["sport"] for p in cap
                            if p["payload"][:1] == b"\x16" and
                            p["payload"][5:6] == b"\x02")
@@ -278,7 +280,7 @@ def main():
         client_random = ch["body"][6:38]
         marker = client_random[:8]
 
-        mem = open(os.path.join(PUBLIC, "memory.raw"), "rb").read()
+        mem = open(os.path.join(public, "memory.raw"), "rb").read()
         idx = mem.find(marker)
         if idx < 0:
             raise SystemExit("client-random marker not found in memory.raw")
@@ -300,7 +302,7 @@ def main():
               f"master secret recovered (CRC32 ok)")
 
         # 7. decrypt the TLS app-data record
-        plaintext, _ = decrypt_session(os.path.join(PUBLIC, "traffic.pcap"), ms)
+        plaintext, _ = decrypt_session(os.path.join(public, "traffic.pcap"), ms)
         body = plaintext.decode("latin-1")
         m = re.search(r"ingehack\{[^}]+\}", body)
         if not m:

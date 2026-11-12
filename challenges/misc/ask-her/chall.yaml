@@ -21,8 +21,13 @@ description: |
   Recover the master secret of the upload, decrypt the TLS stream, and read the
   flag.
 
-  **Attachments:** `backup_corrupted.zip`, `memory.raw`, `traffic.pcap`,
-  `README_challenge.txt`
+  **Getting the evidence**
+  Press **Start** to spawn your instance. The evidence set is downloaded from
+  your instance page — every team gets its own artifacts and its own flag, so
+  another team's files will not give you their flag.
+
+  > [!CONNECTION]
+  > http://ask-her-<team-id>.challs.ingeniums.club:9487/
 
   🚩 Flag format: `ingehack{...}`
 
@@ -40,16 +45,24 @@ tags:
   - steganography
   - zip
 
-flag: ingehack{c0rrupt3d_z1p_1n_p0ck3t_4nd_m3m0ry}
-instanced: false
-container: false
+flagsDynamicBase: ingehack{c0rrupt3d_z1p_1n_p0ck3t_4nd_m3m0ry}
+flagsDynamicMode: auto
 
-files:
-  - name: backup_corrupted.zip
-    path: files/backup_corrupted.zip
-  - name: memory.raw
-    path: files/memory.raw
-  - name: traffic.pcap
-    path: files/traffic.pcap
-  - name: README_challenge.txt
-    path: files/README_challenge.txt
+instanced: true
+instancer:
+  challengeIntegrationId: ask-her
+  timeoutMilliseconds: 1800000
+  extendable: true
+  expose:
+    - {kind: http, hostPrefix: ask-her, containerName: main, containerPort: 5000, shouldDisplay: true, title: "Ask Her evidence (HTTP)"}
+  services:
+    main:
+      environment:
+        RCTF_FLAG: ${RCTF_FLAG}
+      user: "app"
+      mem_limit: 384m
+      read_only: false
+      pids_limit: 128
+      networks: [internal]
+  networks:
+    internal: {internal: true}

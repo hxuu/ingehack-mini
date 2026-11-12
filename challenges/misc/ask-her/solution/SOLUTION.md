@@ -1,6 +1,8 @@
 # Solution — Ask Her
 
-**Flag:** `ingehack{c0rrupt3d_z1p_1n_p0ck3t_4nd_m3m0ry}`
+**Flag:** printed by the solver. Each team's instance carries its own
+dynamically minted flag, so the value below the walkthrough will not match
+another team's evidence.
 
 The challenge is a four-stage recovery: repair enough of a ZIP to get the
 backup tool, pull three XOR-obfuscated fragments out of three different
@@ -8,6 +10,24 @@ layers, rebuild the TLS master secret held in the memory image, then decrypt
 the capture.
 
 `solution/solve.py` automates the whole path and prints the flag.
+
+## Step 0 — Download your evidence set
+
+Press **Start** on the challenge, then download the four files from your
+instance (`http://ask-her-<team-id>.challs.ingeniums.club:9487/`) into one
+directory:
+
+```bash
+mkdir -p evidence
+cd evidence
+curl -O http://ask-her-<team-id>.challs.ingeniums.club:9487/backup_corrupted.zip
+curl -O http://ask-her-<team-id>.challs.ingeniums.club:9487/memory.raw
+curl -O http://ask-her-<team-id>.challs.ingeniums.club:9487/traffic.pcap
+curl -O http://ask-her-<team-id>.challs.ingeniums.club:9487/README_challenge.txt
+```
+
+The method is identical for every team; fragments B and C, the archive
+bytes, the memory image, the capture and the flag differ per team.
 
 ---
 
@@ -37,11 +57,13 @@ This yields `README.txt`, `backup_tool`, `notes.png` and `session.dat`.
 `strings` shows nothing.
 
 **B — `session.dat`.** Scan the first 256 bytes for a 4-byte window that
-de-XORs with `0x5a` to lowercase hex: `9a7f` at offset 64.
+de-XORs with `0x5a` to lowercase hex. The token sits at offset 64 and is
+random per team (for example `9a7f`).
 
-**C — `notes.png` alpha channel.** Pixel `(512,700)` has alpha `0x9a` and
-`(513,700)` has alpha `0x84`; XOR both with `0x5a` to get the bytes
-`0xc0 0xde`, i.e. the hex string `c0de`. (The low-contrast QR is a decoy.)
+**C — `notes.png` alpha channel.** Pixel `(512,700)` holds the first byte and
+`(513,700)` the second, both XORed with `0x5a`. The two bytes spell the hex
+string in ASCII (for example `0xc0 0xde` → `c0de`), and both are random per
+team. (The low-contrast QR is a decoy.)
 
 ## Step 3 — Rebuild the master secret from `memory.raw`
 
@@ -54,7 +76,7 @@ first 8 bytes — the marker sits at offset `0x2000`. The layout from there is:
 | `0x2008` | 48-byte master secret, XORed with a keystream |
 | `0x2038` | CRC32(master secret), little endian |
 
-The keystream is `SHA256(A + B + C)` (the ASCII hex strings
+The keystream is `SHA256(A + B + C)` (the ASCII hex strings — for example
 `4b32` + `9a7f` + `c0de`), repeated to 48 bytes. XOR the 48 bytes at
 `0x2008`, then confirm `zlib.crc32(secret) == crc32` read from `0x2038`.
 
@@ -99,14 +121,15 @@ filename*.
 ## Run the reference solver
 
 ```bash
-python3 solution/solve.py
+python3 solution/solve.py evidence/
+# [*] evidence directory: /path/to/evidence
 # [*] recovered 4 entries from the corrupted zip
 # [*] keygen: 'Key fragment A: 4b33' without env, 'Key fragment A: 4b32' with BACKUP_KEY_A
-# [*] PNG alpha fragments -> c0de
-# [*] session.dat candidates: ['9a7f']
+# [*] PNG alpha fragments -> <team C>
+# [*] session.dat candidates: ['<team B>']
 # [*] marker found at offset 0x2000
-# [*] fragments A=4b32 B=9a7f C=c0de; master secret recovered (CRC32 ok)
-# ingehack{c0rrupt3d_z1p_1n_p0ck3t_4nd_m3m0ry}
+# [*] fragments A=4b32 B=<team B> C=<team C>; master secret recovered (CRC32 ok)
+# ingehack{<your team's flag>}
 ```
 
 Requirements: Python 3 and the `openssl` CLI (used for AES-CBC).
