@@ -1,12 +1,7 @@
 #!/usr/bin/env python3
-"""generate.py — rebuild the Ask Her handouts (authoring tool).
+"""generate.py — build one team's Ask Her evidence set at instance start.
 
-This challenge ships static handouts, so there is no runtime container: run
-this script by hand whenever the flag changes, and commit the result.
-
-  python3 src/generate.py --flag 'ingehack{...}' --out files
-
-Inputs (baked in this directory, under ./template):
+Inputs (baked into the image, under ./template):
   traffic_raw.pcap   captured TLS 1.2 session with a placeholder response
   session.json       {marker, client_random, server_random, master_secret, cipher}
   backup_tool        compiled tool carrying fragment A ("4b32")
@@ -14,15 +9,14 @@ Inputs (baked in this directory, under ./template):
   README_challenge.txt
 
 Outputs (into --out):
-  backup_corrupted.zip, memory.raw, traffic.pcap, README_challenge.txt
+  backup_corrupted.zip, memory.raw, traffic.pcap, README_challenge.txt, index.html
 
-Fragments B and C (in session.dat and the PNG alpha channel) are chosen fresh
-on every run, so the handouts differ from the previous build while staying
-mutually consistent. The master secret is unchanged, so the memory image and
-the capture stay consistent with each other.
+Per team we pick fresh fragments B and C (4 hex chars each) and re-encrypt the
+TLS application-data record with the team's flag. The master secret itself is
+unchanged, so the memory image and the capture stay consistent.
 
-The flag only ever exists inside the encrypted pcap record — never in
-plaintext in any artifact.
+No flag is ever baked into the image: the flag arrives as --flag (from
+RCTF_FLAG) and only ever exists inside the encrypted pcap record.
 """
 import argparse
 import hashlib
@@ -415,8 +409,15 @@ def main():
     open(os.path.join(out, "memory.raw"), "wb").write(memory)
     open(os.path.join(out, "traffic.pcap"), "wb").write(pcap)
     open(os.path.join(out, "README_challenge.txt"), "wb").write(readme)
+    open(os.path.join(out, "index.html"), "w").write(
+        "<!doctype html><meta charset=utf-8><title>Ask Her - evidence</title>"
+        "<h1>Evidence drop</h1><ul>" +
+        "".join(f'<li><a href="{n}">{n}</a></li>' for n in
+                ("backup_corrupted.zip", "memory.raw", "traffic.pcap",
+                 "README_challenge.txt")) +
+        "</ul><p>This set is unique to your team.</p>")
 
-    print(f"generated handouts in {out}: "
+    print(f"generated evidence in {out}: "
           f"zip={len(zip_bytes)}B mem={len(memory)}B pcap={len(pcap)}B "
           f"(fragments B={frag_b} C={frag_c})")
 

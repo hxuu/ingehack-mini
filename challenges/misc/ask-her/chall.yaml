@@ -1,8 +1,6 @@
 name: ask-her
 author: boul3h14
 category: misc
-# Hidden until it is ready for players: the platform keeps it out of the
-# challenge list (set `hidden: false` here, or in the admin UI, to publish it).
 hidden: true
 releaseTime: null
 tiebreakEligible: true
@@ -23,8 +21,13 @@ description: |
   Recover the master secret of the upload, decrypt the TLS stream, and read the
   flag.
 
-  **Attachments:** `backup_corrupted.zip`, `memory.raw`, `traffic.pcap`,
-  `README_challenge.txt`
+  **Getting the evidence**
+  Press **Start** to spawn your instance. The evidence set is downloaded from
+  your instance page — every team gets its own artifacts and its own flag, so
+  another team's files will not give you their flag.
+
+  > [!CONNECTION]
+  > http://ask-her-<team-id>.challs.ingeniums.club:9487/
 
   **Hints**
   1. A ZIP without its index still has file headers. `unzip` fails; your parser
@@ -52,22 +55,33 @@ tags:
   - steganography
   - zip
 
-# The flag is baked into `files/traffic.pcap` — that is where players recover
-# it from — so this value and the committed handouts must always agree.
-# Changing it means rebuilding the handouts and committing them:
-#   python3 src/generate.py --flag 'ingehack{...}' --out files
-# The platform entry is registered from this manifest, so it follows along.
-flag: ingehack{sh3_w4s_w41t1ng_f0r_y0u_t0_4sk}
+# The flag entry is owned by the platform admin UI: `flagOwnedByPlatform`
+# makes CI register without touching an existing flag entry, so the base can
+# be edited in the UI and never be overwritten by a later merge. The base below
+# is only the seed for a platform that has no flag entry yet.
+#
+# The base has 15 lowercase letters, so `mode: auto` mints per-team flags in
+# "tail" form: ingehack{<base>_<10 hex chars>}. Each team's own minted flag
+# is what the instance bakes into its capture.
+flagOwnedByPlatform: true
+flagsDynamicBase: ingehack{sh3_w4s_w41t1ng_f0r_y0u_t0_4sk}
+flagsDynamicMode: auto
 
-instanced: false
-container: false
-
-files:
-  - name: backup_corrupted.zip
-    path: files/backup_corrupted.zip
-  - name: memory.raw
-    path: files/memory.raw
-  - name: traffic.pcap
-    path: files/traffic.pcap
-  - name: README_challenge.txt
-    path: files/README_challenge.txt
+instanced: true
+instancer:
+  challengeIntegrationId: ask-her
+  timeoutMilliseconds: 1800000
+  extendable: true
+  expose:
+    - {kind: http, hostPrefix: ask-her, containerName: main, containerPort: 5000, shouldDisplay: true, title: "Ask Her evidence (HTTP)"}
+  services:
+    main:
+      environment:
+        RCTF_FLAG: ${RCTF_FLAG}
+      user: "app"
+      mem_limit: 384m
+      read_only: false
+      pids_limit: 128
+      networks: [internal]
+  networks:
+    internal: {internal: true}
