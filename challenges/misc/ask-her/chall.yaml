@@ -1,7 +1,9 @@
 name: ask-her
 author: boul3h14
 category: misc
-hidden: false
+# Hidden until it is ready for players: the platform keeps it out of the
+# challenge list (set `hidden: false` here, or in the admin UI, to publish it).
+hidden: true
 releaseTime: null
 tiebreakEligible: true
 
