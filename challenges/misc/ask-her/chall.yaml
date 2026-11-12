@@ -1,0 +1,68 @@
+name: ask-her
+author: boul3h14
+category: misc
+hidden: false
+releaseTime: null
+tiebreakEligible: true
+
+description: |
+  Our monitoring agent grabbed a nightly backup session minutes before the
+  machine was wiped. What survived is everything we have, and it isn't a
+  friendly shape:
+
+  - `backup_corrupted.zip` — the backup archive, its index destroyed
+  - `memory.raw` — a raw 16 MiB memory image taken shortly afterwards
+  - `traffic.pcap` — the TLS upload of the backup session
+
+  The backup tool that produced all of this is still inside the archive. It
+  never wrote its keys to disk in plaintext — but nothing on this box can keep
+  a secret if you look at the right layer.
+
+  Recover the master secret of the upload, decrypt the TLS stream, and read the
+  flag.
+
+  **Getting the evidence**
+  Press **Start** to spawn your instance. The evidence set is downloaded from
+  your instance page — every team gets its own artifacts and its own flag, so
+  another team's files will not give you their flag.
+
+  > [!CONNECTION]
+  > http://ask-her-<team-id>.challs.ingeniums.club:9487/
+
+  🚩 Flag format: `ingehack{...}`
+
+points:
+  min: 100
+  max: 500
+
+tags:
+  - misc
+  - forensics
+  - network
+  - tls
+  - memory-forensics
+  - reverse-engineering
+  - steganography
+  - zip
+
+flagsDynamicBase: ingehack{c0rrupt3d_z1p_1n_p0ck3t_4nd_m3m0ry}
+flagsDynamicMode: auto
+
+instanced: true
+instancer:
+  challengeIntegrationId: ask-her
+  timeoutMilliseconds: 1800000
+  extendable: true
+  expose:
+    - {kind: http, hostPrefix: ask-her, containerName: main, containerPort: 5000, shouldDisplay: true, title: "Ask Her evidence (HTTP)"}
+  services:
+    main:
+      environment:
+        RCTF_FLAG: ${RCTF_FLAG}
+      user: "app"
+      mem_limit: 384m
+      read_only: false
+      pids_limit: 128
+      networks: [internal]
+  networks:
+    internal: {internal: true}
