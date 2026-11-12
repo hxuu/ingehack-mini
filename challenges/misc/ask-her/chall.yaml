@@ -1,0 +1,55 @@
+name: ask-her
+author: boul3h14
+category: misc
+hidden: false
+releaseTime: null
+tiebreakEligible: true
+
+description: |
+  Our monitoring agent grabbed a nightly backup session minutes before the
+  machine was wiped. What survived is everything we have, and it isn't a
+  friendly shape:
+
+  - `backup_corrupted.zip` — the backup archive, its index destroyed
+  - `memory.raw` — a raw 16 MiB memory image taken shortly afterwards
+  - `traffic.pcap` — the TLS upload of the backup session
+
+  The backup tool that produced all of this is still inside the archive. It
+  never wrote its keys to disk in plaintext — but nothing on this box can keep
+  a secret if you look at the right layer.
+
+  Recover the master secret of the upload, decrypt the TLS stream, and read the
+  flag.
+
+  **Attachments:** `backup_corrupted.zip`, `memory.raw`, `traffic.pcap`,
+  `README_challenge.txt`
+
+  🚩 Flag format: `ingehack{...}`
+
+points:
+  min: 100
+  max: 500
+
+tags:
+  - misc
+  - forensics
+  - network
+  - tls
+  - memory-forensics
+  - reverse-engineering
+  - steganography
+  - zip
+
+flag: ingehack{c0rrupt3d_z1p_1n_p0ck3t_4nd_m3m0ry}
+instanced: false
+container: false
+
+files:
+  - name: backup_corrupted.zip
+    path: files/backup_corrupted.zip
+  - name: memory.raw
+    path: files/memory.raw
+  - name: traffic.pcap
+    path: files/traffic.pcap
+  - name: README_challenge.txt
+    path: files/README_challenge.txt
