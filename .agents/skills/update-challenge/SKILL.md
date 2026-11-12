@@ -31,6 +31,12 @@ skill first: the branch is the author's GitHub login
    admin UI survives both this fast path and CI re-registration. Declare them
    in `chall.yaml` when the repo should win. `sortWeight` follows the same
    opt-in rule; higher weights sort first inside a category.
+   `flagOwnedByPlatform: true` in `chall.yaml` is the same idea for the flag:
+   the platform admin UI owns the flag entry, CI registers without touching
+   it, and the manifest's `flagsDynamicBase`/`flag` is only the seed for the
+   first registration. Use it when the admin must be able to edit the flag
+   without a repo change — and remember the platform needs a flag before
+   players can solve or before instances get an `RCTF_FLAG`.
 2. **Code or Dockerfile change** (container challenges only) — rebuild
    required. Commit and merge a PR:
    CI jobs build the new image, ship, and re-register it (ADR 0005). Static

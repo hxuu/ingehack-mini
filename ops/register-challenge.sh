@@ -35,6 +35,10 @@ python3 -c 'import jsonschema' 2>/dev/null || pip install --quiet jsonschema || 
 #   win.
 #   flags: either
 #     flag: ingehack{...}                          (single static flag), or
+#     flagOwnedByPlatform: true                    (admin UI owns the flag;
+#                                                  the manifest value is only
+#                                                  the seed for the first
+#                                                  registration)
 #     flagsFlagProvider / flagsFlagConfig          (full entry), or
 #     flagsDynamicBase / flagsDynamicMode          (per-team minted flags)
 #   files: [{name, path(local file to upload), size(optional; filled if absent)}]
@@ -92,6 +96,25 @@ PY
 payload=$(echo "$payload" | jq --argjson files "$attached" '.data.files = $files')
 
 id=$(python3 -c 'import sys,yaml;m=yaml.safe_load(open(sys.argv[1]));i=m.get("instancer") or {};print(i.get("challengeIntegrationId", m.get("challengeIntegrationId")) or m["name"].lower().replace(" ","-"))' "$manifest")
+
+# ---- platform-owned flag: seed once, then never overwrite ---------------
+# `flagOwnedByPlatform: true` means the platform admin UI owns the flag
+# entry. rCTF's upsert keeps the current value for any field we do not send,
+# so: if the challenge already carries a flag on the platform, drop "flags"
+# from the payload; otherwise send the manifest's seed so that the very
+# first registration is already solvable.
+if python3 -c 'import sys,yaml;m=yaml.safe_load(open(sys.argv[1]));sys.exit(0 if m.get("flagOwnedByPlatform") else 1)' "$manifest"; then
+  live=$(curl -fsS "$platform/api/v2/admin/challs/$id" -H "Authorization: Bearer $token" 2>/dev/null || true)
+  live_flags=$(printf '%s' "$live" | jq -r '(.data.flags // []) | length' 2>/dev/null || echo "")
+  if [ -z "$live_flags" ]; then
+    echo "flagOwnedByPlatform: live challenge '$id' unreadable — keeping the manifest flag"
+  elif [ "$live_flags" -gt 0 ]; then
+    payload=$(echo "$payload" | jq 'del(.data.flags)')
+    echo "flagOwnedByPlatform: the platform already holds $live_flags flag entr(y/ies) — not overwriting them"
+  else
+    echo "flagOwnedByPlatform: the platform has no flag yet — seeding from the manifest"
+  fi
+fi
 
 # ---- pre-PUT validation: PAYLOAD's instancer config vs LIVE provider schema -
 echo "validating instancerConfig against live provider schema ..."
